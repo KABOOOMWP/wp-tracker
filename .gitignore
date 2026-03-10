@@ -1,0 +1,65 @@
+# ── macOS ────────────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# ── Archives / binaries ───────────────────────────────────────────────────────
+*.zip
+*.tar.gz
+*.aar
+*.apk
+*.aab
+*.ipa
+
+# ── Claude AI session data ────────────────────────────────────────────────────
+.claude/
+
+# ── Gradle (WearOS + KMP shared) ──────────────────────────────────────────────
+.gradle/
+build/
+**/build/
+local.properties
+*.hprof
+
+# ── Kotlin build cache ────────────────────────────────────────────────────────
+.kotlin/
+
+# ── IntelliJ IDEA / Android Studio ───────────────────────────────────────────
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# ── KMP XCFramework build outputs ────────────────────────────────────────────
+**/XCFrameworks/
+
+# ── Xcode (watchOS) ──────────────────────────────────────────────────────────
+xcuserdata/
+**/*.xcodeproj/xcuserdata/
+**/*.xcworkspace/xcuserdata/
+**/*.xcworkspace/contents.xcworkspacedata
+DerivedData/
+*.xcarchive
+*.xcresult
+*.moved-aside
+
+# ── Swift Package Manager ─────────────────────────────────────────────────────
+.swiftpm/
+.build/
+
+# ── CocoaPods (if ever added) ─────────────────────────────────────────────────
+Pods/
+Podfile.lock
+
+# ── Fastlane (if ever added) ──────────────────────────────────────────────────
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output/
+
+# ── Misc ──────────────────────────────────────────────────────────────────────
+*.log
+*.tmp
+*.swp
+*~
