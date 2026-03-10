@@ -1,0 +1,592 @@
+🟡 WP-Tracker
+
+Smartwatch Padel Scoring App – Final Spezifikation (Clean)
+
+⸻
+
+1. PROJEKT VISION
+
+WP-Tracker ist eine minimalistische, hochintuitive Padel-Score-App für Smartwatches (Apple Watch & WearOS).
+
+Ziel:
+	•	Minimalste Interaktion während eines aktiven Matches
+	•	Maximale visuelle Klarheit
+	•	Physische Spiellogik (Positionierung / Aufschlagseite) visuell unterstützen
+	•	Kein unnötiger Text
+	•	Kein Clutter
+	•	Fokus auf den aktuellen Punkt und den emotionalen Moment
+
+Design-Inspiration:
+Minimal / Dark Mode / shadcn/ui Ästhetik
+Kontraststark, aber ruhig.
+
+⸻
+
+2. SETUP FLOW (APP START)
+
+Beim Start der App werden nacheinander folgende Parameter abgefragt:
+
+2.1 Spielmodus
+	•	1v1
+	•	2v2
+
+2.2 Match Format
+	•	Best of 3
+	•	Best of 5
+
+2.3 Regelmodus
+	•	Standard (Advantage)
+	•	Golden Point
+	•	Star Point
+
+Neben jedem Regelmodus befindet sich ein Info-Button (i), der die Regel kurz erklärt.
+
+Nach Auswahl wird direkt der Match Screen geladen.
+
+⸻
+
+3. MATCH SCREEN – LAYOUT
+
+3.1 Grundstruktur
+	•	Oberer Bereich: Opponent (Orange)
+	•	Unterer Bereich: You (Blau)
+	•	Horizontale weiße Trennlinie in der Mitte
+
+Es werden keine Teamnamen benötigt – nur:
+	•	„Opponent“
+	•	„You“
+
+3.2 Zusätzliche UI-Elemente (fix enthalten)
+	•	Status-Pille (mittig auf der weißen Linie)
+	•	Satzhistorie (subtil nahe der Linie)
+	•	Revert / End Match Button (seitlich)
+	•	Weißer Punkt (Server + Serve-Side Indikator)
+
+Alle Elemente sind bewusst minimal und werden nur gezeigt, wenn sie relevant sind.
+
+⸻
+
+4. CORE INTERAKTION
+	•	Tap obere Hälfte → Punkt für Opponent
+	•	Tap untere Hälfte → Punkt für You
+
+Extrem große Touchflächen → fehlertolerant.
+
+⸻
+
+5. SCORE SYSTEM
+
+5.1 Standard Punkte
+
+0 → 15 → 30 → 40 → Game
+
+5.2 Deuce
+
+Wenn beide Teams 40 haben:
+
+Anzeige:
+40 40
+
+Keine Pille.
+
+5.3 Advantage
+
+Anzeige:
+	•	AD 40
+	•	40 AD
+
+Keine Pille.
+
+⸻
+
+6. DIAGONALE POSITIONSLOGIK (VISUELLE ORIENTIERUNG)
+
+Die angezeigten Werte bleiben immer:
+	•	0 / 15 / 30 / 40 / AD
+	•	im Tie-Break: 0, 1, 2, 3, …
+
+Was sich ändert ist nur die Position der Score-Zahlen im UI.
+
+Die diagonale Anordnung hängt von der Anzahl gespielter Ballwechsel im aktuellen Game ab:
+
+Positionslogik
+
+Wenn Anzahl gespielter Punkte im Game gerade:
+	•	You → unten links
+	•	Opponent → oben rechts
+
+Wenn Anzahl gespielter Punkte im Game ungerade:
+	•	You → unten rechts
+	•	Opponent → oben links
+
+Das simuliert das reale Seitenwechsel-Verhalten im Spiel.
+
+⸻
+
+7. WEISSER PUNKT (SERVER + SERVE-SIDE INDICATOR)
+
+Der weiße Punkt ersetzt vollständig:
+	•	L/R Labels
+	•	Pfeile
+	•	separate Server-Anzeigen
+
+Er zeigt gleichzeitig:
+
+7.1 Links / Rechts
+
+→ von welcher Seite serviert wird (Left / Right)
+
+7.2 Oben / Unten
+
+→ welches Team serviert (Opponent / You)
+
+Der Punkt bewegt sich also:
+	•	horizontal (links/rechts)
+	•	vertikal (oben/unten)
+
+Mapping
+	•	Opponent serviert + Right → oben rechts
+	•	Opponent serviert + Left → oben links
+	•	You servierst + Right → unten rechts
+	•	You servierst + Left → unten links
+
+⸻
+
+8. SERVE-SIDE LOGIK (INNERHALB EINES GAMES)
+
+Unabhängig von 1v1 oder 2v2 gilt:
+
+Wenn Anzahl gespielter Punkte im Game gerade:
+→ Serve von rechts
+
+Wenn ungerade:
+→ Serve von links
+
+Diese Regel gilt für:
+	•	Regular Game
+	•	Golden Point
+	•	Star Point
+	•	Tie-Break (mit Sonderregel für den ersten Punkt, siehe unten)
+
+⸻
+
+9. REGELMODI
+
+9.1 Standard (Advantage)
+
+40:40 → Advantage → Game
+	•	Vorteil wechselt bis 2-Punkte-Vorsprung erreicht ist.
+
+Anzeige:
+	•	40 40
+	•	AD 40
+	•	40 AD
+
+Keine Pille.
+
+⸻
+
+9.2 Golden Point (No-Ad)
+
+Bei 40:40:
+	•	Golden Active
+	•	nächster Punkt entscheidet das Game
+	•	Pille zeigt: Golden Point
+
+Regelkonform:
+	•	Empfangendes Team darf die Annahmeseite wählen (links/rechts)
+	•	Empfangendes Team darf die Positionen nicht wechseln
+
+⸻
+
+9.3 Star Point (FIP 2026 System)
+
+Bei 40:40:
+
+Ablauf:
+	1.	First Advantage
+	2.	zurück zu Deuce möglich
+	3.	Second Advantage
+	4.	zurück zu Deuce möglich
+	5.	danach → Star Point (entscheidender Punkt)
+
+Nur im finalen Entscheidungszustand:
+	•	Pille zeigt: Star Point
+
+Regelkonform:
+	•	Empfangendes Team wählt Seite
+	•	kein Positionswechsel erlaubt
+
+⸻
+
+10. STATUS-PILLE (CENTERED)
+
+Position: exakt mittig auf der weißen Trennlinie.
+
+Standardzustand
+
+→ unsichtbar
+
+Wird angezeigt bei:
+	•	Break Point
+	•	Set Point
+	•	Match Point
+	•	Golden Point
+	•	Star Point
+	•	Tie-Break
+
+Wird nicht angezeigt bei:
+	•	Deuce
+	•	Advantage
+
+Die Pille ist das emotionale „Spannungszentrum“ der App.
+
+Priorität bei mehreren Zuständen
+	1.	Match Point
+	2.	Set Point
+	3.	Golden Point / Star Point
+	4.	Break Point (nur in normalen Szenarien: z.B. 30:40 oder 40:Ad → kein Break in Golden-/Star-Phasen)
+	5.	Tie-Break
+
+⸻
+
+11. BREAK / SET / MATCH POINT ERKENNUNG
+
+Break Point
+
+Return-Team kann mit dem nächsten Punkt das Game gewinnen (nur in normalen Spielsituationen; in Golden- und Star-Point-Phasen hat die Entscheidungspunkt-Pille Vorrang).
+
+Set Point
+
+Team kann mit dem nächsten gewonnenen Game den Satz gewinnen.
+
+Match Point
+
+Team kann mit dem nächsten gewonnenen Satz das Match gewinnen.
+
+⸻
+
+12. SPIELSTRUKTUR: 1v1 vs 2v2
+
+WP-Tracker unterstützt zwei Spieltypen:
+
+12.1 1v1
+	•	Jeder Spieler serviert im Wechsel ein komplettes Game.
+	•	Serve-Reihenfolge bleibt über das gesamte Match konstant.
+	•	Tie-Break folgt derselben Reihenfolge.
+
+12.2 2v2 (Standard-Padel)
+
+Teams:
+	•	Team You → A1, A2
+	•	Team Opponent → B1, B2
+
+Serve-Reihenfolge wird zu Matchbeginn festgelegt:
+
+Beispiel:
+A1 → B1 → A2 → B2 → A1 → …
+
+Diese Reihenfolge bleibt über das gesamte Match konstant.
+
+⸻
+
+13. 4-SPIELER SERVE-ROTATION (2v2)
+
+13.1 Regular Games
+
+Ein Server serviert immer ein komplettes Game.
+
+Rotation:
+	•	Game 1 → A1
+	•	Game 2 → B1
+	•	Game 3 → A2
+	•	Game 4 → B2
+	•	Game 5 → A1
+	•	usw.
+
+⸻
+
+14. TIE-BREAK LOGIK
+
+Tie-Break startet automatisch bei 6:6 Games.
+
+14.1 Tie-Break Anzeige
+	•	Punkte zählen 0,1,2,3…
+	•	Pille zeigt: Tie-Break
+
+14.2 Gewinnbedingung
+	•	Sieg bei 7 Punkten mit 2 Punkten Vorsprung
+	•	sonst weiter bis 2 Vorsprung erreicht ist
+
+⸻
+
+14.3 Tie-Break Rotation (1v1)
+	•	Spieler laut Set-Reihenfolge startet
+	•	1 Punkt von rechts
+	•	Gegner 2 Punkte
+	•	danach jeweils 2 Punkte pro Spieler im Wechsel
+
+ServeSide:
+	•	Punkt 1 → rechts
+	•	danach Side-Wechsel bei jedem Punkt
+
+⸻
+
+14.4 Tie-Break Rotation (2v2 – korrekt laut FIP)
+
+Tie-Break folgt der bestehenden Serve-Rotation.
+
+Beispiel Rotation:
+A1 → B1 → A2 → B2
+
+Wenn als nächster Server A2 dran wäre:
+	•	Punkt 1 → A2 (rechts)
+	•	Punkt 2–3 → B2
+	•	Punkt 4–5 → A1
+	•	Punkt 6–7 → B1
+	•	usw.
+
+ServeSide:
+	•	Punkt 1 → rechts
+	•	danach Wechsel bei jedem Punkt
+
+⸻
+
+15. SATZ HISTORIE (SUBTIL)
+
+Positioniert nahe der weißen Mittellinie.
+
+Darstellung:
+	•	Laufender Satz → normale Schrift
+	•	Gewonnener Satz → Gewinner fett
+	•	Verlierer → kursiv
+
+Alle Sätze nebeneinander.
+
+⸻
+
+16. HAPTISCHES FEEDBACK
+	•	Punkt You → 1x kurz
+	•	Punkt Opponent → 2x kurz
+	•	Undo → 3x kurz
+	•	Game / Satz / Match Gewinn → 1x lang
+
+Keine weiteren Vibrationen.
+
+⸻
+
+17. SNAPSHOT SYSTEM (UNDO ENGINE)
+
+Jeder Zustand wird gespeichert als Snapshot.
+
+Unbegrenztes Undo möglich (geringer Speicherverbrauch).
+
+Undo:
+	•	entfernt den letzten Snapshot
+	•	UI rendert komplett neu
+
+Undo funktioniert auch über:
+	•	Game-Ende
+	•	Set-Ende
+	•	Tie-Break-Ende
+	•	Match-Ende
+
+Beispiel Snapshot:
+{
+  "config": {
+    "bestOf": 3 | 5,
+    "ruleMode": "STANDARD" | "GOLDEN" | "STAR",
+    "playMode": "SINGLES" | "DOUBLES"
+  },
+
+  "match": {
+    "setsWonYou": 0..3,
+    "setsWonOpp": 0..3,
+    "setScores": [
+      { "youGames": 0..7, "oppGames": 0..7, "isCompleted": true|false }
+    ],
+    "startedAt": "timestamp",
+    "endedAt": "timestamp|null",
+    "serveOrder": ["A1", "B1", "A2", "B2"]  // nur relevant bei DOUBLES
+  },
+
+  "set": {
+    "currentSetIndex": int,
+    "youGames": 0..7,
+    "oppGames": 0..7
+  },
+
+  "game": {
+    "mode": "REGULAR" | "TIEBREAK",
+    "youPoints": 0..N,
+    "oppPoints": 0..N,
+
+    "starState": {
+      "active": true|false,
+      "advCount": 0..2,
+      "isStarPoint": true|false
+    },
+
+    "goldenActive": true|false,
+
+    "deciderReceiveSideOverride": "LEFT" | "RIGHT" | null
+  },
+
+  "serve": {
+    "serverTeam": "YOU" | "OPP",
+    "serverPlayer": "A1" | "A2" | "B1" | "B2",
+    "serveSide": "LEFT" | "RIGHT"
+  },
+
+  "stats": {
+    "totalPlayedPoints": int,
+    "goldenDecidersPlayed": int,
+    "goldenDecidersWonYou": int,
+    "pointsWonYou": int,
+    "breaksYou": int,
+    "breaksOpp": int,
+    "deuceCount": int
+  }
+}
+
+⸻
+
+18. REVERT / END MATCH MECHANIK
+
+18.1 Undo (Standard)
+
+Icon: Pfeil zurück
+Kurzer Tap:
+	•	letzter Snapshot wird entfernt
+	•	3x kurze Vibration
+
+⸻
+
+18.2 Long Press Mechanik (Match beenden)
+
+Button gedrückt halten:
+	•	Rand des Buttons wird zu einem kreisförmigen Ladebalken
+	•	Ring füllt sich kontinuierlich
+	•	kein Text, keine Zahlen
+
+Wenn der Ring vollständig geschlossen ist:
+	•	Button morpht zu einem roten X
+
+⸻
+
+18.3 Rück-Morph Mechanik
+
+Wenn rotes X gehalten wird:
+	•	gleicher Lade-Ring
+	•	nach vollständigem Kreis → morph zurück zum Undo-Button
+
+⸻
+
+18.4 Match beenden
+
+Wenn rotes X aktiv ist und getappt wird:
+	•	Match endet
+	•	Summary Screen erscheint
+
+⸻
+
+19. MATCH SUMMARY SCREEN
+
+Anzeige:
+
+Header:
+MATCH SUMMARY
+
+Ergebnis (groß):
+YOU 2 : 1 OPPONENT
+
+Alle Sätze:
+	•	6:4
+	•	3:6
+	•	7:6
+
+Statistiken:
+	•	Duration (HH:MM)
+	•	Points: YOU – OPP
+	•	Games: YOU – OPP
+	•	Avg pts/game
+	•	Tiebreaks (nur wenn > 0)
+	•	Breaks: YOU – OPP (nur Regular Games; Tiebreak zählt nicht)
+	•	Deuces (nur wenn > 0; nicht in Golden-Modus)
+	•	Golden / Star won: X/Y (nur im jeweiligen Modus)
+
+Button:
+NEW MATCH
+→ führt zurück zum Setup Flow
+
+⸻
+
+20. WAS BEWUSST NICHT IMPLEMENTIERT WIRD
+	•	Kein L/R Text
+	•	Kein Seitenwechsel-Reminder
+	•	Keine unnötigen Animationen (außer Morph + Ring)
+	•	Keine unnötigen Labels
+	•	Kein Clutter
+	•	Kein überflüssiger Text im Matchscreen
+
+⸻
+
+21. DESIGN PRINZIP
+
+WP-Tracker soll sich anfühlen wie:
+	•	ein physischer Spielassistent
+	•	nicht wie eine App
+	•	extrem ruhig
+	•	extrem klar
+	•	extrem schnell
+
+Fokus liegt immer auf:
+	•	aktuellem Punkt
+	•	aktueller Position (diagonal + weißer Punkt)
+	•	emotionalem Moment (Status-Pille)
+
+⸻
+
+22. TESTING & QUALITÄTSSICHERUNG
+
+Die Implementierung erfolgt mit:
+
+Shared logic:
+👉 Kotlin Multiplatform (KMP)
+
+Apple Watch:
+👉 SwiftUI
+
+Wear OS:
+👉 Jetpack Compose for Wear (Kotlin)
+
+Die komplette Scoring-Engine und State-Logik wird durch automatisierte Unit-Tests vollständig abgedeckt.
+
+Ein Test-Driven-Development (TDD)-Ansatz ist optional, wird jedoch insbesondere für die Kernlogik empfohlen.
+
+Mindestens folgende Bereiche müssen durch Tests abgesichert sein:
+	•	Score-Transitions (Standard / Golden / Star)
+	•	Tie-Break-Logik
+	•	1v1- und 2v2-Serve-Rotation
+	•	Break-, Set- und Match-Point-Erkennung
+	•	Snapshot- / Undo-Mechanik
+
+Ziel ist eine deterministische, vollständig testbare State-Machine ohne UI-Abhängigkeiten.
+
+⸻
+
+23. IMPLEMENTIERTE ABWEICHUNGEN (KOMMENTAR)
+
+Dieser Abschnitt dokumentiert bewusst umgesetzte Unterschiede zum ursprünglichen Konzept:
+
+1) Serve-Order Setup (2v2 erweitert)
+	•	Zusätzlich zur Team-Auswahl „Who Serves?“ gibt es eine weitere Setup-UI:
+	•	„ORDER OF SERVE“
+	•	Der User definiert die komplette 4er-Serve-Reihenfolge vor Matchstart über 4 Taps.
+	•	Pro Tap wird ein Feld deaktiviert und haptisch bestätigt.
+	•	Es wird verhindert, dass zweimal hintereinander dieselbe Team-Seite gewählt wird.
+
+2) Serve-Indikator
+	•	Der weiße Punkt wird aktuell nicht als permanenter Match-Indikator verwendet.
+	•	Stattdessen wird eine Seiten-Markierung (Serve-Line/Stripe) genutzt.
+	•	Punkte zeigen die Standposition, die Serve-Line zeigt den aktiven Server innerhalb der Rotation.

@@ -1,0 +1,36 @@
+[versions]
+kotlin            = "2.1.0"
+agp               = "8.13.2"
+compose-bom       = "2024.12.01"
+wear-compose      = "1.4.0"
+activity-compose  = "1.9.3"
+coroutines        = "1.9.0"
+play-services-wearable = "18.2.0"
+
+[libraries]
+kotlin-test                  = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+
+# Compose
+compose-bom                  = { group = "androidx.compose",      name = "compose-bom",           version.ref = "compose-bom" }
+compose-ui                   = { group = "androidx.compose.ui",   name = "ui" }
+compose-ui-tooling           = { group = "androidx.compose.ui",   name = "ui-tooling" }
+compose-ui-tooling-preview   = { group = "androidx.compose.ui",   name = "ui-tooling-preview" }
+
+# Wear Compose
+wear-compose-foundation      = { group = "androidx.wear.compose", name = "compose-foundation",    version.ref = "wear-compose" }
+wear-compose-material        = { group = "androidx.wear.compose", name = "compose-material",      version.ref = "wear-compose" }
+wear-compose-navigation      = { group = "androidx.wear.compose", name = "compose-navigation",    version.ref = "wear-compose" }
+
+# AndroidX
+activity-compose             = { group = "androidx.activity",     name = "activity-compose",      version.ref = "activity-compose" }
+play-services-wearable       = { group = "com.google.android.gms", name = "play-services-wearable", version.ref = "play-services-wearable" }
+
+# Coroutines
+kotlinx-coroutines-android   = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+
+[plugins]
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-android       = { id = "org.jetbrains.kotlin.android",       version.ref = "kotlin" }
+kotlin-compose       = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+android-application  = { id = "com.android.application",            version.ref = "agp" }
+android-library      = { id = "com.android.library",                version.ref = "agp" }
