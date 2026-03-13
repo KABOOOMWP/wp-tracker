@@ -146,6 +146,40 @@ cd code
 
 ---
 
+## CI/CD
+
+Recommended pipeline (e.g. GitHub Actions):
+
+**On every push / pull request:**
+
+1. Run shared module unit tests
+
+   ```bash
+   ./gradlew :shared:commonTest
+   ```
+
+2. Build the Wear OS APK (debug)
+
+   ```bash
+   ./gradlew :wearos:assembleDebug
+   ```
+
+3. Build the XCFramework for watchOS
+
+   ```bash
+   ./gradlew :shared:assembleSharedXCFramework
+   ```
+
+4. Build the watchOS app via `xcodebuild` (simulator target)
+
+**On merge to `main`:**
+
+1. Run the full release build for both platforms
+2. Sign and upload the Wear OS APK to the Play Console internal track
+3. Archive the watchOS build for TestFlight distribution via `xcodebuild archive` + `altool`
+
+---
+
 ## App Version
 
 Current version: **1.1.1** (`versionCode` = 20260313)

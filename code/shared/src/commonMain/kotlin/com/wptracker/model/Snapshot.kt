@@ -10,7 +10,12 @@ data class Config(
     val ruleMode: RuleMode,
     val playMode: PlayMode,
     val serveOrder: List<Player>
-)
+) {
+    init {
+        require(bestOf == 3 || bestOf == 5) { "bestOf must be 3 or 5, was $bestOf" }
+        require(serveOrder.isNotEmpty()) { "serveOrder cannot be empty" }
+    }
+}
 
 data class SetScore(
     val youGames: Int,

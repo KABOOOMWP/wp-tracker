@@ -44,7 +44,7 @@ fun SummaryScreen(
     val coroutineScope = rememberCoroutineScope()
     val focusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(Unit) { try { focusRequester.requestFocus() } catch (_: Exception) {} }
+    LaunchedEffect(Unit) { try { focusRequester.requestFocus() } catch (_: IllegalStateException) {} }
     val match    = snapshot.match
     val youWon   = match.setsWonYou > match.setsWonOpp
     val duration = formatDuration(match.startedAt, match.endedAt ?: System.currentTimeMillis())

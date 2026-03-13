@@ -45,7 +45,7 @@ import kotlinx.coroutines.launch
 
 // Layout constants scaled from the 192 dp reference (see Theme.kt).
 // `round` increases the horizontal inset to keep content away from the curved edges.
-private class ML(s: Float, round: Boolean) {
+private data class ML(val s: Float, val round: Boolean) {
     val hInset      = ((if (round) 22f else 10f) * s).dp
     val topVInset   = (2f  * s).coerceAtLeast(1f).dp
     val botVInset   = (4f  * s).dp
