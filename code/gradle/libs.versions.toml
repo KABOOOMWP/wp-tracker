@@ -11,6 +11,10 @@ wear                   = "1.4.0"
 [libraries]
 kotlin-test                  = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 
+# Compose UI Testing
+compose-ui-test-junit4       = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+compose-ui-test-manifest     = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+
 # Compose
 compose-bom                  = { group = "androidx.compose",      name = "compose-bom",           version.ref = "compose-bom" }
 compose-ui                   = { group = "androidx.compose.ui",   name = "ui" }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <!--
+            Required for createComposeRule() to launch a host activity.
+            compose-ui-test-manifest normally provides this, but it isn't
+            merging correctly with the Wear OS build type, so we declare it
+            explicitly here.
+        -->
+        <activity
+            android:name="androidx.activity.ComponentActivity"
+            android:exported="true" />
+    </application>
+</manifest>

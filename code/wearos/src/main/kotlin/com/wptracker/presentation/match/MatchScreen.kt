@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -105,7 +106,7 @@ fun MatchScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         // ── Full-screen tap zones ─────────────────────────────────────────
         Column(modifier = Modifier.fillMaxSize()) {
-            TapZone(modifier = Modifier.weight(1f).fillMaxWidth()) {
+            TapZone(modifier = Modifier.weight(1f).fillMaxWidth().testTag("tap_opp")) {
                 val prev = snapshot
                 vm.score(Team.OPP)
                 val next = vm.current ?: return@TapZone
@@ -113,7 +114,7 @@ fun MatchScreen(
                     if (wasGameWon(prev, next)) haptic.gameWin() else haptic.pointOpp()
                 }
             }
-            TapZone(modifier = Modifier.weight(1f).fillMaxWidth()) {
+            TapZone(modifier = Modifier.weight(1f).fillMaxWidth().testTag("tap_you")) {
                 val prev = snapshot
                 vm.score(Team.YOU)
                 val next = vm.current ?: return@TapZone
@@ -140,6 +141,7 @@ fun MatchScreen(
                 showServeStripe = serverTeam == Team.OPP,
                 stripeColor = WPColors.OppAccent,
                 ml = ml,
+                scoreTag = "score_opp",
                 modifier = Modifier.weight(1f).fillMaxWidth()
             )
 
@@ -160,6 +162,7 @@ fun MatchScreen(
                 showServeStripe = serverTeam == Team.YOU,
                 stripeColor = WPColors.YouAccent,
                 ml = ml,
+                scoreTag = "score_you",
                 modifier = Modifier.weight(1f).fillMaxWidth()
             )
         }
@@ -168,7 +171,7 @@ fun MatchScreen(
         UndoButton(
             onUndo     = { vm.undo(); haptic.undo() },
             onEndMatch = { onMatchEnd(snapshot.copy(match = snapshot.match.copy(endedAt = System.currentTimeMillis()))) },
-            modifier   = Modifier.align(Alignment.CenterEnd).padding(end = (6f * scale).dp)
+            modifier   = Modifier.align(Alignment.CenterEnd).padding(end = (6f * scale).dp).testTag("btn_undo")
         )
 
         // ── Decider-side picker ───────────────────────────────────────────
@@ -214,6 +217,7 @@ private fun TeamPanel(
     showServeStripe: Boolean,
     stripeColor: Color,
     ml: ML,
+    scoreTag: String? = null,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -245,6 +249,7 @@ private fun TeamPanel(
                 .padding(start = if (leftSide) ml.scorePad else 0.dp)
                 .padding(end   = if (leftSide) 0.dp else ml.scorePad)
                 .padding(bottom = ml.scorePadBot)
+                .then(if (scoreTag != null) Modifier.testTag(scoreTag) else Modifier)
         )
     }
 }
