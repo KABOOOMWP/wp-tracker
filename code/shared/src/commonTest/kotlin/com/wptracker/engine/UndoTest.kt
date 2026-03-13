@@ -18,7 +18,7 @@ class UndoTest {
     // Snapshot immutability
     // -----------------------------------------------------------------------
 
-    @Test fun `scoring returns a new snapshot, original unchanged`() {
+    @Test fun `scoring returns a new snapshot and original unchanged`() {
         val original = makeSnapshot()
         val after = original.you()
         assertEquals(0, original.game.youPoints) // original untouched

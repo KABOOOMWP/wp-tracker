@@ -28,21 +28,21 @@ class DiagonalPositionTest {
     // Regular game: even/odd alternation
     // -----------------------------------------------------------------------
 
-    @Test fun `game start rally 0 (even) → layout A`() {
+    @Test fun `game start rally 0 → layout A`() {
         assertEquals(layoutA(), makeSnapshot().layout())
     }
 
-    @Test fun `rally 1 (odd) → layout B`() {
+    @Test fun `rally 1 → layout B`() {
         val s = makeSnapshot().you()  // 1 point played
         assertEquals(layoutB(), s.layout())
     }
 
-    @Test fun `rally 2 (even) → layout A`() {
+    @Test fun `rally 2 → layout A`() {
         val s = makeSnapshot().you().opp()
         assertEquals(layoutA(), s.layout())
     }
 
-    @Test fun `rally 3 (odd) → layout B`() {
+    @Test fun `rally 3 → layout B`() {
         val s = makeSnapshot().you().you().opp()
         assertEquals(layoutB(), s.layout())
     }
@@ -60,25 +60,25 @@ class DiagonalPositionTest {
     // Deuce / Advantage: same even/odd formula, no special casing
     // -----------------------------------------------------------------------
 
-    @Test fun `at deuce (rally 6, even) → layout A`() {
+    @Test fun `at deuce rally 6 even → layout A`() {
         // 3:3 = 6 points played → even → layout A
         val s = makeSnapshot(youPoints = 3, oppPoints = 3, phase = GamePhase.DEUCE)
         assertEquals(6, s.game.youPoints + s.game.oppPoints)
         assertEquals(layoutA(), s.layout())
     }
 
-    @Test fun `ADV_YOU (rally 7, odd) → layout B`() {
+    @Test fun `ADV_YOU rally 7 odd → layout B`() {
         val s = makeSnapshot(youPoints = 4, oppPoints = 3, phase = GamePhase.ADV_YOU)
         assertEquals(7, s.game.youPoints + s.game.oppPoints)
         assertEquals(layoutB(), s.layout())
     }
 
-    @Test fun `ADV_OPP (rally 7, odd) → layout B`() {
+    @Test fun `ADV_OPP rally 7 odd → layout B`() {
         val s = makeSnapshot(youPoints = 3, oppPoints = 4, phase = GamePhase.ADV_OPP)
         assertEquals(layoutB(), s.layout())
     }
 
-    @Test fun `second deuce (rally 8, even) → layout A`() {
+    @Test fun `second deuce rally 8 even → layout A`() {
         // After ADV lost → DEUCE again: 4:4 = rally 8 (even) → layout A
         val s = makeSnapshot(youPoints = 4, oppPoints = 4, phase = GamePhase.DEUCE)
         assertEquals(layoutA(), s.layout())
@@ -99,7 +99,7 @@ class DiagonalPositionTest {
     // Golden and Star Point phases
     // -----------------------------------------------------------------------
 
-    @Test fun `GOLDEN phase rally 6 (even) → layout A`() {
+    @Test fun `GOLDEN phase rally 6 → layout A`() {
         val s = makeSnapshot(
             config = singlesConfig(RuleMode.GOLDEN),
             youPoints = 3, oppPoints = 3, phase = GamePhase.GOLDEN
@@ -120,12 +120,12 @@ class DiagonalPositionTest {
     // Tie-break: same formula (TB points accumulate as raw rally index)
     // -----------------------------------------------------------------------
 
-    @Test fun `TB start rally 0 (even) → layout A`() {
+    @Test fun `TB start rally 0 → layout A`() {
         val s = makeSnapshot(youGames = 6, oppGames = 6, gameMode = GameMode.TIEBREAK)
         assertEquals(layoutA(), s.layout())
     }
 
-    @Test fun `TB after 1 point rally 1 (odd) → layout B`() {
+    @Test fun `TB after 1 point rally 1 → layout B`() {
         val s = makeSnapshot(
             youGames = 6, oppGames = 6,
             gameMode = GameMode.TIEBREAK,
@@ -134,7 +134,7 @@ class DiagonalPositionTest {
         assertEquals(layoutB(), s.layout())
     }
 
-    @Test fun `TB after 4 points rally 4 (even) → layout A`() {
+    @Test fun `TB after 4 points rally 4 → layout A`() {
         val s = makeSnapshot(
             youGames = 6, oppGames = 6,
             gameMode = GameMode.TIEBREAK,
@@ -156,7 +156,7 @@ class DiagonalPositionTest {
     // Reset on new game
     // -----------------------------------------------------------------------
 
-    @Test fun `new game always starts with layout A (rally = 0)`() {
+    @Test fun `new game always starts with layout A`() {
         // Win a game from 40-0 → new game starts
         val s = makeSnapshot().scoreMany(Team.YOU, Team.YOU, Team.YOU, Team.YOU)
         // New game, rally = 0 → layout A

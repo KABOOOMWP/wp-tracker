@@ -123,7 +123,7 @@ class UndoDeciderTest {
         assertEquals(1, undone.game.starAdvCount)
     }
 
-    @Test fun `full starAdvCount rollback - DEUCE→ADV→DEUCE→ADV→STAR_POINT, undo each step`() {
+    @Test fun `full starAdvCount rollback - DEUCE→ADV→DEUCE→ADV→STAR_POINT and undo each step`() {
         // Start at DEUCE (first time, advCount=0)
         val deuce0 = makeSnapshot(
             config = singlesConfig(RuleMode.STAR),
@@ -164,7 +164,7 @@ class UndoDeciderTest {
     // Stats after undo
     // -----------------------------------------------------------------------
 
-    @Test fun `goldenDecidersPlayed after undo (pop from stack)`() {
+    @Test fun `goldenDecidersPlayed after undo`() {
         val before = makeSnapshot(
             config = singlesConfig(RuleMode.GOLDEN),
             youPoints = 3, oppPoints = 3, phase = GamePhase.GOLDEN
@@ -188,7 +188,7 @@ class UndoDeciderTest {
         assertEquals(0, undone.stats.goldenDecidersWonYou)
     }
 
-    @Test fun `totalPlayedPoints decrements correctly after undo (stack pop)`() {
+    @Test fun `totalPlayedPoints decrements correctly after undo`() {
         val s0 = makeSnapshot()
         val s1 = s0.you()
         val s2 = s1.opp()

@@ -31,7 +31,7 @@ class PillDetectionTest {
         assertEquals(PillState.HIDDEN, MatchEngine.computePill(s))
     }
 
-    @Test fun `ADV_OPP opp serves you returning - HIDDEN (returner has no game point)`() {
+    @Test fun `ADV_OPP opp serves you returning - HIDDEN`() {
         // OPP serves their service game at advantage. YOU are returning but cannot win → HIDDEN.
         val s = makeSnapshot(
             youPoints = 3, oppPoints = 4, phase = GamePhase.ADV_OPP,
@@ -53,7 +53,7 @@ class PillDetectionTest {
     // GOLDEN_POINT
     // -----------------------------------------------------------------------
 
-    @Test fun `Golden phase → GOLDEN_POINT pill (overrides break)`() {
+    @Test fun `Golden phase → GOLDEN_POINT pill`() {
         // GOLDEN phase is the deciding moment — GOLDEN_POINT has higher priority than BREAK_POINT.
         val s = makeSnapshot(
             config = singlesConfig(RuleMode.GOLDEN),
@@ -67,7 +67,7 @@ class PillDetectionTest {
     // STAR_POINT
     // -----------------------------------------------------------------------
 
-    @Test fun `Star phase STAR_POINT → STAR_POINT pill (overrides break)`() {
+    @Test fun `Star phase STAR_POINT → STAR_POINT pill`() {
         // STAR_POINT is the deciding moment — STAR_POINT has higher priority than BREAK_POINT.
         val s = makeSnapshot(
             config = singlesConfig(RuleMode.STAR),
@@ -78,7 +78,7 @@ class PillDetectionTest {
         assertEquals(PillState.STAR_POINT, MatchEngine.computePill(s))
     }
 
-    @Test fun `Star ADV phases (not deciding) - HIDDEN`() {
+    @Test fun `Star ADV phases - HIDDEN`() {
         // STAR_ADV_YOU: you serve, opp returns but opp cannot win next point → no break → HIDDEN.
         val s1 = makeSnapshot(
             config = singlesConfig(RuleMode.STAR),
@@ -103,7 +103,7 @@ class PillDetectionTest {
     // Break point: the returning team (non-server) can win the current game with the next point.
     // Returning team has game point.
 
-    @Test fun `YOU returning, opp at 40-0 → not break point (YOU has no game point)`() {
+    @Test fun `YOU returning and opp at 40-0 → not break point YOU has no game point`() {
         // Opp serves, opp has 3, you have 0 → opp has game point, not you → no break for you
         val s = makeSnapshot(
             youPoints = 0, oppPoints = 3,
@@ -113,7 +113,7 @@ class PillDetectionTest {
         assertEquals(PillState.HIDDEN, MatchEngine.computePill(s))
     }
 
-    @Test fun `YOU returning opp serves, YOU has 40-0 → BREAK_POINT`() {
+    @Test fun `YOU returning opp serves and YOU has 40-0 → BREAK_POINT`() {
         // Opp serves (you return). You have 3, opp has 0. You can win → break point.
         val s = makeSnapshot(
             youPoints = 3, oppPoints = 0,
@@ -122,7 +122,7 @@ class PillDetectionTest {
         assertEquals(PillState.BREAK_POINT, MatchEngine.computePill(s))
     }
 
-    @Test fun `YOU serves, YOU has game point → NOT break point (it's YOU's serve)`() {
+    @Test fun `YOU serves and YOU has game point → NOT break point it's YOU's serve`() {
         val s = makeSnapshot(
             youPoints = 3, oppPoints = 0,
             serverTeam = Team.YOU
@@ -177,7 +177,7 @@ class PillDetectionTest {
         assertEquals(PillState.SET_POINT, MatchEngine.computePill(s))
     }
 
-    @Test fun `opp has set point at 3-5 games, opp serving with game point`() {
+    @Test fun `opp has set point at 3-5 games and opp serving with game point`() {
         val s = makeSnapshot(
             youGames = 3, oppGames = 5,
             youPoints = 0, oppPoints = 3,
@@ -282,7 +282,7 @@ class PillDetectionTest {
         assertEquals(PillState.SET_POINT, MatchEngine.computePill(s))
     }
 
-    @Test fun `TIEBREAK is lowest priority, beat by MATCH_POINT`() {
+    @Test fun `TIEBREAK is lowest priority and beat by MATCH_POINT`() {
         // If it's tie-break AND match point, show MATCH_POINT
         val s = makeSnapshot(
             config = singlesConfig(bestOf = 3),

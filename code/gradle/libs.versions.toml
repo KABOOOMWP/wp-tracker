@@ -1,11 +1,12 @@
 [versions]
-kotlin            = "2.1.0"
-agp               = "8.13.2"
-compose-bom       = "2024.12.01"
-wear-compose      = "1.4.0"
-activity-compose  = "1.9.3"
-coroutines        = "1.9.0"
-play-services-wearable = "18.2.0"
+kotlin            = "2.3.10"
+agp               = "9.1.0"
+compose-bom       = "2026.02.01"
+wear-compose      = "1.5.6"
+activity-compose  = "1.13.0"
+coroutines        = "1.10.2"
+play-services-wearable = "19.0.0"
+wear                   = "1.4.0"
 
 [libraries]
 kotlin-test                  = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -24,6 +25,7 @@ wear-compose-navigation      = { group = "androidx.wear.compose", name = "compos
 # AndroidX
 activity-compose             = { group = "androidx.activity",     name = "activity-compose",      version.ref = "activity-compose" }
 play-services-wearable       = { group = "com.google.android.gms", name = "play-services-wearable", version.ref = "play-services-wearable" }
+wear-core                    = { group = "androidx.wear",           name = "wear",                   version.ref = "wear" }
 
 # Coroutines
 kotlinx-coroutines-android   = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
@@ -32,5 +34,6 @@ kotlinx-coroutines-android   = { group = "org.jetbrains.kotlinx", name = "kotlin
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-android       = { id = "org.jetbrains.kotlin.android",       version.ref = "kotlin" }
 kotlin-compose       = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-android-application  = { id = "com.android.application",            version.ref = "agp" }
-android-library      = { id = "com.android.library",                version.ref = "agp" }
+android-application                  = { id = "com.android.application",                    version.ref = "agp" }
+android-library                      = { id = "com.android.library",                        version.ref = "agp" }
+android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library",   version.ref = "agp" }

@@ -16,7 +16,10 @@ object WPColors {
     val PillText        = Color(0xFF000000)
     val UndoBg          = Color(0xFF383838)   // dark grey
     val UndoRing        = Color(0xFFFFFFFF)
-    val SetHistoryMuted = Color(0xFF888888)
+
+    // ── Theme 2 (unused) ──────────────────────────────────────────────────
+    // val YouPanel  = Color(0xFF4B2E83)   // deep purple
+    // val OppAccent = Color(0xFFB9C900)   // lime yellow
 }
 
 // Reference screen width in dp (Pixel Watch 2 / Galaxy Watch 4 40 mm ≈ 192 dp).
@@ -25,4 +28,5 @@ const val WEAR_SCALE_REF_DP = 192f
 
 // Provided once at the root of the composition tree (MainActivity).
 // Every composable can read LocalWatchScale.current to get the scale factor.
-val LocalWatchScale = staticCompositionLocalOf { 1f }
+val LocalWatchScale    = staticCompositionLocalOf { 1f }
+val LocalIsRoundScreen = staticCompositionLocalOf { false }

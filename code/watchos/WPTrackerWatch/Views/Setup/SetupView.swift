@@ -4,7 +4,7 @@ import Shared
 // ── Setup steps ────────────────────────────────────────────────────────────
 
 private enum SetupStep {
-    case playMode, matchFormat, ruleMode, whoServes, serveOrder
+    case playMode, matchFormat, ruleMode, whoServes, whichPlayer
 }
 
 // ── Colors (same palette as MatchView) ────────────────────────────────────
@@ -15,6 +15,10 @@ private extension Color {
     static let youAccent = Color(red: 0.290, green: 0.620, blue: 0.973)
     static let oppAccent = Color(red: 1.000, green: 0.584, blue: 0.000)
     static let pillBg    = Color(red: 0.831, green: 0.627, blue: 0.090)
+
+    // ── Theme 2 (unused) ──────────────────────────────────────────────────
+    // static let youPanel  = Color(red: 0.294, green: 0.180, blue: 0.514)  // #4B2E83 deep purple
+    // static let oppAccent = Color(red: 0.725, green: 0.788, blue: 0.000)  // #B9C900 lime yellow
 }
 
 // ── Main view ──────────────────────────────────────────────────────────────
@@ -23,12 +27,11 @@ struct SetupView: View {
     @EnvironmentObject var store: MatchStore
     @Environment(\.watchScale) private var watchScale
 
-    @State private var step:     SetupStep = .playMode
-    @State private var playMode: PlayMode? = nil
-    @State private var bestOf:   Int32?    = nil
-    @State private var selectedRule: RuleMode? = nil
-    @State private var startingTeam: Team? = nil
-    @State private var serveOrderSelection: [Player] = []
+    @State private var step:         SetupStep  = .playMode
+    @State private var playMode:     PlayMode?  = nil
+    @State private var bestOf:       Int32?     = nil
+    @State private var selectedRule: RuleMode?  = nil
+    @State private var startingTeam: Team?      = nil
 
     private var labelFont: CGFloat { (24 * watchScale).rounded() }
 
@@ -101,9 +104,7 @@ struct SetupView: View {
                     Color.oppPanel.contentShape(Rectangle()).onTapGesture {
                         HapticManager.shared.pointYou()
                         selectedRule = .standard
-                        step = (playMode == .doubles) ? .serveOrder : .whoServes
-                        serveOrderSelection = []
-                        startingTeam = nil
+                        step = .whoServes
                     }
                     Text("Standard")
                         .font(.system(size: labelFont, weight: .bold))
@@ -122,9 +123,7 @@ struct SetupView: View {
                     Color(white: 0.12).contentShape(Rectangle()).onTapGesture {
                         HapticManager.shared.pointYou()
                         selectedRule = .golden
-                        step = (playMode == .doubles) ? .serveOrder : .whoServes
-                        serveOrderSelection = []
-                        startingTeam = nil
+                        step = .whoServes
                     }
                     Text("Golden Point")
                         .font(.system(size: labelFont, weight: .bold))
@@ -143,9 +142,7 @@ struct SetupView: View {
                     Color.youPanel.contentShape(Rectangle()).onTapGesture {
                         HapticManager.shared.pointYou()
                         selectedRule = .star
-                        step = (playMode == .doubles) ? .serveOrder : .whoServes
-                        serveOrderSelection = []
-                        startingTeam = nil
+                        step = .whoServes
                     }
                     Text("Star Point")
                         .font(.system(size: labelFont, weight: .bold))
@@ -184,51 +181,32 @@ struct SetupView: View {
             }
             .ignoresSafeArea()
 
-        // ── Order of Serve (2v2 only) ────────────────────────────────────
-        case .serveOrder:
-            ZStack {
-                VStack(spacing: 0) {
-                    HStack(spacing: 0) {
-                        ServeOrderCell(
-                            title: "OPP L",
-                            player: .b2,
-                            selectedOrder: serveOrderSelection
-                        ) { handleServeOrderTap(.b2) }
-                        ServeOrderCell(
-                            title: "OPP R",
-                            player: .b1,
-                            selectedOrder: serveOrderSelection
-                        ) { handleServeOrderTap(.b1) }
-                    }
-                    HStack(spacing: 0) {
-                        ServeOrderCell(
-                            title: "YOU L",
-                            player: .a2,
-                            selectedOrder: serveOrderSelection
-                        ) { handleServeOrderTap(.a2) }
-                        ServeOrderCell(
-                            title: "YOU R",
-                            player: .a1,
-                            selectedOrder: serveOrderSelection
-                        ) { handleServeOrderTap(.a1) }
-                    }
+        // ── Which Player (2v2 only) ──────────────────────────────────────
+        case .whichPlayer:
+            LeftRightPickerOverlay(
+                header: "WHO SERVES?",
+                subtitle: startingTeam == .you ? "YOUR SIDE" : "OPPONENT SIDE",
+                onLeftTap: {
+                    let p: Player   = startingTeam == .you ? .a2 : .b2
+                    let opp: Player = startingTeam == .you ? .b1 : .a1
+                    store.startMatch(config: Config(
+                        bestOf: bestOf!, ruleMode: selectedRule!, playMode: .doubles,
+                        serveOrder: [p, opp, partnerOf(p), partnerOf(opp)]))
+                },
+                onRightTap: {
+                    let p: Player   = startingTeam == .you ? .a1 : .b1
+                    let opp: Player = startingTeam == .you ? .b1 : .a1
+                    store.startMatch(config: Config(
+                        bestOf: bestOf!, ruleMode: selectedRule!, playMode: .doubles,
+                        serveOrder: [p, opp, partnerOf(p), partnerOf(opp)]))
                 }
-                Rectangle().fill(Color.white).frame(width: 1)
-                    .frame(maxHeight: .infinity, alignment: .center)
-                Rectangle().fill(Color.white).frame(height: 1)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                PillLabel("ORDER OF SERVE")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-            }
-            .ignoresSafeArea()
+            )
         }
     }
 
     private func finish(servingTeam: Team) {
         guard let pm = playMode, let bo = bestOf, let rule = selectedRule else { return }
-        let order: [Player] = pm == .singles
-            ? (servingTeam == .you ? [.a1, .b1] : [.b1, .a1])
-            : serveOrderSelection
+        let order: [Player] = servingTeam == .you ? [.a1, .b1] : [.b1, .a1]
         store.startMatch(config: Config(bestOf: bo, ruleMode: rule, playMode: pm, serveOrder: order))
     }
 
@@ -238,42 +216,17 @@ struct SetupView: View {
         if pm == .singles {
             finish(servingTeam: team)
         } else {
-            serveOrderSelection = []
-            step = .serveOrder
+            step = .whichPlayer
         }
     }
 
-    private func handleServeOrderTap(_ player: Player) {
-        // Tapping an already-selected player resets the entire selection.
-        // Partial removal would shift indices and could violate the alternating-team rule.
-        if serveOrderSelection.contains(player) {
-            HapticManager.shared.pointYou()
-            serveOrderSelection = []
-            startingTeam = nil
-            return
+    private func partnerOf(_ player: Player) -> Player {
+        switch player {
+        case .a1: return .a2
+        case .a2: return .a1
+        case .b1: return .b2
+        default:  return .b1  // .b2 → .b1
         }
-        let idx = serveOrderSelection.count
-        if idx >= 4 { return }
-        let firstTeam = startingTeam ?? teamOf(player)
-        if startingTeam == nil { startingTeam = firstTeam }
-
-        let expectedTeam: Team = (idx % 2 == 0) ? firstTeam : oppositeTeam(firstTeam)
-        if teamOf(player) != expectedTeam { return }
-
-        HapticManager.shared.pointYou()
-        serveOrderSelection.append(player)
-
-        if serveOrderSelection.count == 4 {
-            finish(servingTeam: firstTeam)
-        }
-    }
-
-    private func teamOf(_ player: Player) -> Team {
-        (player == .a1 || player == .a2) ? .you : .opp
-    }
-
-    private func oppositeTeam(_ team: Team) -> Team {
-        team == .you ? .opp : .you
     }
 }
 
@@ -295,36 +248,3 @@ private struct PillLabel: View {
     }
 }
 
-private struct ServeOrderCell: View {
-    let title: String
-    let player: Player
-    let selectedOrder: [Player]
-    let onTap: () -> Void
-    @Environment(\.watchScale) private var watchScale
-
-    var body: some View {
-        let idx = selectedOrder.firstIndex(of: player)
-        let active = idx == nil
-        let inYouTeam = player == .a1 || player == .a2
-        let bg = inYouTeam ? Color.youPanel : Color.oppPanel
-        let fg = inYouTeam ? Color.youAccent : Color.oppAccent
-
-        ZStack {
-            bg
-                .opacity(active ? 1.0 : 0.35)
-                .contentShape(Rectangle())
-                .onTapGesture { onTap() }
-            VStack(spacing: 4) {
-                Text(title)
-                    .font(.system(size: (12 * watchScale).rounded(), weight: .bold))
-                    .foregroundColor(fg)
-                if let number = idx {
-                    Text("\(number + 1)")
-                        .font(.system(size: (22 * watchScale).rounded(), weight: .bold))
-                        .foregroundColor(.white)
-                }
-            }
-            .allowsHitTesting(false)
-        }
-    }
-}

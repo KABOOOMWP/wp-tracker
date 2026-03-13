@@ -153,7 +153,7 @@ class ScoreTransitionTest {
     // Star Point (FIP 2026)
     // -----------------------------------------------------------------------
 
-    @Test fun `3-3 Star → DEUCE (not STAR_POINT yet)`() {
+    @Test fun `3-3 Star → DEUCE`() {
         val s = makeSnapshot(
             config = singlesConfig(RuleMode.STAR),
             youPoints = 2, oppPoints = 3

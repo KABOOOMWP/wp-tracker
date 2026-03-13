@@ -8,6 +8,8 @@
 
     <application
         android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:label="WP Tracker"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.DeviceDefault">
@@ -26,6 +28,10 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Keep activity alive (instead of returning to watch face) when display goes ambient -->
+            <meta-data
+                android:name="com.google.android.wearable.keepActivity"
+                android:value="true" />
         </activity>
 
     </application>

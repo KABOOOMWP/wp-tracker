@@ -37,6 +37,21 @@ fun singlesConfigOppFirst(
     serveOrder = listOf(Player.B1, Player.A1)
 )
 
+/**
+ * Doubles config with opponentServerConfirmed=false (deferred pick).
+ * Identical to [doublesConfig] since opponentServerConfirmed lives on ServeState (defaults false).
+ * Named separately for clarity in deferred-pick tests.
+ */
+fun doublesConfigDeferred(
+    ruleMode: RuleMode = RuleMode.STANDARD,
+    bestOf: Int = 3
+) = Config(
+    bestOf = bestOf,
+    ruleMode = ruleMode,
+    playMode = PlayMode.DOUBLES,
+    serveOrder = listOf(Player.A1, Player.B1, Player.A2, Player.B2)
+)
+
 /** Doubles starting with opponent: B1 → A1 → B2 → A2 → B1 → … */
 fun doublesConfigOppFirst(
     ruleMode: RuleMode = RuleMode.STANDARD,

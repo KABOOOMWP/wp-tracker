@@ -76,6 +76,29 @@ object MatchEngine {
         )
     }
 
+    /**
+     * Called when the user picks which opponent player serves game 2.
+     * Builds the full 4-player serve order, updates config, and clears [Snapshot.awaitingServePick].
+     * The returned snapshot is appended to history so undo restores the picker.
+     */
+    fun pickOpponentFirstServer(snapshot: Snapshot, player: Player): Snapshot {
+        val firstServer = snapshot.config.serveOrder[0]
+        val newOrder = listOf(firstServer, player, partnerOf(firstServer), partnerOf(player))
+        val newConfig = snapshot.config.copy(serveOrder = newOrder)
+        val newServe = ServeState(
+            serverTeam = player.team(),
+            serverPlayer = player,
+            serveSide = ServeSide.RIGHT,
+            serveOrderIndex = 1,
+            opponentServerConfirmed = true
+        )
+        return snapshot.copy(
+            config = newConfig,
+            serve = newServe,
+            awaitingServePick = false
+        )
+    }
+
     /** Score a point for [team]. Returns the same snapshot if the match is already over. */
     fun score(snapshot: Snapshot, team: Team): Snapshot {
         if (snapshot.isMatchOver) return snapshot
@@ -292,17 +315,22 @@ object MatchEngine {
             // Advance game, rotate server
             val nextOrderIndex = (snapshot.serve.serveOrderIndex + 1) % snapshot.config.serveOrder.size
             val nextPlayer = snapshot.config.serveOrder[nextOrderIndex]
+            val confirmed = snapshot.serve.opponentServerConfirmed
+            val awaitingPick = snapshot.config.playMode == PlayMode.DOUBLES &&
+                nextOrderIndex == 1 && !confirmed
             val newServe = ServeState(
                 serverTeam = nextPlayer.team(),
                 serverPlayer = nextPlayer,
                 serveSide = ServeSide.RIGHT,
-                serveOrderIndex = nextOrderIndex
+                serveOrderIndex = nextOrderIndex,
+                opponentServerConfirmed = confirmed
             )
             snapshot.copy(
                 set = snapshot.set.copy(youGames = newYouGames, oppGames = newOppGames),
                 game = resetGame(GameMode.REGULAR),
                 serve = newServe,
-                stats = updatedStats
+                stats = updatedStats,
+                awaitingServePick = awaitingPick
             )
         }
     }
@@ -315,13 +343,15 @@ object MatchEngine {
             serverTeam = tbPlayer.team(),
             serverPlayer = tbPlayer,
             serveSide = ServeSide.RIGHT,
-            serveOrderIndex = tbOrderIndex
+            serveOrderIndex = tbOrderIndex,
+            opponentServerConfirmed = snapshot.serve.opponentServerConfirmed
         )
         return snapshot.copy(
             set = snapshot.set.copy(youGames = 6, oppGames = 6),
             game = resetGame(GameMode.TIEBREAK),
             serve = newServe,
-            stats = stats
+            stats = stats,
+            awaitingServePick = false
         )
     }
 
@@ -364,7 +394,8 @@ object MatchEngine {
         )
 
         if (matchOver) {
-            return snapshot.copy(match = newMatch, isMatchOver = true, stats = stats)
+            return snapshot.copy(match = newMatch, isMatchOver = true, stats = stats,
+                awaitingServePick = false)
         }
 
         // Start new set
@@ -374,14 +405,16 @@ object MatchEngine {
             serverTeam = nextPlayer.team(),
             serverPlayer = nextPlayer,
             serveSide = ServeSide.RIGHT,
-            serveOrderIndex = nextOrderIndex
+            serveOrderIndex = nextOrderIndex,
+            opponentServerConfirmed = snapshot.serve.opponentServerConfirmed
         )
         return snapshot.copy(
             match = newMatch,
             set = SetState(currentSetIndex = newSetsYou + newSetsOpp, youGames = 0, oppGames = 0),
             game = resetGame(GameMode.REGULAR),
             serve = newServe,
-            stats = stats
+            stats = stats,
+            awaitingServePick = false
         )
     }
 
@@ -474,4 +507,11 @@ object MatchEngine {
         phase = GamePhase.NORMAL,
         starAdvCount = 0
     )
+
+    private fun partnerOf(player: Player): Player = when (player) {
+        Player.A1 -> Player.A2
+        Player.A2 -> Player.A1
+        Player.B1 -> Player.B2
+        Player.B2 -> Player.B1
+    }
 }

@@ -17,17 +17,17 @@ class ServeRotationTest {
     // Serve side within a game (even=RIGHT, odd=LEFT)
     // -----------------------------------------------------------------------
 
-    @Test fun `game start rally 0 (even) → RIGHT`() {
+    @Test fun `game start rally 0 → RIGHT`() {
         val s = makeSnapshot(serverTeam = Team.YOU)
         assertEquals(ServeSide.RIGHT, s.serve.serveSide)
     }
 
-    @Test fun `after 1 point rally 1 (odd) → LEFT`() {
+    @Test fun `after 1 point rally 1 → LEFT`() {
         val s = makeSnapshot(serverTeam = Team.YOU).you()
         assertEquals(ServeSide.LEFT, s.serve.serveSide)
     }
 
-    @Test fun `after 2 points rally 2 (even) → RIGHT`() {
+    @Test fun `after 2 points rally 2 → RIGHT`() {
         val s = makeSnapshot(serverTeam = Team.YOU).you().opp()
         assertEquals(ServeSide.RIGHT, s.serve.serveSide)
     }
@@ -150,20 +150,21 @@ class ServeRotationTest {
 
     // 1v1 with OPP serving first: order = [B1, A1]
 
-    @Test fun `1v1 opp-first: game 1 server is B1`() {
-        val s = makeSnapshot(config = singlesConfigOppFirst(), serverPlayer = Player.B1, serveOrderIndex = 0)
+    @Test fun `1v1 opp-first — game 1 server is B1`() {
+        val s = makeSnapshot(config = singlesConfigOppFirst(), serverPlayer = Player.B1,
+            serverTeam = Team.OPP, serveOrderIndex = 0)
         assertEquals(Player.B1, s.serve.serverPlayer)
         assertEquals(Team.OPP, s.serve.serverTeam)
     }
 
-    @Test fun `1v1 opp-first: game 2 server is A1`() {
+    @Test fun `1v1 opp-first — game 2 server is A1`() {
         val s = makeSnapshot(config = singlesConfigOppFirst(), serverPlayer = Player.B1, serveOrderIndex = 0)
             .winGameOpp()
         assertEquals(Player.A1, s.serve.serverPlayer)
         assertEquals(Team.YOU, s.serve.serverTeam)
     }
 
-    @Test fun `1v1 opp-first: game 3 wraps back to B1`() {
+    @Test fun `1v1 opp-first — game 3 wraps back to B1`() {
         val s = makeSnapshot(config = singlesConfigOppFirst(), serverPlayer = Player.B1, serveOrderIndex = 0)
             .winGameOpp()
             .winGameYou()
@@ -173,20 +174,21 @@ class ServeRotationTest {
 
     // 2v2 with OPP serving first: order = [B1, A1, B2, A2]
 
-    @Test fun `2v2 opp-first: game 1 B1 serves`() {
-        val s = makeSnapshot(config = doublesConfigOppFirst(), serverPlayer = Player.B1, serveOrderIndex = 0)
+    @Test fun `2v2 opp-first — game 1 B1 serves`() {
+        val s = makeSnapshot(config = doublesConfigOppFirst(), serverPlayer = Player.B1,
+            serverTeam = Team.OPP, serveOrderIndex = 0)
         assertEquals(Player.B1, s.serve.serverPlayer)
         assertEquals(Team.OPP, s.serve.serverTeam)
     }
 
-    @Test fun `2v2 opp-first: game 2 A1 serves`() {
+    @Test fun `2v2 opp-first — game 2 A1 serves`() {
         val s = makeSnapshot(config = doublesConfigOppFirst(), serverPlayer = Player.B1, serveOrderIndex = 0)
             .winGameOpp()
         assertEquals(Player.A1, s.serve.serverPlayer)
         assertEquals(Team.YOU, s.serve.serverTeam)
     }
 
-    @Test fun `2v2 opp-first: game 3 B2 serves`() {
+    @Test fun `2v2 opp-first — game 3 B2 serves`() {
         val s = makeSnapshot(config = doublesConfigOppFirst(), serverPlayer = Player.B1, serveOrderIndex = 0)
             .winGameOpp()
             .winGameYou()
@@ -194,7 +196,7 @@ class ServeRotationTest {
         assertEquals(Team.OPP, s.serve.serverTeam)
     }
 
-    @Test fun `2v2 opp-first: game 4 A2 serves`() {
+    @Test fun `2v2 opp-first — game 4 A2 serves`() {
         val s = makeSnapshot(config = doublesConfigOppFirst(), serverPlayer = Player.B1, serveOrderIndex = 0)
             .winGameOpp()
             .winGameYou()
@@ -203,19 +205,35 @@ class ServeRotationTest {
         assertEquals(Team.YOU, s.serve.serverTeam)
     }
 
-    @Test fun `2v2 opp-first: game 5 wraps back to B1`() {
+    @Test fun `2v2 opp-first — game 5 wraps back to B1`() {
         val s = makeSnapshot(config = doublesConfigOppFirst(), serverPlayer = Player.B1, serveOrderIndex = 0)
             .winGameOpp().winGameYou().winGameOpp().winGameYou()
         assertEquals(Player.B1, s.serve.serverPlayer)
         assertEquals(Team.OPP, s.serve.serverTeam)
     }
 
-    @Test fun `2v2 opp-first: serve order persists across set boundary`() {
+    @Test fun `2v2 opp-first — serve order persists across set boundary`() {
         // 6 games: B1(0),A1(1),B2(2),A2(3),B1(0),A1(1) → last served=A1, next=B2 (idx 2)
         var s = makeSnapshot(config = doublesConfigOppFirst(), serverPlayer = Player.B1, serveOrderIndex = 0)
         repeat(6) { s = s.winGameOpp() }
         assertEquals(1, s.match.setsWonOpp)
         assertEquals(Player.B2, s.serve.serverPlayer)
+    }
+
+    // -----------------------------------------------------------------------
+    // awaitingServePick does not block engine scoring
+    // -----------------------------------------------------------------------
+
+    @Test fun `engine score works even when awaitingServePick is true`() {
+        // After game 1 ends in doubles, awaitingServePick = true.
+        // The engine still returns a new snapshot (UI is responsible for blocking the tap zone).
+        val s = makeSnapshot(config = doublesConfig(), serverPlayer = Player.A1, serveOrderIndex = 0)
+            .winGameYou() // awaitingServePick = true now
+        assertTrue(s.awaitingServePick)
+        val next = MatchEngine.score(s, Team.YOU)
+        assertNotNull(next)
+        // mid-game point: awaitingServePick preserved (UI still shows picker)
+        assertTrue(next.awaitingServePick)
     }
 
     // -----------------------------------------------------------------------

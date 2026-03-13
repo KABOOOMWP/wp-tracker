@@ -47,4 +47,10 @@ class MatchViewModel : ViewModel() {
         val updated = MatchEngine.setDeciderSide(snap, side)
         if (updated !== snap) _history[_history.lastIndex] = updated
     }
+
+    fun pickOpponentFirstServer(player: Player) {
+        val snap = current ?: return
+        val updated = MatchEngine.pickOpponentFirstServer(snap, player)
+        _history += updated  // append so undo shows picker again
+    }
 }

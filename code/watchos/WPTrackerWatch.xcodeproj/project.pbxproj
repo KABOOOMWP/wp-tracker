@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 90;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -21,18 +21,17 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		AA0000000000000000000034 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
 			dstPath = "";
-			dstSubfolderSpec = 10;
+			dstSubfolder = Frameworks;
 			files = (
 				AA0000000000000000000028 /* Shared.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		385761212F619F1E003B806B /* WPTrackerWatch Watch App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "WPTrackerWatch Watch App.entitlements"; sourceTree = "<group>"; };
 		AA0000000000000000000010 /* WPTrackerWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPTrackerWatchApp.swift; sourceTree = "<group>"; };
 		AA0000000000000000000011 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		AA0000000000000000000012 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
@@ -47,11 +46,9 @@
 /* Begin PBXFrameworksBuildPhase section */
 		AA0000000000000000000032 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				AA0000000000000000000027 /* Shared.xcframework in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
@@ -59,6 +56,7 @@
 		AA0000000000000000000002 = {
 			isa = PBXGroup;
 			children = (
+				385761212F619F1E003B806B /* WPTrackerWatch Watch App.entitlements */,
 				AA0000000000000000000005 /* WPTrackerWatch */,
 				AA0000000000000000000004 /* Frameworks */,
 				AA0000000000000000000003 /* Products */,
@@ -149,8 +147,6 @@
 			);
 			buildRules = (
 			);
-			dependencies = (
-			);
 			name = "WPTrackerWatch Watch App";
 			productName = "WPTrackerWatch Watch App";
 			productReference = AA0000000000000000000018 /* WPTrackerWatch Watch App.app */;
@@ -172,7 +168,6 @@
 				};
 			};
 			buildConfigurationList = AA0000000000000000000050 /* Build configuration list for PBXProject "WPTrackerWatch" */;
-			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -180,6 +175,7 @@
 				Base,
 			);
 			mainGroup = AA0000000000000000000002;
+			preferredProjectObjectVersion = 90;
 			productRefGroup = AA0000000000000000000003 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -192,18 +188,15 @@
 /* Begin PBXResourcesBuildPhase section */
 		AA0000000000000000000033 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				AA0000000000000000000026 /* Assets.xcassets in Resources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		AA0000000000000000000031 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				AA0000000000000000000020 /* WPTrackerWatchApp.swift in Sources */,
 				AA0000000000000000000021 /* AppModel.swift in Sources */,
@@ -212,12 +205,11 @@
 				AA0000000000000000000024 /* MatchView.swift in Sources */,
 				AA0000000000000000000025 /* SummaryView.swift in Sources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		AA0000000000000000000040 /* Debug */ = {
+		AA0000000000000000000040 /* Debug configuration for PBXProject "WPTrackerWatch" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -276,7 +268,7 @@
 			};
 			name = Debug;
 		};
-		AA0000000000000000000041 /* Release */ = {
+		AA0000000000000000000041 /* Release configuration for PBXProject "WPTrackerWatch" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -327,14 +319,15 @@
 			};
 			name = Release;
 		};
-		AA0000000000000000000042 /* Debug */ = {
+		AA0000000000000000000042 /* Debug configuration for PBXNativeTarget "WPTrackerWatch Watch App" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "WPTrackerWatch Watch App.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 20260313;
 				DEVELOPMENT_TEAM = 9P2T82QGN8;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "WP-Tracker";
@@ -344,27 +337,28 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.wptracker.watch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Debug;
 		};
-		AA0000000000000000000043 /* Release */ = {
+		AA0000000000000000000043 /* Release configuration for PBXNativeTarget "WPTrackerWatch Watch App" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "WPTrackerWatch Watch App.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 20260313;
 				DEVELOPMENT_TEAM = 9P2T82QGN8;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "WP-Tracker";
@@ -374,14 +368,14 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.wptracker.watch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 26.0;
 			};
@@ -393,19 +387,17 @@
 		AA0000000000000000000050 /* Build configuration list for PBXProject "WPTrackerWatch" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AA0000000000000000000040 /* Debug */,
-				AA0000000000000000000041 /* Release */,
+				AA0000000000000000000040 /* Debug configuration for PBXProject "WPTrackerWatch" */,
+				AA0000000000000000000041 /* Release configuration for PBXProject "WPTrackerWatch" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		AA0000000000000000000051 /* Build configuration list for PBXNativeTarget "WPTrackerWatch Watch App" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AA0000000000000000000042 /* Debug */,
-				AA0000000000000000000043 /* Release */,
+				AA0000000000000000000042 /* Debug configuration for PBXNativeTarget "WPTrackerWatch Watch App" */,
+				AA0000000000000000000043 /* Release configuration for PBXNativeTarget "WPTrackerWatch Watch App" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */

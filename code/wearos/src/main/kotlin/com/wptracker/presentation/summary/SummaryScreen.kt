@@ -1,23 +1,34 @@
 package com.wptracker.presentation.summary
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.rotary.onRotaryScrollEvent
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 import androidx.wear.compose.material.Chip
 import androidx.wear.compose.material.ChipDefaults
 import androidx.wear.compose.material.Text
 import com.wptracker.model.RuleMode
 import com.wptracker.model.Snapshot
+import com.wptracker.presentation.theme.LocalIsRoundScreen
 import com.wptracker.presentation.theme.LocalWatchScale
 import com.wptracker.presentation.theme.WPColors
 import kotlin.math.abs
@@ -27,7 +38,13 @@ fun SummaryScreen(
     snapshot   : Snapshot,
     onNewMatch : () -> Unit
 ) {
-    val scale    = LocalWatchScale.current
+    val scale          = LocalWatchScale.current
+    val isRound        = LocalIsRoundScreen.current
+    val scrollState    = rememberScrollState()
+    val coroutineScope = rememberCoroutineScope()
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) { try { focusRequester.requestFocus() } catch (_: Exception) {} }
     val match    = snapshot.match
     val youWon   = match.setsWonYou > match.setsWonOpp
     val duration = formatDuration(match.startedAt, match.endedAt ?: System.currentTimeMillis())
@@ -48,7 +65,7 @@ fun SummaryScreen(
     val teamLblSz   = (9f  * scale).sp
     val headerSz    = (8f  * scale).coerceAtLeast(7f).sp
     val dividerH    = (20f * scale).dp
-    val hPad        = (12f * scale).dp
+    val hPad        = ((if (isRound) 22f else 12f) * scale).dp
     val trailPad    = (14f * scale).dp
     val colHdrSz    = (7f  * scale).coerceAtLeast(6f).sp
     val btnSz       = (11f * scale).coerceAtLeast(9f).sp
@@ -57,7 +74,13 @@ fun SummaryScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+                .focusRequester(focusRequester)
+                .onRotaryScrollEvent { event ->
+                    coroutineScope.launch { scrollState.scrollBy(event.verticalScrollPixels) }
+                    true
+                }
+                .focusable()
+                .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // ── Header ────────────────────────────────────────────────────
@@ -219,7 +242,9 @@ fun SummaryScreen(
                 onClick  = onNewMatch,
                 label    = {
                     Text("NEW MATCH", color = Color.White,
-                        fontWeight = FontWeight.Bold, fontSize = btnSz)
+                        fontWeight = FontWeight.Bold, fontSize = btnSz,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth())
                 },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
                 colors   = ChipDefaults.chipColors(backgroundColor = Color(0xFF242424))

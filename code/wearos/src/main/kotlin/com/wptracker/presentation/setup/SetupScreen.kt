@@ -24,7 +24,7 @@ private sealed class SetupStep {
     object MatchFormat : SetupStep()
     object RuleMode    : SetupStep()
     object WhoServes   : SetupStep()
-    object ServeOrder  : SetupStep()
+    object WhichPlayer : SetupStep()
 }
 
 @Composable
@@ -38,7 +38,6 @@ fun SetupScreen(onMatchStart: (Config) -> Unit) {
     var bestOf       by remember { mutableStateOf<Int?>(null) }
     var ruleMode     by remember { mutableStateOf<RuleMode?>(null) }
     var startingTeam by remember { mutableStateOf<Team?>(null) }
-    val serveOrderSelection = remember { mutableStateListOf<Player>() }
 
     when (step) {
         // ── Play Mode ─────────────────────────────────────────────────────
@@ -110,8 +109,7 @@ fun SetupScreen(onMatchStart: (Config) -> Unit) {
                         detectTapGestures {
                             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                             ruleMode = RuleMode.STANDARD
-                            if (playMode == PlayMode.DOUBLES) { serveOrderSelection.clear(); startingTeam = null; step = SetupStep.ServeOrder }
-                            else step = SetupStep.WhoServes
+                            step = SetupStep.WhoServes
                         }
                     }
             ) { Text("Standard", color = WPColors.OppAccent, fontSize = labelSz, fontWeight = FontWeight.Bold) }
@@ -126,8 +124,7 @@ fun SetupScreen(onMatchStart: (Config) -> Unit) {
                         detectTapGestures {
                             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                             ruleMode = RuleMode.GOLDEN
-                            if (playMode == PlayMode.DOUBLES) { serveOrderSelection.clear(); startingTeam = null; step = SetupStep.ServeOrder }
-                            else step = SetupStep.WhoServes
+                            step = SetupStep.WhoServes
                         }
                     }
             ) { Text("Golden Point", color = Color.White, fontSize = labelSz, fontWeight = FontWeight.Bold) }
@@ -142,8 +139,7 @@ fun SetupScreen(onMatchStart: (Config) -> Unit) {
                         detectTapGestures {
                             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                             ruleMode = RuleMode.STAR
-                            if (playMode == PlayMode.DOUBLES) { serveOrderSelection.clear(); startingTeam = null; step = SetupStep.ServeOrder }
-                            else step = SetupStep.WhoServes
+                            step = SetupStep.WhoServes
                         }
                     }
             ) { Text("Star Point", color = WPColors.YouAccent, fontSize = labelSz, fontWeight = FontWeight.Bold) }
@@ -161,7 +157,7 @@ fun SetupScreen(onMatchStart: (Config) -> Unit) {
                             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                             startingTeam = Team.OPP
                             if (playMode == PlayMode.SINGLES) finish(playMode!!, bestOf!!, ruleMode!!, listOf(Player.B1, Player.A1), onMatchStart)
-                            else { serveOrderSelection.clear(); step = SetupStep.ServeOrder }
+                            else step = SetupStep.WhichPlayer
                         }
                     }
             ) { Text("OPPONENT", color = WPColors.OppAccent, fontSize = labelSz, fontWeight = FontWeight.Bold) }
@@ -175,7 +171,7 @@ fun SetupScreen(onMatchStart: (Config) -> Unit) {
                             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                             startingTeam = Team.YOU
                             if (playMode == PlayMode.SINGLES) finish(playMode!!, bestOf!!, ruleMode!!, listOf(Player.A1, Player.B1), onMatchStart)
-                            else { serveOrderSelection.clear(); step = SetupStep.ServeOrder }
+                            else step = SetupStep.WhichPlayer
                         }
                     }
             ) { Text("YOU", color = WPColors.YouAccent, fontSize = labelSz, fontWeight = FontWeight.Bold) }
@@ -183,28 +179,22 @@ fun SetupScreen(onMatchStart: (Config) -> Unit) {
             SetupPill("WHO SERVES?", Modifier.align(Alignment.Center))
         }
 
-        // ── Order of Serve ────────────────────────────────────────────────
-        SetupStep.ServeOrder -> Box(Modifier.fillMaxSize()) {
-            Column(Modifier.fillMaxSize()) {
-                Row(Modifier.weight(1f).fillMaxWidth()) {
-                    ServeOrderCell("OPP L", Player.B2, serveOrderSelection) { onServeOrderTap(view, serveOrderSelection, Player.B2) }
-                    ServeOrderCell("OPP R", Player.B1, serveOrderSelection) { onServeOrderTap(view, serveOrderSelection, Player.B1) }
-                }
-                Row(Modifier.weight(1f).fillMaxWidth()) {
-                    ServeOrderCell("YOU L", Player.A2, serveOrderSelection) { onServeOrderTap(view, serveOrderSelection, Player.A2) }
-                    ServeOrderCell("YOU R", Player.A1, serveOrderSelection) { onServeOrderTap(view, serveOrderSelection, Player.A1) }
-                }
+        // ── Which Player (doubles only) ───────────────────────────────────
+        SetupStep.WhichPlayer -> WhichPlayerScreen(
+            scale        = scale,
+            view         = view,
+            startingTeam = startingTeam,
+            onLeft = {
+                val p   = if (startingTeam == Team.YOU) Player.A2 else Player.B2
+                val opp = if (startingTeam == Team.YOU) Player.B1 else Player.A1
+                finish(playMode!!, bestOf!!, ruleMode!!, listOf(p, opp, partnerOf(p), partnerOf(opp)), onMatchStart)
+            },
+            onRight = {
+                val p   = if (startingTeam == Team.YOU) Player.A1 else Player.B1
+                val opp = if (startingTeam == Team.YOU) Player.B1 else Player.A1
+                finish(playMode!!, bestOf!!, ruleMode!!, listOf(p, opp, partnerOf(p), partnerOf(opp)), onMatchStart)
             }
-            Box(Modifier.fillMaxHeight().width(1.dp).background(Color.White).align(Alignment.Center))
-            Box(Modifier.fillMaxWidth().height(1.dp).background(Color.White).align(Alignment.Center))
-            SetupPill("ORDER OF SERVE", Modifier.align(Alignment.Center))
-        }
-    }
-
-    LaunchedEffect(serveOrderSelection.size, step) {
-        if (step == SetupStep.ServeOrder && serveOrderSelection.size == 4) {
-            finish(playMode!!, bestOf!!, ruleMode!!, serveOrderSelection.toList(), onMatchStart)
-        }
+        )
     }
 }
 
@@ -215,61 +205,73 @@ private fun finish(
     onMatchStart(Config(bestOf = bestOf, ruleMode = ruleMode, playMode = playMode, serveOrder = order))
 }
 
-private fun onServeOrderTap(
-    view: android.view.View,
-    order: MutableList<Player>,
-    player: Player
-) {
-    // Tapping an already-selected player resets the entire selection.
-    // Partial removal would shift indices and could violate the alternating-team rule.
-    if (order.contains(player)) {
-        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
-        order.clear()
-        return
-    }
-    val idx = order.size
-    if (idx >= 4) return
-    val firstTeam    = if (order.isEmpty()) teamOf(player) else teamOf(order[0])
-    val expectedTeam = if (idx % 2 == 0) firstTeam else oppositeTeam(firstTeam)
-    if (teamOf(player) != expectedTeam) return
-    view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
-    order.add(player)
+private fun partnerOf(player: Player): Player = when (player) {
+    Player.A1 -> Player.A2
+    Player.A2 -> Player.A1
+    Player.B1 -> Player.B2
+    Player.B2 -> Player.B1
 }
 
-private fun teamOf(player: Player): Team =
-    if (player == Player.A1 || player == Player.A2) Team.YOU else Team.OPP
-
-private fun oppositeTeam(team: Team): Team =
-    if (team == Team.YOU) Team.OPP else Team.YOU
-
 @Composable
-private fun RowScope.ServeOrderCell(
-    title: String,
-    player: Player,
-    selectedOrder: List<Player>,
-    onTap: () -> Unit
+private fun WhichPlayerScreen(
+    scale        : Float,
+    view         : android.view.View,
+    startingTeam : com.wptracker.model.Team?,
+    onLeft       : () -> Unit,
+    onRight      : () -> Unit
 ) {
-    val scale     = LocalWatchScale.current
-    val titleSz   = (12f * scale).sp
-    val numberSz  = (22f * scale).sp
-    val idx       = selectedOrder.indexOf(player)
-    val active    = idx == -1
-    val inYouTeam = player == Player.A1 || player == Player.A2
-    val bg        = if (inYouTeam) WPColors.YouPanel else WPColors.OppPanel
-    val fg        = if (inYouTeam) WPColors.YouAccent else WPColors.OppAccent
+    val titleFont = (11f * scale).coerceAtLeast(9f).sp
+    val subFont   = (8f  * scale).coerceAtLeast(7f).sp
+    val btnFont   = (14f * scale).coerceAtLeast(11f).sp
 
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .weight(1f).fillMaxHeight()
-            .background(bg.copy(alpha = if (active) 1f else 0.35f))
-            .pointerInput(player, selectedOrder.size) { detectTapGestures { onTap() } }
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-            Text(title, color = fg, fontSize = titleSz, fontWeight = FontWeight.Bold)
-            if (idx != -1) {
-                Text((idx + 1).toString(), color = Color.White, fontSize = numberSz, fontWeight = FontWeight.Bold)
-            }
+    Box(Modifier.fillMaxSize()) {
+        Row(Modifier.fillMaxSize()) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .weight(1f).fillMaxHeight()
+                    .background(WPColors.YouPanel)
+                    .pointerInput(Unit) {
+                        detectTapGestures {
+                            view.performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY)
+                            onLeft()
+                        }
+                    }
+            ) { Text("← LEFT", color = Color.White, fontSize = btnFont, fontWeight = FontWeight.Bold) }
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .weight(1f).fillMaxHeight()
+                    .background(WPColors.OppPanel)
+                    .pointerInput(Unit) {
+                        detectTapGestures {
+                            view.performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY)
+                            onRight()
+                        }
+                    }
+            ) { Text("RIGHT →", color = Color.White, fontSize = btnFont, fontWeight = FontWeight.Bold) }
+        }
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth()
+                .background(Color.Black)
+                .padding(top = 6.dp, start = 8.dp, end = 8.dp, bottom = 6.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                text          = "WHO SERVES?",
+                color         = Color.White.copy(alpha = 0.9f),
+                fontSize      = titleFont,
+                fontWeight    = FontWeight.Bold,
+                letterSpacing = 0.5.sp
+            )
+            Text(
+                text     = if (startingTeam == com.wptracker.model.Team.YOU) "YOUR SIDE" else "OPPONENT SIDE",
+                color    = Color.White.copy(alpha = 0.45f),
+                fontSize = subFont
+            )
         }
     }
 }

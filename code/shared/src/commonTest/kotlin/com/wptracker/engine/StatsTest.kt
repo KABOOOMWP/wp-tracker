@@ -71,7 +71,7 @@ class StatsTest {
         assertEquals(0, makeSnapshot().stats.goldenDecidersPlayed)
     }
 
-    @Test fun `goldenDecidersPlayed does NOT increment when entering 40-40 (GOLDEN phase)`() {
+    @Test fun `goldenDecidersPlayed does NOT increment when entering 40-40`() {
         // At 2:3, you score → 3:3 → GOLDEN phase begins. Counter should still be 0.
         val s = makeSnapshot(
             config = singlesConfig(RuleMode.GOLDEN),
@@ -150,7 +150,7 @@ class StatsTest {
         assertEquals(1, s.stats.goldenDecidersPlayed)
     }
 
-    @Test fun `goldenDecidersWonYou - 2 golden points, you win both`() {
+    @Test fun `goldenDecidersWonYou - 2 golden points and you win both`() {
         val s = makeStatsSnapshot(
             config = singlesConfig(RuleMode.GOLDEN),
             youPoints = 3, oppPoints = 3, phase = GamePhase.GOLDEN,
@@ -208,7 +208,7 @@ class StatsTest {
         assertEquals(3, s.stats.totalPlayedPoints)
     }
 
-    @Test fun `pointsWonYou + (totalPlayedPoints - pointsWonYou) = totalPlayedPoints`() {
+    @Test fun `pointsWonYou + = totalPlayedPoints`() {
         val s = makeSnapshot().you().opp().opp().you().you()
         assertEquals(5, s.stats.totalPlayedPoints)
         assertEquals(3, s.stats.pointsWonYou)
@@ -308,7 +308,7 @@ class StatsTest {
         assertEquals(1, afterSecondDeuce.stats.deuceCount)
     }
 
-    @Test fun `deuceCount is 0 for golden mode (no deuce phase)`() {
+    @Test fun `deuceCount is 0 for golden mode`() {
         val s = makeSnapshot(
             config = singlesConfig(RuleMode.GOLDEN),
             youPoints = 2, oppPoints = 3

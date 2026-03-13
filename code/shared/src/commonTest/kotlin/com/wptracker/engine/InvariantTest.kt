@@ -19,7 +19,7 @@ class InvariantTest {
     // Serve-side invariant: side = RIGHT iff rallyIndex is even
     // -----------------------------------------------------------------------
 
-    @Test fun `serve side is RIGHT at the start of every regular game (rallyIndex=0)`() {
+    @Test fun `serve side is RIGHT at the start of every regular game`() {
         var s = makeSnapshot()
         repeat(6) {
             assertEquals(ServeSide.RIGHT, s.serve.serveSide,
@@ -125,7 +125,7 @@ class InvariantTest {
     // Tie-break win condition: must win by ≥2 from ≥7
     // -----------------------------------------------------------------------
 
-    @Test fun `TB does not end at 6-6 (need 7 with 2-pt lead)`() {
+    @Test fun `TB does not end at 6-6`() {
         var s = makeSnapshot(
             config = singlesConfig(),
             youGames = 6, oppGames = 6,
@@ -141,7 +141,7 @@ class InvariantTest {
         assertFalse(s.isMatchOver)
     }
 
-    @Test fun `TB does not end at 7-6 (not 2-pt lead in a win-by-2 scenario)`() {
+    @Test fun `TB does not end at 7-6`() {
         // Score 13 TB points: 7 YOU, 6 OPP alternating (YOU first)
         var s = makeSnapshot(
             config = singlesConfig(),
@@ -159,7 +159,7 @@ class InvariantTest {
         assertEquals(GameMode.TIEBREAK, s.game.mode)
     }
 
-    @Test fun `TB ends at 7-5 (first team to 7 with 2+ lead)`() {
+    @Test fun `TB ends at 7-5`() {
         var s = makeSnapshot(
             config = singlesConfig(),
             youGames = 6, oppGames = 6,
@@ -184,7 +184,7 @@ class InvariantTest {
         assertNotEquals(GameMode.TIEBREAK, s.game.mode)
     }
 
-    @Test fun `TB ends at 9-7 (win by 2 from deuce scenario at 7-7)`() {
+    @Test fun `TB ends at 9-7`() {
         var s = makeSnapshot(
             config = singlesConfig(),
             youGames = 6, oppGames = 6,
@@ -209,7 +209,7 @@ class InvariantTest {
     // totalPlayedPoints consistency
     // -----------------------------------------------------------------------
 
-    @Test fun `totalPlayedPoints equals number of score() calls (no golden deciders)`() {
+    @Test fun `totalPlayedPoints equals number of score calls no golden deciders`() {
         var s = makeSnapshot(config = singlesConfig(bestOf = 3))
         var scoreCalls = 0
 

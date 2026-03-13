@@ -10,6 +10,10 @@ private extension Color {
     static let oppAccent = Color(red: 1.000, green: 0.584, blue: 0.000)
     static let pillBg    = Color(red: 0.831, green: 0.627, blue: 0.090)
     static let undoBg    = Color(white: 0.22)
+
+    // ── Theme 2 (unused) ──────────────────────────────────────────────────
+    // static let youPanel  = Color(red: 0.294, green: 0.180, blue: 0.514)  // #4B2E83 deep purple
+    // static let oppAccent = Color(red: 0.725, green: 0.788, blue: 0.000)  // #B9C900 lime yellow
 }
 
 // MARK: – Layout constants (scale-aware)
@@ -180,9 +184,22 @@ private struct MatchContent: View {
                 // ── Decider-side picker (full-screen overlay) ───────────────
                 if needsDeciderPick {
                     let receivingTeam = srvTeam == .you ? Team.opp : Team.you
-                    DeciderSidePicker(receivingTeam: receivingTeam) { side in
-                        store.setDeciderSide(side: side)
-                    }
+                    LeftRightPickerOverlay(
+                        header: "SERVE FROM\nWHICH SIDE?",
+                        subtitle: "\(receivingTeam == .you ? "YOU" : "OPP") RECEIVE",
+                        onLeftTap:  { store.setDeciderSide(side: .left) },
+                        onRightTap: { store.setDeciderSide(side: .right) }
+                    )
+                }
+
+                // ── Serve-pick overlay (doubles game 2) ──────────────────────
+                if snapshot.awaitingServePick {
+                    LeftRightPickerOverlay(
+                        header: "WHO SERVES?",
+                        subtitle: srvTeam == .you ? "YOUR SIDE" : "OPPONENT SIDE",
+                        onLeftTap:  { store.pickOpponentFirstServer(player: srvTeam == .you ? .a2 : .b2) },
+                        onRightTap: { store.pickOpponentFirstServer(player: srvTeam == .you ? .a1 : .b1) }
+                    )
                 }
             }
         }
@@ -282,14 +299,6 @@ private func pillLabel(for pill: PillState) -> String? {
     return nil
 }
 
-private func localScoreLayout(_ snapshot: Snapshot) -> ScoreLayout {
-    let rallyIndex = snapshot.game.youPoints + snapshot.game.oppPoints
-    if rallyIndex % 2 == 0 {
-        return ScoreLayout(youPosition: .bottomRight, oppPosition: .topLeft)
-    }
-    return ScoreLayout(youPosition: .bottomLeft, oppPosition: .topRight)
-}
-
 private func displayedSetScores(_ snapshot: Snapshot) -> [SetScore] {
     var scores = snapshot.match.setScores
     // When match is over, only show completed sets (no ghost next set)
@@ -349,54 +358,60 @@ private struct SetScoreDigit: View {
     }
 }
 
-// MARK: – Decider-side picker
+// MARK: – Left/Right picker overlay (also used in SetupView)
 
-private struct DeciderSidePicker: View {
-    let receivingTeam: Team
-    let onPick: (ServeSide) -> Void
+struct LeftRightPickerOverlay: View {
+    let header: String
+    let subtitle: String
+    let onLeftTap: () -> Void
+    let onRightTap: () -> Void
     @Environment(\.watchScale) private var watchScale
 
     var body: some View {
-        ZStack {
+        ZStack(alignment: .top) {
             Color.black.opacity(0.88).ignoresSafeArea()
 
-            VStack(spacing: 0) {
-                Text("SERVE FROM\nWHICH SIDE?")
+            // Buttons fill the full screen
+            HStack(spacing: 0) {
+                Button(action: onLeftTap) {
+                    Text("← LEFT")
+                        .font(.system(size: max(11, (14 * watchScale).rounded()), weight: .bold))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+                .background(Color.youPanel)
+                .buttonStyle(.plain)
+
+                Button(action: onRightTap) {
+                    Text("RIGHT →")
+                        .font(.system(size: max(11, (14 * watchScale).rounded()), weight: .bold))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+                .background(Color.oppPanel)
+                .buttonStyle(.plain)
+            }
+
+            // Title overlaid at the top (non-interactive) with solid black background
+            VStack(spacing: 3) {
+                Text(header)
                     .font(.system(size: max(9, (11 * watchScale).rounded()), weight: .bold))
                     .foregroundColor(.white.opacity(0.9))
                     .kerning(0.5)
                     .multilineTextAlignment(.center)
-                    .padding(.top, 6)
-                    .padding(.horizontal, 8)
 
-                Text("\(receivingTeam == .you ? "YOU" : "OPP") RECEIVE")
+                Text(subtitle)
                     .font(.system(size: max(7, (8 * watchScale).rounded())))
                     .foregroundColor(.white.opacity(0.45))
                     .kerning(0.5)
-                    .padding(.top, 3)
-
-                Spacer()
-
-                HStack(spacing: 0) {
-                    Button(action: { onPick(ServeSide.left) }) {
-                        Text("← LEFT")
-                            .font(.system(size: max(11, (14 * watchScale).rounded()), weight: .bold))
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    }
-                    .background(Color.youPanel)
-                    .buttonStyle(.plain)
-
-                    Button(action: { onPick(ServeSide.right) }) {
-                        Text("RIGHT →")
-                            .font(.system(size: max(11, (14 * watchScale).rounded()), weight: .bold))
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    }
-                    .background(Color.oppPanel)
-                    .buttonStyle(.plain)
-                }
+                    .multilineTextAlignment(.center)
             }
+            .allowsHitTesting(false)
+            .padding(.top, 6)
+            .padding(.horizontal, 8)
+            .padding(.bottom, 6)
+            .frame(maxWidth: .infinity)
+            .background(Color.black)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

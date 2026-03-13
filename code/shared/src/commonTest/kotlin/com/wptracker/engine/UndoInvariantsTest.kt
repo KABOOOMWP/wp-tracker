@@ -17,7 +17,7 @@ class UndoInvariantsTest {
     // Single-snapshot stack: undo is not possible
     // -----------------------------------------------------------------------
 
-    @Test fun `stack with 1 snapshot cannot undo (size check)`() {
+    @Test fun `stack with 1 snapshot cannot undo`() {
         val initial = makeSnapshot()
         val stack = mutableListOf(initial)
         // Undo is possible only if stack.size > 1
@@ -137,7 +137,7 @@ class UndoInvariantsTest {
     // Undo across tie-break activation boundary
     // -----------------------------------------------------------------------
 
-    @Test fun `undo from TB-active state back to 6-5 (pre-trigger)`() {
+    @Test fun `undo from TB-active state back to 6-5`() {
         // At 5:6, you serve and win → 6:6 → TB activates
         val preWin = makeSnapshot(
             config = singlesConfig(),

@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import WatchKit
 import Shared
 
 // ── Watch scale environment key ─────────────────────────────────────────────
@@ -36,6 +37,10 @@ class MatchStore: ObservableObject {
     @Published private(set) var history: [Snapshot] = []
     @Published private(set) var matchEndedAt: Date?
 
+    // Keeps the app alive while a match is in progress (prevents watchOS from
+    // returning to the watch face when the display goes ambient).
+    private var extendedSession: WKExtendedRuntimeSession?
+
     var current: Snapshot? { history.last }
     var canUndo: Bool { history.count > 1 }
 
@@ -45,6 +50,7 @@ class MatchStore: ObservableObject {
         matchEndedAt = nil
         history = [initial]
         screen   = .match
+        beginExtendedSession()
     }
 
     func score(team: Team) {
@@ -63,14 +69,36 @@ class MatchStore: ObservableObject {
         if updated !== snap { history[history.count - 1] = updated }
     }
 
+    func pickOpponentFirstServer(player: Player) {
+        guard let snap = current else { return }
+        let updated = MatchEngine.shared.pickOpponentFirstServer(snapshot: snap, player: player)
+        history.append(updated)  // append so undo shows picker again
+    }
+
     func endMatch() {
         matchEndedAt = Date()
         screen = .summary
+        endExtendedSession()
     }
 
     func newMatch() {
         history      = []
         matchEndedAt = nil
         screen       = .setup
+        endExtendedSession()
+    }
+
+    // MARK: – Extended runtime session
+
+    private func beginExtendedSession() {
+        extendedSession?.invalidate()
+        let session = WKExtendedRuntimeSession()
+        session.start()
+        extendedSession = session
+    }
+
+    private func endExtendedSession() {
+        extendedSession?.invalidate()
+        extendedSession = nil
     }
 }

@@ -16,11 +16,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -32,6 +36,7 @@ import androidx.wear.compose.material.Text
 import com.wptracker.engine.MatchEngine
 import com.wptracker.haptic.HapticManager
 import com.wptracker.model.*
+import com.wptracker.presentation.theme.LocalIsRoundScreen
 import com.wptracker.presentation.theme.LocalWatchScale
 import com.wptracker.presentation.theme.WPColors
 import kotlinx.coroutines.Job
@@ -39,8 +44,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 // Layout constants scaled from the 192 dp reference (see Theme.kt).
-private class ML(s: Float) {
-    val hInset      = (10f * s).dp
+// `round` increases the horizontal inset to keep content away from the curved edges.
+private class ML(s: Float, round: Boolean) {
+    val hInset      = ((if (round) 22f else 10f) * s).dp
     val topVInset   = (2f  * s).coerceAtLeast(1f).dp
     val botVInset   = (4f  * s).dp
     val midRowH     = (26f * s).dp
@@ -62,12 +68,20 @@ fun MatchScreen(
     onMatchEnd: (Snapshot) -> Unit,
     vm        : MatchViewModel = viewModel()
 ) {
+    val view = LocalView.current
+    DisposableEffect(Unit) {
+        view.keepScreenOn = true
+        onDispose { view.keepScreenOn = false }
+    }
+
     LaunchedEffect(config) { vm.init(config) }
     val snapshot = vm.current ?: return
-    val scale = LocalWatchScale.current
-    val ml = remember(scale) { ML(scale) }
+    val scale   = LocalWatchScale.current
+    val isRound = LocalIsRoundScreen.current
+    val ml = remember(scale, isRound) { ML(scale, isRound) }
 
     val pill = MatchEngine.computePill(snapshot)
+    val awaitingServePick = snapshot.awaitingServePick
     val serverTeam = snapshot.serve.serverTeam
     val serveLeft  = snapshot.serve.serveSide == ServeSide.LEFT
     // A2/B2 are left-side players; A1/B1 are right-side players.
@@ -164,15 +178,28 @@ fun MatchScreen(
                 onPick = { side -> vm.setDeciderSide(side) }
             )
         }
+
+        // ── Serve-pick overlay (doubles game 2) ───────────────────────────
+        if (awaitingServePick) {
+            ServePickOverlay(servingTeam = serverTeam) { player ->
+                vm.pickOpponentFirstServer(player)
+            }
+        }
     }
 }
 
 @Composable
 private fun TapZone(modifier: Modifier, onTap: () -> Unit) {
+    // rememberUpdatedState ensures the pointerInput coroutine (which never restarts because
+    // its key is Unit) always calls the LATEST lambda — i.e. the one with the current
+    // snapshot captured at the last recomposition. Without this, `prev` inside onTap would
+    // be stale after a picker overlay changes state, making wasGameWon() return wrong results
+    // and firing the wrong haptic pattern.
+    val currentOnTap by rememberUpdatedState(onTap)
     Box(
         modifier = modifier
             .background(Color.Transparent)
-            .pointerInput(Unit) { detectTapGestures(onTap = { onTap() }) }
+            .pointerInput(Unit) { detectTapGestures(onTap = { currentOnTap() }) }
     )
 }
 
@@ -352,11 +379,12 @@ private fun BoxScope.DeciderSidePicker(
                 Text("RIGHT →", color = Color.White, fontSize = btnFont, fontWeight = FontWeight.Bold)
             }
         }
-        // Title + subtitle stacked naturally at top — no hardcoded offset
         Column(
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(top = 6.dp, start = 8.dp, end = 8.dp),
+                .fillMaxWidth()
+                .background(Color.Black)
+                .padding(top = 6.dp, start = 8.dp, end = 8.dp, bottom = 6.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
@@ -370,6 +398,75 @@ private fun BoxScope.DeciderSidePicker(
             )
             Text(
                 text     = "${if (receivingTeam == Team.YOU) "YOU" else "OPP"} RECEIVE",
+                color    = Color.White.copy(alpha = 0.45f),
+                fontSize = subFont
+            )
+        }
+    }
+}
+
+@Composable
+private fun BoxScope.ServePickOverlay(
+    servingTeam: Team,
+    onPick: (Player) -> Unit
+) {
+    val scale     = LocalWatchScale.current
+    val titleFont = (11f * scale).coerceAtLeast(9f).sp
+    val subFont   = (8f  * scale).coerceAtLeast(7f).sp
+    val btnFont   = (14f * scale).coerceAtLeast(11f).sp
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.88f))
+    ) {
+        Row(modifier = Modifier.fillMaxSize()) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .weight(1f).fillMaxHeight()
+                    .background(WPColors.YouPanel)
+                    .pointerInput(Unit) {
+                        detectTapGestures {
+                            onPick(if (servingTeam == Team.YOU) Player.A2 else Player.B2)
+                        }
+                    }
+            ) {
+                Text("← LEFT", color = Color.White, fontSize = btnFont, fontWeight = FontWeight.Bold)
+            }
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .weight(1f).fillMaxHeight()
+                    .background(WPColors.OppPanel)
+                    .pointerInput(Unit) {
+                        detectTapGestures {
+                            onPick(if (servingTeam == Team.YOU) Player.A1 else Player.B1)
+                        }
+                    }
+            ) {
+                Text("RIGHT →", color = Color.White, fontSize = btnFont, fontWeight = FontWeight.Bold)
+            }
+        }
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth()
+                .background(Color.Black)
+                .padding(top = 6.dp, start = 8.dp, end = 8.dp, bottom = 6.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                text          = "WHO SERVES?",
+                color         = Color.White.copy(alpha = 0.9f),
+                fontSize      = titleFont,
+                fontWeight    = FontWeight.Bold,
+                letterSpacing = 0.5.sp,
+                textAlign     = TextAlign.Center
+            )
+            Text(
+                text     = if (servingTeam == Team.YOU) "YOUR SIDE" else "OPPONENT SIDE",
                 color    = Color.White.copy(alpha = 0.45f),
                 fontSize = subFont
             )
@@ -471,7 +568,13 @@ private val ReverseArrowVector: ImageVector
         defaultWidth = 24.dp, defaultHeight = 24.dp,
         viewportWidth = 24f,  viewportHeight = 24f
     ).apply {
-        path {
+        path(
+            fill            = null,
+            stroke          = SolidColor(Color.White),
+            strokeLineWidth = 2f,
+            strokeLineCap   = StrokeCap.Round,
+            strokeLineJoin  = StrokeJoin.Round
+        ) {
             moveTo(9f, 15f); lineTo(3f, 9f)
             moveTo(3f, 9f);  lineTo(9f, 3f)
             moveTo(3f, 9f);  lineTo(15f, 9f)
@@ -486,7 +589,13 @@ private val CloseXVector: ImageVector
         defaultWidth = 24.dp, defaultHeight = 24.dp,
         viewportWidth = 24f,  viewportHeight = 24f
     ).apply {
-        path {
+        path(
+            fill            = null,
+            stroke          = SolidColor(Color.White),
+            strokeLineWidth = 2f,
+            strokeLineCap   = StrokeCap.Round,
+            strokeLineJoin  = StrokeJoin.Round
+        ) {
             moveTo(6f, 18f); lineTo(18f, 6f)
             moveTo(6f, 6f);  lineTo(18f, 18f)
         }

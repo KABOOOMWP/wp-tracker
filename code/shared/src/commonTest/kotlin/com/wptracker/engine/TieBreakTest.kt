@@ -69,7 +69,7 @@ class TieBreakTest {
         assertEquals(6, s.match.setScores.last { it.isCompleted }.oppGames)
     }
 
-    @Test fun `7-6 is NOT a tie-break win (only 1 ahead)`() {
+    @Test fun `7-6 is NOT a tie-break win`() {
         val s = tbSnapshot(youPoints = 6, oppPoints = 6).you() // 7:6 → not enough
         assertEquals(0, s.match.setsWonYou)
         assertEquals(GameMode.TIEBREAK, s.game.mode)

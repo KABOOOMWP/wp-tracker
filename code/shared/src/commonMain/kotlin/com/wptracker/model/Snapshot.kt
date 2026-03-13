@@ -69,7 +69,8 @@ data class ServeState(
     val serverTeam: Team,
     val serverPlayer: Player,
     val serveSide: ServeSide,
-    val serveOrderIndex: Int = 0
+    val serveOrderIndex: Int = 0,
+    val opponentServerConfirmed: Boolean = false
 )
 
 data class StatsState(
@@ -93,5 +94,6 @@ data class Snapshot(
     val game: GameState,
     val serve: ServeState,
     val stats: StatsState,
-    val isMatchOver: Boolean = false
+    val isMatchOver: Boolean = false,
+    val awaitingServePick: Boolean = false
 )

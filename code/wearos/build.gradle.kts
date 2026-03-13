@@ -1,19 +1,18 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 }
 
 android {
     namespace   = "com.wptracker"
-    compileSdk  = 35
+    compileSdk  = 36
 
     defaultConfig {
         applicationId = "com.wptracker"
         minSdk        = 26
-        targetSdk     = 34
-        versionCode   = 1
-        versionName   = "1.0"
+        targetSdk     = 36
+        versionCode   = 20260313
+        versionName   = "1.1.1"
     }
 
     buildFeatures {
@@ -24,9 +23,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+}
 
-    kotlinOptions {
-        jvmTarget = "11"
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
     }
 }
 
@@ -46,6 +47,7 @@ dependencies {
     // AndroidX
     implementation(libs.activity.compose)
     implementation(libs.play.services.wearable)
+    implementation(libs.wear.core)
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)

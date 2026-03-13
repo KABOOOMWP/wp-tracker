@@ -2,15 +2,15 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
 }
 
 kotlin {
     // ── Android (Wear OS) ─────────────────────────────────────────────────
-    androidTarget {
-        compilations.all {
-            kotlinOptions { jvmTarget = "11" }
-        }
+    android {
+        namespace  = "com.wptracker.shared"
+        compileSdk = 36
+        minSdk     = 26
     }
 
     // ── JVM (unit tests + desktop tooling) ───────────────────────────────
@@ -42,17 +42,5 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
-    }
-}
-
-android {
-    namespace  = "com.wptracker.shared"
-    compileSdk = 35
-    defaultConfig {
-        minSdk = 26
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
     }
 }

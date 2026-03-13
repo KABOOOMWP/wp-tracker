@@ -104,7 +104,7 @@ class DeciderSideTest {
         assertSame(s, result)
     }
 
-    @Test fun `setDeciderSide in STAR_ADV_YOU phase is no-op (only STAR_POINT is the decider)`() {
+    @Test fun `setDeciderSide in STAR_ADV_YOU phase is no-op`() {
         val s = makeSnapshot(
             config = singlesConfig(RuleMode.STAR),
             youPoints = 4, oppPoints = 3, phase = GamePhase.STAR_ADV_YOU
@@ -143,7 +143,7 @@ class DeciderSideTest {
         assertEquals(ServeSide.RIGHT, afterPoint.serve.serveSide)
     }
 
-    @Test fun `override persists until point is played (can be changed multiple times)`() {
+    @Test fun `override persists until point is played`() {
         val s = makeSnapshot(
             config = singlesConfig(RuleMode.GOLDEN),
             youPoints = 3, oppPoints = 3, phase = GamePhase.GOLDEN

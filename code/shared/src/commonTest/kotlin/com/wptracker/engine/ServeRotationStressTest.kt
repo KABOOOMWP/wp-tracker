@@ -27,7 +27,7 @@ class ServeRotationStressTest {
     // After 12 games (6:6): last server = B2 (idx=3)
     // TB starts with (3+1)%4 = 0 = A1
 
-    @Test fun `2v2 full 12-game rotation - TB opener is A1 (idx 0)`() {
+    @Test fun `2v2 full 12-game rotation - TB opener is A1`() {
         var s = makeSnapshot(
             config = doublesConfig(),
             serverPlayer = Player.A1, serverTeam = Team.YOU, serveOrderIndex = 0

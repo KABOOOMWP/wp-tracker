@@ -5,14 +5,15 @@ import WatchKit
 ///   pointOpp  → 2× click (180 ms apart)
 ///   undo      → 3× click
 ///   gameWin   → 1× success (long)
+@MainActor
 class HapticManager {
 
     static let shared = HapticManager()
     private init() {}
 
-    func pointYou() { play([.click]) }
-    func pointOpp() { play([.click, .click]) }
-    func undo()     { play([.click, .click, .click]) }
+    func pointYou() { play([.directionUp]) }
+    func pointOpp() { play([.directionUp, .directionUp]) }
+    func undo()     { play([.directionUp, .directionUp, .directionUp]) }
     func gameWin()  { play([.success]) }
 
     private func play(_ types: [WKHapticType]) {

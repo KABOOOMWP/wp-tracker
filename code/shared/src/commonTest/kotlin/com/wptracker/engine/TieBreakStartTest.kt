@@ -20,7 +20,7 @@ class TieBreakStartTest {
     // -----------------------------------------------------------------------
     // Trigger: makeSnapshot at 5:6 or 6:5 with specified last server, then win a game to reach 6:6.
 
-    @Test fun `2v2 TB starts with B1 when last server was A1 (idx 0)`() {
+    @Test fun `2v2 TB starts with B1 when last server was A1`() {
         // youGames=5, oppGames=6. A1 (idx=0) serves. YOU wins this game → 6:6 → TB.
         // Next in rotation after idx=0 is idx=1 (B1).
         val s = makeSnapshot(
@@ -35,7 +35,7 @@ class TieBreakStartTest {
         assertEquals(ServeSide.RIGHT, s.serve.serveSide)
     }
 
-    @Test fun `2v2 TB starts with A2 when last server was B1 (idx 1)`() {
+    @Test fun `2v2 TB starts with A2 when last server was B1`() {
         val s = makeSnapshot(
             config = doublesConfig(),
             youGames = 6, oppGames = 5,
@@ -47,7 +47,7 @@ class TieBreakStartTest {
         assertEquals(Team.YOU, s.serve.serverTeam)
     }
 
-    @Test fun `2v2 TB starts with B2 when last server was A2 (idx 2)`() {
+    @Test fun `2v2 TB starts with B2 when last server was A2`() {
         val s = makeSnapshot(
             config = doublesConfig(),
             youGames = 5, oppGames = 6,
@@ -59,7 +59,7 @@ class TieBreakStartTest {
         assertEquals(Team.OPP, s.serve.serverTeam)
     }
 
-    @Test fun `2v2 TB starts with A1 when last server was B2 (idx 3)`() {
+    @Test fun `2v2 TB starts with A1 when last server was B2`() {
         val s = makeSnapshot(
             config = doublesConfig(),
             youGames = 6, oppGames = 5,
@@ -115,7 +115,7 @@ class TieBreakStartTest {
     // TB and set boundary: rotation continuity across sets
     // -----------------------------------------------------------------------
 
-    @Test fun `after TB-won set, next set first server is one step beyond TB opener`() {
+    @Test fun `after TB-won set next set first server is one step beyond TB opener`() {
         // TB opened by A1 (serveOrderIndex=0). TB won by YOU.
         // After set: serve advances to (0+1)%4 = 1 → B1.
         val tbState = makeSnapshot(
@@ -134,7 +134,7 @@ class TieBreakStartTest {
         assertEquals(Team.OPP, afterTB.serve.serverTeam)
     }
 
-    @Test fun `after TB-won set, new set games continue rotation correctly`() {
+    @Test fun `after TB-won set new set games continue rotation correctly`() {
         // TB opened by A1 (idx=0). Set won. Next set starts with B1 (idx=1).
         // B1 serves first game of set 2. After winning that game, A2 (idx=2) should serve.
         val tbState = makeSnapshot(
