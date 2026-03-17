@@ -10,16 +10,10 @@ object WPColors {
     val YouAccent       = Color(0xFF4A9EF8)   // blue
     val OppAccent       = Color(0xFFFF9500)   // orange
     val Divider         = Color(0xFFFFFFFF)
-    val WhiteDot        = Color(0xFFFFFFFF)
     val ScoreText       = Color(0xFFFFFFFF)
     val PillBg          = Color(0xFFD4A017)   // golden yellow
     val PillText        = Color(0xFF000000)
     val UndoBg          = Color(0xFF383838)   // dark grey
-    val UndoRing        = Color(0xFFFFFFFF)
-
-    // ── Theme 2 (unused) ──────────────────────────────────────────────────
-    // val YouPanel  = Color(0xFF4B2E83)   // deep purple
-    // val OppAccent = Color(0xFFB9C900)   // lime yellow
 }
 
 // Reference screen width in dp (Pixel Watch 2 / Galaxy Watch 4 40 mm ≈ 192 dp).

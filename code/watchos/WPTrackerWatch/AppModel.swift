@@ -75,6 +75,18 @@ class MatchStore: ObservableObject {
         history.append(updated)  // append so undo shows picker again
     }
 
+    func confirmYouPositionSwitch(doSwitch: Bool) {
+        guard let snap = current else { return }
+        let updated = MatchEngine.shared.confirmYouPositionSwitch(snapshot: snap, doSwitch: doSwitch)
+        if updated !== snap { history[history.count - 1] = updated }  // replace so undo skips overlay
+    }
+
+    func confirmOppPositionSwitch(doSwitch: Bool) {
+        guard let snap = current else { return }
+        let updated = MatchEngine.shared.confirmOppPositionSwitch(snapshot: snap, doSwitch: doSwitch)
+        if updated !== snap { history[history.count - 1] = updated }  // replace so undo skips overlay
+    }
+
     func endMatch() {
         matchEndedAt = Date()
         screen = .summary
@@ -93,6 +105,7 @@ class MatchStore: ObservableObject {
     private func beginExtendedSession() {
         extendedSession?.invalidate()
         let session = WKExtendedRuntimeSession()
+        session.delegate = self
         session.start()
         extendedSession = session
     }
@@ -100,5 +113,25 @@ class MatchStore: ObservableObject {
     private func endExtendedSession() {
         extendedSession?.invalidate()
         extendedSession = nil
+    }
+}
+
+// MARK: – WKExtendedRuntimeSessionDelegate
+
+extension MatchStore: WKExtendedRuntimeSessionDelegate {
+    nonisolated func extendedRuntimeSessionDidStart(
+        _ extendedRuntimeSession: WKExtendedRuntimeSession
+    ) {}
+
+    nonisolated func extendedRuntimeSessionWillExpire(
+        _ extendedRuntimeSession: WKExtendedRuntimeSession
+    ) {}
+
+    nonisolated func extendedRuntimeSession(
+        _ extendedRuntimeSession: WKExtendedRuntimeSession,
+        didInvalidateWith reason: WKExtendedRuntimeSessionInvalidationReason,
+        error: Error?
+    ) {
+        Task { @MainActor in extendedSession = nil }
     }
 }

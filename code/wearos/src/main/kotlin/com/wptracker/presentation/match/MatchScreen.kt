@@ -83,6 +83,8 @@ fun MatchScreen(
 
     val pill = MatchEngine.computePill(snapshot)
     val awaitingServePick = snapshot.awaitingServePick
+    val awaitingYouPositionSwitch = snapshot.awaitingYouPositionSwitch
+    val awaitingOppPositionSwitch = snapshot.awaitingOppPositionSwitch
     val serverTeam = snapshot.serve.serverTeam
     val serveLeft  = snapshot.serve.serveSide == ServeSide.LEFT
     // A2/B2 are left-side players; A1/B1 are right-side players.
@@ -178,14 +180,26 @@ fun MatchScreen(
         if (needsDeciderPick) {
             DeciderSidePicker(
                 receivingTeam = if (serverTeam == Team.YOU) Team.OPP else Team.YOU,
-                onPick = { side -> vm.setDeciderSide(side) }
+                onPick = { side -> haptic.pointYou(); vm.setDeciderSide(side) }
             )
         }
 
         // ── Serve-pick overlay (doubles game 2) ───────────────────────────
         if (awaitingServePick) {
             ServePickOverlay(servingTeam = serverTeam) { player ->
+                haptic.pointYou()
                 vm.pickOpponentFirstServer(player)
+            }
+        }
+
+        // ── Position-switch overlays (doubles, after each non-final set) ──
+        if (awaitingYouPositionSwitch) {
+            PositionSwitchOverlay(team = Team.YOU, haptic = haptic) { doSwitch ->
+                vm.confirmYouPositionSwitch(doSwitch)
+            }
+        } else if (awaitingOppPositionSwitch) {
+            PositionSwitchOverlay(team = Team.OPP, haptic = haptic) { doSwitch ->
+                vm.confirmOppPositionSwitch(doSwitch)
             }
         }
     }
@@ -474,6 +488,75 @@ private fun BoxScope.ServePickOverlay(
                 text     = if (servingTeam == Team.YOU) "YOUR SIDE" else "OPPONENT SIDE",
                 color    = Color.White.copy(alpha = 0.45f),
                 fontSize = subFont
+            )
+        }
+    }
+}
+
+@Composable
+private fun BoxScope.PositionSwitchOverlay(
+    team  : Team,
+    haptic: HapticManager,
+    onPick: (Boolean) -> Unit
+) {
+    val scale      = LocalWatchScale.current
+    val teamFont   = (12f * scale).coerceAtLeast(10f).sp
+    val questionFont = (9f * scale).coerceAtLeast(7f).sp
+    val btnFont    = (14f * scale).coerceAtLeast(11f).sp
+    val teamColor  = if (team == Team.YOU) WPColors.YouAccent else WPColors.OppAccent
+    val teamLabel  = if (team == Team.YOU) "YOUR TEAM" else "OPP TEAM"
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.88f))
+    ) {
+        Row(modifier = Modifier.fillMaxSize()) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .weight(1f).fillMaxHeight()
+                    .background(WPColors.YouPanel)
+                    .pointerInput(Unit) { detectTapGestures { haptic.pointYou(); onPick(true) } }
+                    .testTag("btn_position_switch_yes")
+            ) {
+                Text("← SWITCH", color = Color.White, fontSize = btnFont, fontWeight = FontWeight.Bold)
+            }
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .weight(1f).fillMaxHeight()
+                    .background(WPColors.OppPanel)
+                    .pointerInput(Unit) { detectTapGestures { haptic.pointYou(); onPick(false) } }
+                    .testTag("btn_position_switch_no")
+            ) {
+                Text("KEEP →", color = Color.White, fontSize = btnFont, fontWeight = FontWeight.Bold)
+            }
+        }
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth()
+                .background(Color.Black)
+                .padding(top = 6.dp, start = 8.dp, end = 8.dp, bottom = 5.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
+            Text(
+                text          = teamLabel,
+                color         = teamColor,
+                fontSize      = teamFont,
+                fontWeight    = FontWeight.Bold,
+                letterSpacing = 0.5.sp,
+                textAlign     = TextAlign.Center
+            )
+            Text(
+                text          = "SWITCH SIDES?",
+                color         = Color.White.copy(alpha = 0.75f),
+                fontSize      = questionFont,
+                fontWeight    = FontWeight.Bold,
+                letterSpacing = 0.5.sp,
+                textAlign     = TextAlign.Center
             )
         }
     }

@@ -14,22 +14,8 @@ class MatchViewModel : ViewModel() {
 
     /** Called once per match; safe to call again with a new config (resets state). */
     fun init(config: Config) {
-        if (_history.isNotEmpty() && _history.first().config == config) return
         _history.clear()
-        val first = config.serveOrder.first()
-        _history += Snapshot(
-            config = config,
-            match  = MatchState(startedAt = System.currentTimeMillis()),
-            set    = SetState(),
-            game   = GameState(),
-            serve  = ServeState(
-                serverTeam       = first.team(),
-                serverPlayer     = first,
-                serveSide        = ServeSide.RIGHT,
-                serveOrderIndex  = 0
-            ),
-            stats  = StatsState()
-        )
+        _history += MatchEngine.initialSnapshot(config, System.currentTimeMillis())
     }
 
     fun score(team: Team) {
@@ -52,5 +38,17 @@ class MatchViewModel : ViewModel() {
         val snap = current ?: return
         val updated = MatchEngine.pickOpponentFirstServer(snap, player)
         _history += updated  // append so undo shows picker again
+    }
+
+    fun confirmYouPositionSwitch(doSwitch: Boolean) {
+        val snap = current ?: return
+        val updated = MatchEngine.confirmYouPositionSwitch(snap, doSwitch)
+        if (updated !== snap) _history[_history.lastIndex] = updated  // replace so undo skips overlay
+    }
+
+    fun confirmOppPositionSwitch(doSwitch: Boolean) {
+        val snap = current ?: return
+        val updated = MatchEngine.confirmOppPositionSwitch(snap, doSwitch)
+        if (updated !== snap) _history[_history.lastIndex] = updated  // replace so undo skips overlay
     }
 }

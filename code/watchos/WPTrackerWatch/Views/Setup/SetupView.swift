@@ -7,20 +7,6 @@ private enum SetupStep {
     case playMode, matchFormat, ruleMode, whoServes, whichPlayer
 }
 
-// ── Colors (same palette as MatchView) ────────────────────────────────────
-
-private extension Color {
-    static let oppPanel  = Color(red: 0.259, green: 0.122, blue: 0.000)
-    static let youPanel  = Color(red: 0.043, green: 0.114, blue: 0.212)
-    static let youAccent = Color(red: 0.290, green: 0.620, blue: 0.973)
-    static let oppAccent = Color(red: 1.000, green: 0.584, blue: 0.000)
-    static let pillBg    = Color(red: 0.831, green: 0.627, blue: 0.090)
-
-    // ── Theme 2 (unused) ──────────────────────────────────────────────────
-    // static let youPanel  = Color(red: 0.294, green: 0.180, blue: 0.514)  // #4B2E83 deep purple
-    // static let oppAccent = Color(red: 0.725, green: 0.788, blue: 0.000)  // #B9C900 lime yellow
-}
-
 // ── Main view ──────────────────────────────────────────────────────────────
 
 struct SetupView: View {
@@ -42,14 +28,20 @@ struct SetupView: View {
         case .playMode:
             ZStack {
                 VStack(spacing: 0) {
-                    Color.oppPanel.contentShape(Rectangle()).onTapGesture {
-                        HapticManager.shared.pointYou()
-                        playMode = PlayMode.singles; step = .matchFormat
-                    }
-                    Color.youPanel.contentShape(Rectangle()).onTapGesture {
-                        HapticManager.shared.pointYou()
-                        playMode = PlayMode.doubles; step = .matchFormat
-                    }
+                    Color.oppPanel.contentShape(Rectangle())
+                        .accessibilityIdentifier("btn_play_singles")
+                        .accessibilityAddTraits(.isButton)
+                        .onTapGesture {
+                            HapticManager.shared.pointYou()
+                            playMode = PlayMode.singles; step = .matchFormat
+                        }
+                    Color.youPanel.contentShape(Rectangle())
+                        .accessibilityIdentifier("btn_play_doubles")
+                        .accessibilityAddTraits(.isButton)
+                        .onTapGesture {
+                            HapticManager.shared.pointYou()
+                            playMode = PlayMode.doubles; step = .matchFormat
+                        }
                 }
                 VStack(spacing: 0) {
                     Text("1 vs 1")
@@ -71,14 +63,20 @@ struct SetupView: View {
         case .matchFormat:
             ZStack {
                 VStack(spacing: 0) {
-                    Color.oppPanel.contentShape(Rectangle()).onTapGesture {
-                        HapticManager.shared.pointYou()
-                        bestOf = 3; step = .ruleMode
-                    }
-                    Color.youPanel.contentShape(Rectangle()).onTapGesture {
-                        HapticManager.shared.pointYou()
-                        bestOf = 5; step = .ruleMode
-                    }
+                    Color.oppPanel.contentShape(Rectangle())
+                        .accessibilityIdentifier("btn_format_best_of_3")
+                        .accessibilityAddTraits(.isButton)
+                        .onTapGesture {
+                            HapticManager.shared.pointYou()
+                            bestOf = 3; step = .ruleMode
+                        }
+                    Color.youPanel.contentShape(Rectangle())
+                        .accessibilityIdentifier("btn_format_best_of_5")
+                        .accessibilityAddTraits(.isButton)
+                        .onTapGesture {
+                            HapticManager.shared.pointYou()
+                            bestOf = 5; step = .ruleMode
+                        }
                 }
                 VStack(spacing: 0) {
                     Text("Best of 3")
@@ -101,11 +99,14 @@ struct SetupView: View {
             VStack(spacing: 0) {
                 // Row 1 — Standard
                 ZStack {
-                    Color.oppPanel.contentShape(Rectangle()).onTapGesture {
-                        HapticManager.shared.pointYou()
-                        selectedRule = .standard
-                        step = .whoServes
-                    }
+                    Color.oppPanel.contentShape(Rectangle())
+                        .accessibilityIdentifier("btn_rule_standard")
+                        .accessibilityAddTraits(.isButton)
+                        .onTapGesture {
+                            HapticManager.shared.pointYou()
+                            selectedRule = .standard
+                            step = .whoServes
+                        }
                     Text("Standard")
                         .font(.system(size: labelFont, weight: .bold))
                         .foregroundColor(.oppAccent).allowsHitTesting(false)
@@ -120,11 +121,14 @@ struct SetupView: View {
 
                 // Row 2 — Golden Point
                 ZStack {
-                    Color(white: 0.12).contentShape(Rectangle()).onTapGesture {
-                        HapticManager.shared.pointYou()
-                        selectedRule = .golden
-                        step = .whoServes
-                    }
+                    Color(white: 0.12).contentShape(Rectangle())
+                        .accessibilityIdentifier("btn_rule_golden")
+                        .accessibilityAddTraits(.isButton)
+                        .onTapGesture {
+                            HapticManager.shared.pointYou()
+                            selectedRule = .golden
+                            step = .whoServes
+                        }
                     Text("Golden Point")
                         .font(.system(size: labelFont, weight: .bold))
                         .foregroundColor(.white).allowsHitTesting(false)
@@ -139,11 +143,14 @@ struct SetupView: View {
 
                 // Row 3 — Star Point
                 ZStack {
-                    Color.youPanel.contentShape(Rectangle()).onTapGesture {
-                        HapticManager.shared.pointYou()
-                        selectedRule = .star
-                        step = .whoServes
-                    }
+                    Color.youPanel.contentShape(Rectangle())
+                        .accessibilityIdentifier("btn_rule_star")
+                        .accessibilityAddTraits(.isButton)
+                        .onTapGesture {
+                            HapticManager.shared.pointYou()
+                            selectedRule = .star
+                            step = .whoServes
+                        }
                     Text("Star Point")
                         .font(.system(size: labelFont, weight: .bold))
                         .foregroundColor(.youAccent).allowsHitTesting(false)
@@ -156,14 +163,20 @@ struct SetupView: View {
         case .whoServes:
             ZStack {
                 VStack(spacing: 0) {
-                    Color.oppPanel.contentShape(Rectangle()).onTapGesture {
-                        HapticManager.shared.pointYou()
-                        handleServingTeamPick(.opp)
-                    }
-                    Color.youPanel.contentShape(Rectangle()).onTapGesture {
-                        HapticManager.shared.pointYou()
-                        handleServingTeamPick(.you)
-                    }
+                    Color.oppPanel.contentShape(Rectangle())
+                        .accessibilityIdentifier("btn_serve_opp")
+                        .accessibilityAddTraits(.isButton)
+                        .onTapGesture {
+                            HapticManager.shared.pointYou()
+                            handleServingTeamPick(.opp)
+                        }
+                    Color.youPanel.contentShape(Rectangle())
+                        .accessibilityIdentifier("btn_serve_you")
+                        .accessibilityAddTraits(.isButton)
+                        .onTapGesture {
+                            HapticManager.shared.pointYou()
+                            handleServingTeamPick(.you)
+                        }
                 }
                 VStack(spacing: 0) {
                     Text("OPPONENT")
@@ -187,17 +200,19 @@ struct SetupView: View {
                 header: "WHO SERVES?",
                 subtitle: startingTeam == .you ? "YOUR SIDE" : "OPPONENT SIDE",
                 onLeftTap: {
+                    guard let bestOf = bestOf, let selectedRule = selectedRule else { return }
                     let p: Player   = startingTeam == .you ? .a2 : .b2
                     let opp: Player = startingTeam == .you ? .b1 : .a1
                     store.startMatch(config: Config(
-                        bestOf: bestOf!, ruleMode: selectedRule!, playMode: .doubles,
+                        bestOf: bestOf, ruleMode: selectedRule, playMode: .doubles,
                         serveOrder: [p, opp, partnerOf(p), partnerOf(opp)]))
                 },
                 onRightTap: {
+                    guard let bestOf = bestOf, let selectedRule = selectedRule else { return }
                     let p: Player   = startingTeam == .you ? .a1 : .b1
                     let opp: Player = startingTeam == .you ? .b1 : .a1
                     store.startMatch(config: Config(
-                        bestOf: bestOf!, ruleMode: selectedRule!, playMode: .doubles,
+                        bestOf: bestOf, ruleMode: selectedRule, playMode: .doubles,
                         serveOrder: [p, opp, partnerOf(p), partnerOf(opp)]))
                 }
             )

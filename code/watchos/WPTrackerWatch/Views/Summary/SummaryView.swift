@@ -1,19 +1,6 @@
 import SwiftUI
 import Shared
 
-// MARK: – Colors (same palette as MatchView)
-
-private extension Color {
-    static let oppPanel  = Color(red: 0.259, green: 0.122, blue: 0.000)
-    static let youPanel  = Color(red: 0.043, green: 0.114, blue: 0.212)
-    static let youAccent = Color(red: 0.290, green: 0.620, blue: 0.973)
-    static let oppAccent = Color(red: 1.000, green: 0.584, blue: 0.000)
-
-    // ── Theme 2 (unused) ──────────────────────────────────────────────────
-    // static let youPanel  = Color(red: 0.294, green: 0.180, blue: 0.514)  // #4B2E83 deep purple
-    // static let oppAccent = Color(red: 0.725, green: 0.788, blue: 0.000)  // #B9C900 lime yellow
-}
-
 struct SummaryView: View {
     let snapshot: Snapshot
     @EnvironmentObject var store: MatchStore

@@ -100,5 +100,17 @@ data class Snapshot(
     val serve: ServeState,
     val stats: StatsState,
     val isMatchOver: Boolean = false,
-    val awaitingServePick: Boolean = false
+    val awaitingServePick: Boolean = false,
+    /**
+     * Set after each non-final set ends in DOUBLES mode.
+     * While true the UI shows a position-switch picker for the YOU team.
+     * Cleared by [MatchEngine.confirmYouPositionSwitch].
+     */
+    val awaitingYouPositionSwitch: Boolean = false,
+    /**
+     * Set after the YOU team confirms their position choice.
+     * While true the UI shows a position-switch picker for the OPP team.
+     * Cleared by [MatchEngine.confirmOppPositionSwitch].
+     */
+    val awaitingOppPositionSwitch: Boolean = false
 )

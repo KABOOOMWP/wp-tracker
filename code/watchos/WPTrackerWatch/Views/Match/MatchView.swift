@@ -1,21 +1,6 @@
 import SwiftUI
 import Shared
 
-// MARK: – Colors
-
-private extension Color {
-    static let oppPanel  = Color(red: 0.259, green: 0.122, blue: 0.000)
-    static let youPanel  = Color(red: 0.043, green: 0.114, blue: 0.212)
-    static let youAccent = Color(red: 0.290, green: 0.620, blue: 0.973)
-    static let oppAccent = Color(red: 1.000, green: 0.584, blue: 0.000)
-    static let pillBg    = Color(red: 0.831, green: 0.627, blue: 0.090)
-    static let undoBg    = Color(white: 0.22)
-
-    // ── Theme 2 (unused) ──────────────────────────────────────────────────
-    // static let youPanel  = Color(red: 0.294, green: 0.180, blue: 0.514)  // #4B2E83 deep purple
-    // static let oppAccent = Color(red: 0.725, green: 0.788, blue: 0.000)  // #B9C900 lime yellow
-}
-
 // MARK: – Layout constants (scale-aware)
 // All values are derived from the 44 mm reference (184 pt logical width).
 // watchScale = screen width / 184; default 1.0 produces the original constants.
@@ -92,10 +77,14 @@ private struct MatchContent: View {
                     Color.clear
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .contentShape(Rectangle())
+                        .accessibilityIdentifier("tap_opp")
+                        .accessibilityAddTraits(.isButton)
                         .onTapGesture { handleTap(team: .opp) }
                     Color.clear
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .contentShape(Rectangle())
+                        .accessibilityIdentifier("tap_you")
+                        .accessibilityAddTraits(.isButton)
                         .onTapGesture { handleTap(team: .you) }
                 }
 
@@ -119,7 +108,7 @@ private struct MatchContent: View {
                         }
 
                         // Score – bottom of panel, diagonal side
-                        panelScore(text: formatScore(snapshot, team: .opp), leftSide: oppLeft)
+                        panelScore(text: formatScore(snapshot, team: .opp), leftSide: oppLeft, id: "score_opp")
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
 
@@ -165,7 +154,7 @@ private struct MatchContent: View {
                         }
 
                         // Score – bottom of panel, diagonal side
-                        panelScore(text: formatScore(snapshot, team: .you), leftSide: youLeft)
+                        panelScore(text: formatScore(snapshot, team: .you), leftSide: youLeft, id: "score_you")
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
@@ -180,6 +169,8 @@ private struct MatchContent: View {
                     onEndMatch: { store.endMatch() }
                 )
                 .position(x: undoCenterX, y: midCenterY)
+                .accessibilityIdentifier("btn_undo")
+                .accessibilityAddTraits(.isButton)
 
                 // ── Decider-side picker (full-screen overlay) ───────────────
                 if needsDeciderPick {
@@ -187,8 +178,8 @@ private struct MatchContent: View {
                     LeftRightPickerOverlay(
                         header: "SERVE FROM\nWHICH SIDE?",
                         subtitle: "\(receivingTeam == .you ? "YOU" : "OPP") RECEIVE",
-                        onLeftTap:  { store.setDeciderSide(side: .left) },
-                        onRightTap: { store.setDeciderSide(side: .right) }
+                        onLeftTap:  { HapticManager.shared.pointYou(); store.setDeciderSide(side: .left) },
+                        onRightTap: { HapticManager.shared.pointYou(); store.setDeciderSide(side: .right) }
                     )
                 }
 
@@ -197,8 +188,41 @@ private struct MatchContent: View {
                     LeftRightPickerOverlay(
                         header: "WHO SERVES?",
                         subtitle: srvTeam == .you ? "YOUR SIDE" : "OPPONENT SIDE",
-                        onLeftTap:  { store.pickOpponentFirstServer(player: srvTeam == .you ? .a2 : .b2) },
-                        onRightTap: { store.pickOpponentFirstServer(player: srvTeam == .you ? .a1 : .b1) }
+                        onLeftTap: {
+                            HapticManager.shared.pointYou()
+                            store.pickOpponentFirstServer(player: srvTeam == .you ? .a2 : .b2)
+                        },
+                        onRightTap: {
+                            HapticManager.shared.pointYou()
+                            store.pickOpponentFirstServer(player: srvTeam == .you ? .a1 : .b1)
+                        }
+                    )
+                }
+
+                // ── Position-switch overlays (doubles, after each non-final set) ──
+                if snapshot.awaitingYouPositionSwitch {
+                    LeftRightPickerOverlay(
+                        header:      "YOUR TEAM",
+                        subtitle:    "SWITCH SIDES?",
+                        headerColor: .youAccent,
+                        leftLabel:   "← SWITCH",
+                        rightLabel:  "KEEP →",
+                        leftId:      "btn_position_switch_yes",
+                        rightId:     "btn_position_switch_no",
+                        onLeftTap:  { HapticManager.shared.pointYou(); store.confirmYouPositionSwitch(doSwitch: true) },
+                        onRightTap: { HapticManager.shared.pointYou(); store.confirmYouPositionSwitch(doSwitch: false) }
+                    )
+                } else if snapshot.awaitingOppPositionSwitch {
+                    LeftRightPickerOverlay(
+                        header:      "OPP TEAM",
+                        subtitle:    "SWITCH SIDES?",
+                        headerColor: .oppAccent,
+                        leftLabel:   "← SWITCH",
+                        rightLabel:  "KEEP →",
+                        leftId:      "btn_position_switch_yes",
+                        rightId:     "btn_position_switch_no",
+                        onLeftTap:  { HapticManager.shared.pointYou(); store.confirmOppPositionSwitch(doSwitch: true) },
+                        onRightTap: { HapticManager.shared.pointYou(); store.confirmOppPositionSwitch(doSwitch: false) }
                     )
                 }
             }
@@ -243,10 +267,11 @@ private struct MatchContent: View {
     }
 
     // Score number anchored to the bottom of the panel, diagonal side
-    private func panelScore(text: String, leftSide: Bool) -> some View {
+    private func panelScore(text: String, leftSide: Bool, id: String) -> some View {
         Text(text)
             .font(.system(size: ml.scoreFont, weight: .bold))
             .foregroundColor(.white)
+            .accessibilityIdentifier(id)
             .frame(
                 maxWidth: .infinity, maxHeight: .infinity,
                 alignment: leftSide ? .bottomLeading : .bottomTrailing
@@ -363,6 +388,11 @@ private struct SetScoreDigit: View {
 struct LeftRightPickerOverlay: View {
     let header: String
     let subtitle: String
+    var headerColor: Color = .white.opacity(0.9)
+    var leftLabel: String = "← LEFT"
+    var rightLabel: String = "RIGHT →"
+    var leftId: String = ""
+    var rightId: String = ""
     let onLeftTap: () -> Void
     let onRightTap: () -> Void
     @Environment(\.watchScale) private var watchScale
@@ -374,42 +404,44 @@ struct LeftRightPickerOverlay: View {
             // Buttons fill the full screen
             HStack(spacing: 0) {
                 Button(action: onLeftTap) {
-                    Text("← LEFT")
+                    Text(leftLabel)
                         .font(.system(size: max(11, (14 * watchScale).rounded()), weight: .bold))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
                 .background(Color.youPanel)
                 .buttonStyle(.plain)
+                .accessibilityIdentifier(leftId)
 
                 Button(action: onRightTap) {
-                    Text("RIGHT →")
+                    Text(rightLabel)
                         .font(.system(size: max(11, (14 * watchScale).rounded()), weight: .bold))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
                 .background(Color.oppPanel)
                 .buttonStyle(.plain)
+                .accessibilityIdentifier(rightId)
             }
 
             // Title overlaid at the top (non-interactive) with solid black background
-            VStack(spacing: 3) {
+            VStack(spacing: 2) {
                 Text(header)
-                    .font(.system(size: max(9, (11 * watchScale).rounded()), weight: .bold))
-                    .foregroundColor(.white.opacity(0.9))
+                    .font(.system(size: max(10, (12 * watchScale).rounded()), weight: .bold))
+                    .foregroundColor(headerColor)
                     .kerning(0.5)
                     .multilineTextAlignment(.center)
 
                 Text(subtitle)
-                    .font(.system(size: max(7, (8 * watchScale).rounded())))
-                    .foregroundColor(.white.opacity(0.45))
+                    .font(.system(size: max(7, (9 * watchScale).rounded()), weight: .bold))
+                    .foregroundColor(.white.opacity(0.75))
                     .kerning(0.5)
                     .multilineTextAlignment(.center)
             }
             .allowsHitTesting(false)
             .padding(.top, 6)
             .padding(.horizontal, 8)
-            .padding(.bottom, 6)
+            .padding(.bottom, 5)
             .frame(maxWidth: .infinity)
             .background(Color.black)
         }

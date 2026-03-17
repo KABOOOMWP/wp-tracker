@@ -42,7 +42,6 @@ dependencies {
     // Wear Compose
     implementation(libs.wear.compose.foundation)
     implementation(libs.wear.compose.material)
-    implementation(libs.wear.compose.navigation)
 
     // AndroidX
     implementation(libs.activity.compose)

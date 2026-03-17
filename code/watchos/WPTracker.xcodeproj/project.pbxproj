@@ -10,13 +10,28 @@
 		AA0000000000000000000020 /* WPTrackerWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000010 /* WPTrackerWatchApp.swift */; };
 		AA0000000000000000000021 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000011 /* AppModel.swift */; };
 		AA0000000000000000000022 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000012 /* HapticManager.swift */; };
+		AA0000000000000000000029 /* WPColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000019 /* WPColors.swift */; };
 		AA0000000000000000000023 /* SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000013 /* SetupView.swift */; };
 		AA0000000000000000000024 /* MatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000014 /* MatchView.swift */; };
 		AA0000000000000000000025 /* SummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000015 /* SummaryView.swift */; };
 		AA0000000000000000000026 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000016 /* Assets.xcassets */; };
 		AA0000000000000000000027 /* Shared.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000017 /* Shared.xcframework */; };
 		AA0000000000000000000028 /* Shared.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000017 /* Shared.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		AA0000000000000000000070 /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000061 /* TestHelpers.swift */; };
+		AA0000000000000000000071 /* MatchViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000062 /* MatchViewTests.swift */; };
+		AA0000000000000000000072 /* SetupViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000063 /* SetupViewTests.swift */; };
+		AA0000000000000000000073 /* SummaryViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000064 /* SummaryViewTests.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		AA00000000000000000000B0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA0000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AA0000000000000000000030;
+			remoteInfo = WPTracker;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		AA0000000000000000000034 /* Embed Frameworks */ = {
@@ -35,19 +50,38 @@
 		AA0000000000000000000010 /* WPTrackerWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPTrackerWatchApp.swift; sourceTree = "<group>"; };
 		AA0000000000000000000011 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		AA0000000000000000000012 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
+		AA0000000000000000000019 /* WPColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPColors.swift; sourceTree = "<group>"; };
 		AA0000000000000000000013 /* SetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupView.swift; sourceTree = "<group>"; };
 		AA0000000000000000000014 /* MatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchView.swift; sourceTree = "<group>"; };
 		AA0000000000000000000015 /* SummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryView.swift; sourceTree = "<group>"; };
 		AA0000000000000000000016 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AA0000000000000000000017 /* Shared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Shared.xcframework; path = ../shared/build/XCFrameworks/debug/Shared.xcframework; sourceTree = SOURCE_ROOT; };
-		AA0000000000000000000018 /* WPTrackerWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WPTrackerWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA0000000000000000000018 /* WPTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WPTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA0000000000000000000060 /* WPTrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WPTrackerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA0000000000000000000061 /* TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelpers.swift; sourceTree = "<group>"; };
+		AA0000000000000000000062 /* MatchViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchViewTests.swift; sourceTree = "<group>"; };
+		AA0000000000000000000063 /* SetupViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupViewTests.swift; sourceTree = "<group>"; };
+		AA0000000000000000000064 /* SummaryViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryViewTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXTargetDependency section */
+		AA00000000000000000000B1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AA0000000000000000000030 /* WPTracker */;
+			targetProxy = AA00000000000000000000B0 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		AA0000000000000000000032 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
 				AA0000000000000000000027 /* Shared.xcframework in Frameworks */,
+			);
+		};
+		AA0000000000000000000082 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
 			);
 		};
 /* End PBXFrameworksBuildPhase section */
@@ -58,6 +92,7 @@
 			children = (
 				385761212F619F1E003B806B /* WPTrackerWatch Watch App.entitlements */,
 				AA0000000000000000000005 /* WPTrackerWatch */,
+				AA00000000000000000000A1 /* WPTrackerWatchUITests */,
 				AA0000000000000000000004 /* Frameworks */,
 				AA0000000000000000000003 /* Products */,
 			);
@@ -66,7 +101,8 @@
 		AA0000000000000000000003 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AA0000000000000000000018 /* WPTrackerWatch Watch App.app */,
+				AA0000000000000000000018 /* WPTracker.app */,
+				AA0000000000000000000060 /* WPTrackerUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -84,6 +120,7 @@
 			children = (
 				AA0000000000000000000010 /* WPTrackerWatchApp.swift */,
 				AA0000000000000000000011 /* AppModel.swift */,
+				AA0000000000000000000019 /* WPColors.swift */,
 				AA0000000000000000000006 /* Haptics */,
 				AA0000000000000000000007 /* Views */,
 				AA0000000000000000000016 /* Assets.xcassets */,
@@ -133,12 +170,23 @@
 			path = Summary;
 			sourceTree = "<group>";
 		};
+		AA00000000000000000000A1 /* WPTrackerWatchUITests */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000000000061 /* TestHelpers.swift */,
+				AA0000000000000000000062 /* MatchViewTests.swift */,
+				AA0000000000000000000063 /* SetupViewTests.swift */,
+				AA0000000000000000000064 /* SummaryViewTests.swift */,
+			);
+			path = WPTrackerWatchUITests;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		AA0000000000000000000030 /* WPTrackerWatch Watch App */ = {
+		AA0000000000000000000030 /* WPTracker */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AA0000000000000000000051 /* Build configuration list for PBXNativeTarget "WPTrackerWatch Watch App" */;
+			buildConfigurationList = AA0000000000000000000051 /* Build configuration list for PBXNativeTarget "WPTracker" */;
 			buildPhases = (
 				AA0000000000000000000031 /* Sources */,
 				AA0000000000000000000032 /* Frameworks */,
@@ -147,10 +195,28 @@
 			);
 			buildRules = (
 			);
-			name = "WPTrackerWatch Watch App";
+			name = WPTracker;
 			productName = "WPTrackerWatch Watch App";
-			productReference = AA0000000000000000000018 /* WPTrackerWatch Watch App.app */;
+			productReference = AA0000000000000000000018 /* WPTracker.app */;
 			productType = "com.apple.product-type.application";
+		};
+		AA0000000000000000000080 /* WPTrackerUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA00000000000000000000A0 /* Build configuration list for PBXNativeTarget "WPTrackerUITests" */;
+			buildPhases = (
+				AA0000000000000000000081 /* Sources */,
+				AA0000000000000000000082 /* Frameworks */,
+				AA0000000000000000000083 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AA00000000000000000000B1 /* PBXTargetDependency */,
+			);
+			name = WPTrackerUITests;
+			productName = WPTrackerUITests;
+			productReference = AA0000000000000000000060 /* WPTrackerUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
 
@@ -165,9 +231,13 @@
 					AA0000000000000000000030 = {
 						CreatedOnToolsVersion = 16.1;
 					};
+					AA0000000000000000000080 = {
+						CreatedOnToolsVersion = 16.1;
+						TestTargetID = AA0000000000000000000030;
+					};
 				};
 			};
-			buildConfigurationList = AA0000000000000000000050 /* Build configuration list for PBXProject "WPTrackerWatch" */;
+			buildConfigurationList = AA0000000000000000000050 /* Build configuration list for PBXProject "WPTracker" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -180,7 +250,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				AA0000000000000000000030 /* WPTrackerWatch Watch App */,
+				AA0000000000000000000030 /* WPTracker */,
+				AA0000000000000000000080 /* WPTrackerUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -192,6 +263,11 @@
 				AA0000000000000000000026 /* Assets.xcassets in Resources */,
 			);
 		};
+		AA0000000000000000000083 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -201,15 +277,25 @@
 				AA0000000000000000000020 /* WPTrackerWatchApp.swift in Sources */,
 				AA0000000000000000000021 /* AppModel.swift in Sources */,
 				AA0000000000000000000022 /* HapticManager.swift in Sources */,
+				AA0000000000000000000029 /* WPColors.swift in Sources */,
 				AA0000000000000000000023 /* SetupView.swift in Sources */,
 				AA0000000000000000000024 /* MatchView.swift in Sources */,
 				AA0000000000000000000025 /* SummaryView.swift in Sources */,
 			);
 		};
+		AA0000000000000000000081 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+				AA0000000000000000000070 /* TestHelpers.swift in Sources */,
+				AA0000000000000000000071 /* MatchViewTests.swift in Sources */,
+				AA0000000000000000000072 /* SetupViewTests.swift in Sources */,
+				AA0000000000000000000073 /* SummaryViewTests.swift in Sources */,
+			);
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		AA0000000000000000000040 /* Debug configuration for PBXProject "WPTrackerWatch" */ = {
+		AA0000000000000000000040 /* Debug configuration for PBXProject "WPTracker" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -268,7 +354,7 @@
 			};
 			name = Debug;
 		};
-		AA0000000000000000000041 /* Release configuration for PBXProject "WPTrackerWatch" */ = {
+		AA0000000000000000000041 /* Release configuration for PBXProject "WPTracker" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -319,7 +405,7 @@
 			};
 			name = Release;
 		};
-		AA0000000000000000000042 /* Debug configuration for PBXNativeTarget "WPTrackerWatch Watch App" */ = {
+		AA0000000000000000000042 /* Debug configuration for PBXNativeTarget "WPTracker" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -350,7 +436,7 @@
 			};
 			name = Debug;
 		};
-		AA0000000000000000000043 /* Release configuration for PBXNativeTarget "WPTrackerWatch Watch App" */ = {
+		AA0000000000000000000043 /* Release configuration for PBXNativeTarget "WPTracker" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -381,22 +467,62 @@
 			};
 			name = Release;
 		};
+		AA0000000000000000000090 /* Debug configuration for PBXNativeTarget "WPTrackerUITests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9P2T82QGN8;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.wptracker.watch.uitests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_TARGET_NAME = WPTracker;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		AA0000000000000000000091 /* Release configuration for PBXNativeTarget "WPTrackerUITests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9P2T82QGN8;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.wptracker.watch.uitests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_TARGET_NAME = WPTracker;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		AA0000000000000000000050 /* Build configuration list for PBXProject "WPTrackerWatch" */ = {
+		AA0000000000000000000050 /* Build configuration list for PBXProject "WPTracker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AA0000000000000000000040 /* Debug configuration for PBXProject "WPTrackerWatch" */,
-				AA0000000000000000000041 /* Release configuration for PBXProject "WPTrackerWatch" */,
+				AA0000000000000000000040 /* Debug configuration for PBXProject "WPTracker" */,
+				AA0000000000000000000041 /* Release configuration for PBXProject "WPTracker" */,
 			);
 			defaultConfigurationName = Release;
 		};
-		AA0000000000000000000051 /* Build configuration list for PBXNativeTarget "WPTrackerWatch Watch App" */ = {
+		AA0000000000000000000051 /* Build configuration list for PBXNativeTarget "WPTracker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				AA0000000000000000000042 /* Debug configuration for PBXNativeTarget "WPTrackerWatch Watch App" */,
-				AA0000000000000000000043 /* Release configuration for PBXNativeTarget "WPTrackerWatch Watch App" */,
+				AA0000000000000000000042 /* Debug configuration for PBXNativeTarget "WPTracker" */,
+				AA0000000000000000000043 /* Release configuration for PBXNativeTarget "WPTracker" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		AA00000000000000000000A0 /* Build configuration list for PBXNativeTarget "WPTrackerUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA0000000000000000000090 /* Debug configuration for PBXNativeTarget "WPTrackerUITests" */,
+				AA0000000000000000000091 /* Release configuration for PBXNativeTarget "WPTrackerUITests" */,
 			);
 			defaultConfigurationName = Release;
 		};

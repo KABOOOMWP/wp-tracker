@@ -99,9 +99,64 @@ object MatchEngine {
         )
     }
 
-    /** Score a point for [team]. Returns the same snapshot if the match is already over. */
+    /**
+     * Called when the YOU team decides whether to switch court positions at the start of a new set.
+     * Swaps A1↔A2 throughout [Config.serveOrder] and updates the current server if they are on
+     * the YOU team. Clears [Snapshot.awaitingYouPositionSwitch]. No-op if the flag is not set.
+     */
+    fun confirmYouPositionSwitch(snapshot: Snapshot, doSwitch: Boolean): Snapshot {
+        if (!snapshot.awaitingYouPositionSwitch) return snapshot
+        if (!doSwitch) return snapshot.copy(awaitingYouPositionSwitch = false)
+        val newOrder = snapshot.config.serveOrder.map { p ->
+            when (p) { Player.A1 -> Player.A2; Player.A2 -> Player.A1; else -> p }
+        }
+        val newServerPlayer = when (snapshot.serve.serverPlayer) {
+            Player.A1 -> Player.A2
+            Player.A2 -> Player.A1
+            else      -> snapshot.serve.serverPlayer
+        }
+        return snapshot.copy(
+            config = snapshot.config.copy(serveOrder = newOrder),
+            serve  = snapshot.serve.copy(
+                serverPlayer = newServerPlayer,
+                serverTeam   = newServerPlayer.team()
+            ),
+            awaitingYouPositionSwitch = false
+        )
+    }
+
+    /**
+     * Called when the OPP team decides whether to switch court positions at the start of a new set.
+     * Swaps B1↔B2 throughout [Config.serveOrder] and updates the current server if they are on
+     * the OPP team. Clears [Snapshot.awaitingOppPositionSwitch]. No-op if the flag is not set.
+     */
+    fun confirmOppPositionSwitch(snapshot: Snapshot, doSwitch: Boolean): Snapshot {
+        if (!snapshot.awaitingOppPositionSwitch) return snapshot
+        if (!doSwitch) return snapshot.copy(awaitingOppPositionSwitch = false)
+        val newOrder = snapshot.config.serveOrder.map { p ->
+            when (p) { Player.B1 -> Player.B2; Player.B2 -> Player.B1; else -> p }
+        }
+        val newServerPlayer = when (snapshot.serve.serverPlayer) {
+            Player.B1 -> Player.B2
+            Player.B2 -> Player.B1
+            else      -> snapshot.serve.serverPlayer
+        }
+        return snapshot.copy(
+            config = snapshot.config.copy(serveOrder = newOrder),
+            serve  = snapshot.serve.copy(
+                serverPlayer = newServerPlayer,
+                serverTeam   = newServerPlayer.team()
+            ),
+            awaitingOppPositionSwitch = false
+        )
+    }
+
+    /** Score a point for [team]. Returns the same snapshot if the match is already over or if
+     *  any overlay pick is pending (serve pick or position switch). */
     fun score(snapshot: Snapshot, team: Team): Snapshot {
         if (snapshot.isMatchOver) return snapshot
+        if (snapshot.awaitingServePick) return snapshot
+        if (snapshot.awaitingYouPositionSwitch || snapshot.awaitingOppPositionSwitch) return snapshot
         return applyPoint(snapshot, team)
     }
 
@@ -408,13 +463,17 @@ object MatchEngine {
             serveOrderIndex = nextOrderIndex,
             opponentServerConfirmed = snapshot.serve.opponentServerConfirmed
         )
+        // In doubles, ask both teams whether they want to switch court positions before play resumes.
+        val isDoubles = snapshot.config.playMode == PlayMode.DOUBLES
         return snapshot.copy(
             match = newMatch,
             set = SetState(currentSetIndex = newSetsYou + newSetsOpp, youGames = 0, oppGames = 0),
             game = resetGame(GameMode.REGULAR),
             serve = newServe,
             stats = stats,
-            awaitingServePick = false
+            awaitingServePick = false,
+            awaitingYouPositionSwitch = isDoubles,
+            awaitingOppPositionSwitch = isDoubles
         )
     }
 

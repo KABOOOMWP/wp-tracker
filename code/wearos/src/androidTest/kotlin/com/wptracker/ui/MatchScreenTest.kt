@@ -177,6 +177,74 @@ class MatchScreenTest {
         rule.onNodeWithText("RIGHT →").assertIsDisplayed()
     }
 
+    // ── Position-switch overlay (doubles, after each non-final set) ──────────
+
+    @Test
+    fun doublesAfterSet1_showsYourTeamPositionSwitchOverlay() {
+        val config = doublesConfig()
+        val vm = MatchViewModel().also { it.init(config) }
+        setMatchContent(config, vm)
+
+        // Complete set 1: 6 games × 4 uncontested points = 24 YOU points
+        repeat(24) { rule.onNodeWithTag("tap_you").performTouchInput { click() } }
+
+        rule.onNodeWithText("SWITCH SIDES?").assertIsDisplayed()
+        rule.onNodeWithText("YOUR TEAM").assertIsDisplayed()
+    }
+
+    @Test
+    fun doublesAfterSet1_afterYouAnswer_showsOppPositionSwitchOverlay() {
+        val config = doublesConfig()
+        val vm = MatchViewModel().also { it.init(config) }
+        setMatchContent(config, vm)
+
+        repeat(24) { rule.onNodeWithTag("tap_you").performTouchInput { click() } }
+        rule.onNodeWithTag("btn_position_switch_yes").performTouchInput { click() }
+
+        rule.onNodeWithText("SWITCH SIDES?").assertIsDisplayed()
+        rule.onNodeWithText("OPP TEAM").assertIsDisplayed()
+    }
+
+    @Test
+    fun doublesAfterSet1_afterBothAnswerKeep_matchContinues() {
+        val config = doublesConfig()
+        val vm = MatchViewModel().also { it.init(config) }
+        setMatchContent(config, vm)
+
+        repeat(24) { rule.onNodeWithTag("tap_you").performTouchInput { click() } }
+        rule.onNodeWithTag("btn_position_switch_no").performTouchInput { click() }  // YOU: keep
+        rule.onNodeWithTag("btn_position_switch_no").performTouchInput { click() }  // OPP: keep
+
+        // Overlay gone, set 2 has started with both game scores reset
+        rule.onNodeWithTag("score_you").assertTextEquals("0")
+        rule.onNodeWithTag("score_opp").assertTextEquals("0")
+    }
+
+    @Test
+    fun doublesAfterSet1_afterBothAnswerSwitch_matchContinues() {
+        val config = doublesConfig()
+        val vm = MatchViewModel().also { it.init(config) }
+        setMatchContent(config, vm)
+
+        repeat(24) { rule.onNodeWithTag("tap_you").performTouchInput { click() } }
+        rule.onNodeWithTag("btn_position_switch_yes").performTouchInput { click() }  // YOU: switch
+        rule.onNodeWithTag("btn_position_switch_yes").performTouchInput { click() }  // OPP: switch
+
+        rule.onNodeWithTag("score_you").assertTextEquals("0")
+        rule.onNodeWithTag("score_opp").assertTextEquals("0")
+    }
+
+    @Test
+    fun singlesAfterSet1_doesNotShowPositionSwitchOverlay() {
+        val config = singlesConfig()
+        val vm = MatchViewModel().also { it.init(config) }
+        setMatchContent(config, vm)
+
+        repeat(24) { rule.onNodeWithTag("tap_you").performTouchInput { click() } }
+
+        rule.onNodeWithText("SWITCH SIDES?").assertDoesNotExist()
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private fun setMatchContent(config: Config, vm: MatchViewModel = MatchViewModel()) {

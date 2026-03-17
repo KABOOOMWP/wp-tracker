@@ -156,8 +156,12 @@ fun SetupScreen(onMatchStart: (Config) -> Unit) {
                         detectTapGestures {
                             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                             startingTeam = Team.OPP
-                            if (playMode == PlayMode.SINGLES) finish(playMode!!, bestOf!!, ruleMode!!, listOf(Player.B1, Player.A1), onMatchStart)
-                            else step = SetupStep.WhichPlayer
+                            if (playMode == PlayMode.SINGLES) {
+                                val pm = playMode ?: return@detectTapGestures
+                                val bo = bestOf ?: return@detectTapGestures
+                                val rm = ruleMode ?: return@detectTapGestures
+                                finish(pm, bo, rm, listOf(Player.B1, Player.A1), onMatchStart)
+                            } else step = SetupStep.WhichPlayer
                         }
                     }
             ) { Text("OPPONENT", color = WPColors.OppAccent, fontSize = labelSz, fontWeight = FontWeight.Bold) }
@@ -170,8 +174,12 @@ fun SetupScreen(onMatchStart: (Config) -> Unit) {
                         detectTapGestures {
                             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                             startingTeam = Team.YOU
-                            if (playMode == PlayMode.SINGLES) finish(playMode!!, bestOf!!, ruleMode!!, listOf(Player.A1, Player.B1), onMatchStart)
-                            else step = SetupStep.WhichPlayer
+                            if (playMode == PlayMode.SINGLES) {
+                                val pm = playMode ?: return@detectTapGestures
+                                val bo = bestOf ?: return@detectTapGestures
+                                val rm = ruleMode ?: return@detectTapGestures
+                                finish(pm, bo, rm, listOf(Player.A1, Player.B1), onMatchStart)
+                            } else step = SetupStep.WhichPlayer
                         }
                     }
             ) { Text("YOU", color = WPColors.YouAccent, fontSize = labelSz, fontWeight = FontWeight.Bold) }
@@ -184,15 +192,21 @@ fun SetupScreen(onMatchStart: (Config) -> Unit) {
             scale        = scale,
             view         = view,
             startingTeam = startingTeam,
-            onLeft = {
+            onLeft = l@{
+                val pm  = playMode ?: return@l
+                val bo  = bestOf   ?: return@l
+                val rm  = ruleMode ?: return@l
                 val p   = if (startingTeam == Team.YOU) Player.A2 else Player.B2
                 val opp = if (startingTeam == Team.YOU) Player.B1 else Player.A1
-                finish(playMode!!, bestOf!!, ruleMode!!, listOf(p, opp, partnerOf(p), partnerOf(opp)), onMatchStart)
+                finish(pm, bo, rm, listOf(p, opp, partnerOf(p), partnerOf(opp)), onMatchStart)
             },
-            onRight = {
+            onRight = r@{
+                val pm  = playMode ?: return@r
+                val bo  = bestOf   ?: return@r
+                val rm  = ruleMode ?: return@r
                 val p   = if (startingTeam == Team.YOU) Player.A1 else Player.B1
                 val opp = if (startingTeam == Team.YOU) Player.B1 else Player.A1
-                finish(playMode!!, bestOf!!, ruleMode!!, listOf(p, opp, partnerOf(p), partnerOf(opp)), onMatchStart)
+                finish(pm, bo, rm, listOf(p, opp, partnerOf(p), partnerOf(opp)), onMatchStart)
             }
         )
     }
