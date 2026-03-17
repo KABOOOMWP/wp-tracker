@@ -148,7 +148,11 @@ class TieBreakStartTest {
         val set2Start = tbState.you()  // win TB → new set, B1 (idx=1) serves
         assertEquals(Player.B1, set2Start.serve.serverPlayer)
 
-        val afterFirstGame = set2Start.winGame(Team.YOU)  // B1 served, game won → A2 next
+        // Confirm position switches (both teams keep positions) before play resumes
+        val ready = MatchEngine.confirmYouPositionSwitch(set2Start, false)
+        val ready2 = MatchEngine.confirmOppPositionSwitch(ready, false)
+
+        val afterFirstGame = ready2.winGame(Team.YOU)  // B1 served, game won → A2 next
         assertEquals(Player.A2, afterFirstGame.serve.serverPlayer)
     }
 

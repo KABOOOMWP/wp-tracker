@@ -31,7 +31,7 @@ enum AppScreen {
 /// Single source of truth for the whole app.
 /// Mirrors MatchViewModel.kt: history stack driven by the pure KMP engine.
 @MainActor
-class MatchStore: ObservableObject {
+class MatchStore: NSObject, ObservableObject {
 
     @Published var screen: AppScreen = .setup
     @Published private(set) var history: [Snapshot] = []

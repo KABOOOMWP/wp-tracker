@@ -152,10 +152,9 @@ object MatchEngine {
     }
 
     /** Score a point for [team]. Returns the same snapshot if the match is already over or if
-     *  any overlay pick is pending (serve pick or position switch). */
+     *  a position-switch confirmation is pending. The serve-pick overlay is handled by the UI. */
     fun score(snapshot: Snapshot, team: Team): Snapshot {
         if (snapshot.isMatchOver) return snapshot
-        if (snapshot.awaitingServePick) return snapshot
         if (snapshot.awaitingYouPositionSwitch || snapshot.awaitingOppPositionSwitch) return snapshot
         return applyPoint(snapshot, team)
     }

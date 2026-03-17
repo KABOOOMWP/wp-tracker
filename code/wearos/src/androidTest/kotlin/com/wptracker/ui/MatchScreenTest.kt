@@ -185,8 +185,7 @@ class MatchScreenTest {
         val vm = MatchViewModel().also { it.init(config) }
         setMatchContent(config, vm)
 
-        // Complete set 1: 6 games × 4 uncontested points = 24 YOU points
-        repeat(24) { rule.onNodeWithTag("tap_you").performTouchInput { click() } }
+        playDoublesSetYou()
 
         rule.onNodeWithText("SWITCH SIDES?").assertIsDisplayed()
         rule.onNodeWithText("YOUR TEAM").assertIsDisplayed()
@@ -198,7 +197,7 @@ class MatchScreenTest {
         val vm = MatchViewModel().also { it.init(config) }
         setMatchContent(config, vm)
 
-        repeat(24) { rule.onNodeWithTag("tap_you").performTouchInput { click() } }
+        playDoublesSetYou()
         rule.onNodeWithTag("btn_position_switch_yes").performTouchInput { click() }
 
         rule.onNodeWithText("SWITCH SIDES?").assertIsDisplayed()
@@ -211,7 +210,7 @@ class MatchScreenTest {
         val vm = MatchViewModel().also { it.init(config) }
         setMatchContent(config, vm)
 
-        repeat(24) { rule.onNodeWithTag("tap_you").performTouchInput { click() } }
+        playDoublesSetYou()
         rule.onNodeWithTag("btn_position_switch_no").performTouchInput { click() }  // YOU: keep
         rule.onNodeWithTag("btn_position_switch_no").performTouchInput { click() }  // OPP: keep
 
@@ -226,7 +225,7 @@ class MatchScreenTest {
         val vm = MatchViewModel().also { it.init(config) }
         setMatchContent(config, vm)
 
-        repeat(24) { rule.onNodeWithTag("tap_you").performTouchInput { click() } }
+        playDoublesSetYou()
         rule.onNodeWithTag("btn_position_switch_yes").performTouchInput { click() }  // YOU: switch
         rule.onNodeWithTag("btn_position_switch_yes").performTouchInput { click() }  // OPP: switch
 
@@ -246,6 +245,17 @@ class MatchScreenTest {
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
+
+    /**
+     * Plays a complete 6-0 set for YOU in a doubles match.
+     * After game 1 the serve-pick overlay appears (OPP must choose their game-2 server);
+     * this helper dismisses it by tapping RIGHT, then scores the remaining 5 games.
+     */
+    private fun playDoublesSetYou() {
+        repeat(4) { rule.onNodeWithTag("tap_you").performTouchInput { click() } }
+        rule.onNodeWithText("RIGHT →").performTouchInput { click() }  // dismiss serve-pick overlay
+        repeat(20) { rule.onNodeWithTag("tap_you").performTouchInput { click() } }
+    }
 
     private fun setMatchContent(config: Config, vm: MatchViewModel = MatchViewModel()) {
         rule.setContent {

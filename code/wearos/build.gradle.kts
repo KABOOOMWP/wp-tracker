@@ -45,6 +45,7 @@ dependencies {
 
     // AndroidX
     implementation(libs.activity.compose)
+    implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.play.services.wearable)
     implementation(libs.wear.core)
 

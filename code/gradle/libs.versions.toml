@@ -27,6 +27,7 @@ wear-compose-material        = { group = "androidx.wear.compose", name = "compos
 
 # AndroidX
 activity-compose             = { group = "androidx.activity",     name = "activity-compose",      version.ref = "activity-compose" }
+lifecycle-viewmodel-compose  = { group = "androidx.lifecycle",    name = "lifecycle-viewmodel-compose" }
 play-services-wearable       = { group = "com.google.android.gms", name = "play-services-wearable", version.ref = "play-services-wearable" }
 wear-core                    = { group = "androidx.wear",           name = "wear",                   version.ref = "wear" }
 

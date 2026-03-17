@@ -48,14 +48,14 @@ class PositionSwitchTest {
 
     // ── YOU team confirmation ─────────────────────────────────────────────────
 
-    @Test fun `confirmYouPositionSwitch keep clears YOU flag, OPP flag stays`() {
+    @Test fun `confirmYouPositionSwitch keep clears YOU flag and OPP flag stays`() {
         val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU)
         val after = MatchEngine.confirmYouPositionSwitch(s, false)
         assertFalse(after.awaitingYouPositionSwitch)
         assertTrue(after.awaitingOppPositionSwitch)
     }
 
-    @Test fun `confirmYouPositionSwitch switch clears YOU flag, OPP flag stays`() {
+    @Test fun `confirmYouPositionSwitch switch clears YOU flag and OPP flag stays`() {
         val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU)
         val after = MatchEngine.confirmYouPositionSwitch(s, true)
         assertFalse(after.awaitingYouPositionSwitch)
