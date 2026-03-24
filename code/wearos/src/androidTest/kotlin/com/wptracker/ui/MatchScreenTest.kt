@@ -159,6 +159,25 @@ class MatchScreenTest {
         repeat(3) { rule.onNodeWithTag("tap_opp").performTouchInput { click() } }
 
         rule.onNodeWithText("GOLDEN POINT").assertIsDisplayed()
+        rule.onNodeWithText("SERVE FROM").assertDoesNotExist()
+    }
+
+    @Test
+    fun goldenPoint_canScoreWithoutDeciderPick() {
+        val config = singlesConfig(ruleMode = RuleMode.GOLDEN)
+        val vm = MatchViewModel().also { it.init(config) }
+        setMatchContent(config, vm)
+
+        // Reach golden point (3:3)
+        repeat(3) { rule.onNodeWithTag("tap_you").performTouchInput { click() } }
+        repeat(3) { rule.onNodeWithTag("tap_opp").performTouchInput { click() } }
+
+        // Score the deciding point directly — no picker interaction needed
+        rule.onNodeWithTag("tap_you").performTouchInput { click() }
+
+        // New game starts with 0:0
+        rule.onNodeWithTag("score_you").assertTextEquals("0")
+        rule.onNodeWithTag("score_opp").assertTextEquals("0")
     }
 
     // ── Serve pick overlay (doubles) ──────────────────────────────────────────

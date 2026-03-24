@@ -101,9 +101,8 @@ fun MatchScreen(
         }
     }
 
-    val needsDeciderPick =
-        (snapshot.game.phase == GamePhase.GOLDEN || snapshot.game.phase == GamePhase.STAR_POINT) &&
-            snapshot.game.deciderReceiveSideOverride == null
+    val isGoldenOrStar =
+        snapshot.game.phase == GamePhase.GOLDEN || snapshot.game.phase == GamePhase.STAR_POINT
 
     Box(modifier = Modifier.fillMaxSize()) {
         // ── Full-screen tap zones ─────────────────────────────────────────
@@ -144,6 +143,7 @@ fun MatchScreen(
                 stripeColor = WPColors.OppAccent,
                 ml = ml,
                 scoreTag = "score_opp",
+                centered = isGoldenOrStar,
                 modifier = Modifier.weight(1f).fillMaxWidth()
             )
 
@@ -165,6 +165,7 @@ fun MatchScreen(
                 stripeColor = WPColors.YouAccent,
                 ml = ml,
                 scoreTag = "score_you",
+                centered = isGoldenOrStar,
                 modifier = Modifier.weight(1f).fillMaxWidth()
             )
         }
@@ -175,14 +176,6 @@ fun MatchScreen(
             onEndMatch = { onMatchEnd(snapshot.copy(match = snapshot.match.copy(endedAt = System.currentTimeMillis()))) },
             modifier   = Modifier.align(Alignment.CenterEnd).padding(end = (6f * scale).dp).testTag("btn_undo")
         )
-
-        // ── Decider-side picker ───────────────────────────────────────────
-        if (needsDeciderPick) {
-            DeciderSidePicker(
-                receivingTeam = if (serverTeam == Team.YOU) Team.OPP else Team.YOU,
-                onPick = { side -> haptic.pointYou(); vm.setDeciderSide(side) }
-            )
-        }
 
         // ── Serve-pick overlay (doubles game 2) ───────────────────────────
         if (awaitingServePick) {
@@ -232,6 +225,7 @@ private fun TeamPanel(
     stripeColor: Color,
     ml: ML,
     scoreTag: String? = null,
+    centered: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -259,9 +253,9 @@ private fun TeamPanel(
             fontSize   = ml.scoreFont,
             fontWeight = FontWeight.Bold,
             modifier   = Modifier
-                .align(if (leftSide) Alignment.BottomStart else Alignment.BottomEnd)
-                .padding(start = if (leftSide) ml.scorePad else 0.dp)
-                .padding(end   = if (leftSide) 0.dp else ml.scorePad)
+                .align(if (centered) Alignment.BottomCenter else if (leftSide) Alignment.BottomStart else Alignment.BottomEnd)
+                .padding(start = if (!centered && leftSide) ml.scorePad else 0.dp)
+                .padding(end   = if (!centered && !leftSide) ml.scorePad else 0.dp)
                 .padding(bottom = ml.scorePadBot)
                 .then(if (scoreTag != null) Modifier.testTag(scoreTag) else Modifier)
         )
@@ -359,68 +353,6 @@ private fun StatusPill(pill: PillState, ml: ML, modifier: Modifier) {
             fontWeight    = FontWeight.Bold,
             letterSpacing = 0.8.sp
         )
-    }
-}
-
-@Composable
-private fun BoxScope.DeciderSidePicker(
-    receivingTeam: Team,
-    onPick: (ServeSide) -> Unit
-) {
-    val scale     = LocalWatchScale.current
-    val titleFont = (11f * scale).coerceAtLeast(9f).sp
-    val subFont   = (8f  * scale).coerceAtLeast(7f).sp
-    val btnFont   = (14f * scale).coerceAtLeast(11f).sp
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.88f))
-    ) {
-        // Full-height tap buttons behind everything
-        Row(modifier = Modifier.fillMaxSize()) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .weight(1f).fillMaxHeight()
-                    .background(WPColors.YouPanel)
-                    .pointerInput(Unit) { detectTapGestures { onPick(ServeSide.LEFT) } }
-            ) {
-                Text("← LEFT", color = Color.White, fontSize = btnFont, fontWeight = FontWeight.Bold)
-            }
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .weight(1f).fillMaxHeight()
-                    .background(WPColors.OppPanel)
-                    .pointerInput(Unit) { detectTapGestures { onPick(ServeSide.RIGHT) } }
-            ) {
-                Text("RIGHT →", color = Color.White, fontSize = btnFont, fontWeight = FontWeight.Bold)
-            }
-        }
-        Column(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .fillMaxWidth()
-                .background(Color.Black)
-                .padding(top = 6.dp, start = 8.dp, end = 8.dp, bottom = 6.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Text(
-                text          = "SERVE FROM\nWHICH SIDE?",
-                color         = Color.White.copy(alpha = 0.9f),
-                fontSize      = titleFont,
-                fontWeight    = FontWeight.Bold,
-                letterSpacing = 0.5.sp,
-                textAlign     = TextAlign.Center
-            )
-            Text(
-                text     = "${if (receivingTeam == Team.YOU) "YOU" else "OPP"} RECEIVE",
-                color    = Color.White.copy(alpha = 0.45f),
-                fontSize = subFont
-            )
-        }
     }
 }
 

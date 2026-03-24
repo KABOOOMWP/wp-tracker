@@ -6,9 +6,8 @@ import kotlin.test.*
 /**
  * Tests [MatchEngine.setDeciderSide] — receiver-side override for Golden and Star Point.
  *
- * Spec §9.2 / §9.3:
- *   - Receiving team may choose which side to return from (left / right).
- *   - Receiving team may NOT switch positions for that deciding point.
+ * Note: The UI no longer presents a side-picker overlay at golden/star point. These tests
+ * cover the engine function itself (still callable e.g. via undo/redo paths), verifying:
  *   - Override applies only while phase == GOLDEN or STAR_POINT.
  *   - Override clears automatically when the deciding point ends (new game resets).
  */
@@ -156,31 +155,4 @@ class DeciderSideTest {
         assertEquals(ServeSide.RIGHT, second.game.deciderReceiveSideOverride)
     }
 
-    // -----------------------------------------------------------------------
-    // Diagonal layout during deciding point (follows rally index, not override)
-    // -----------------------------------------------------------------------
-
-    @Test fun `score layout during GOLDEN phase still follows rally index parity`() {
-        // 3:3 → rally = 6 (even) → layout A regardless of serve-side override
-        val s = makeSnapshot(
-            config = singlesConfig(RuleMode.GOLDEN),
-            youPoints = 3, oppPoints = 3, phase = GamePhase.GOLDEN
-        )
-        val overridden = MatchEngine.setDeciderSide(s, ServeSide.LEFT)
-        val layout = MatchEngine.computeScoreLayout(overridden)
-        assertEquals(ScorePosition.BOTTOM_RIGHT, layout.youPosition)   // rally 6 even → A
-        assertEquals(ScorePosition.TOP_LEFT, layout.oppPosition)
-    }
-
-    @Test fun `score layout during STAR_POINT follows rally index parity`() {
-        // 4:5 → rally = 9 (odd) → layout B
-        val s = makeSnapshot(
-            config = singlesConfig(RuleMode.STAR),
-            youPoints = 4, oppPoints = 5,
-            phase = GamePhase.STAR_POINT, starAdvCount = 2
-        )
-        val layout = MatchEngine.computeScoreLayout(s)
-        assertEquals(ScorePosition.BOTTOM_LEFT, layout.youPosition)  // rally 9 odd → B
-        assertEquals(ScorePosition.TOP_RIGHT, layout.oppPosition)
-    }
 }

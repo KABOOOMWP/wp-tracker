@@ -9,20 +9,27 @@ extension XCUIApplication {
         descendants(matching: .any).matching(identifier: id).firstMatch
     }
 
+    /// Waits for the element to exist, then taps it. Fails the test if it never appears.
+    func tap(id: String, timeout: TimeInterval = 5) {
+        let element = el(id)
+        XCTAssert(element.waitForExistence(timeout: timeout), "Element '\(id)' not found after \(timeout)s")
+        element.tap()
+    }
+
     // ── Setup navigation ──────────────────────────────────────────────────────
 
     func goToSinglesMatch(bestOf3: Bool = true, golden: Bool = false, youServe: Bool = true) {
-        el("btn_play_singles").tap()
-        el(bestOf3 ? "btn_format_best_of_3" : "btn_format_best_of_5").tap()
-        el(golden ? "btn_rule_golden" : "btn_rule_standard").tap()
-        el(youServe ? "btn_serve_you" : "btn_serve_opp").tap()
+        tap(id: "btn_play_singles")
+        tap(id: bestOf3 ? "btn_format_best_of_3" : "btn_format_best_of_5")
+        tap(id: golden ? "btn_rule_golden" : "btn_rule_standard")
+        tap(id: youServe ? "btn_serve_you" : "btn_serve_opp")
     }
 
     func goToDoublesMatch(youServeLeft: Bool = true) {
-        el("btn_play_doubles").tap()
-        el("btn_format_best_of_3").tap()
-        el("btn_rule_standard").tap()
-        el("btn_serve_you").tap()
+        tap(id: "btn_play_doubles")
+        tap(id: "btn_format_best_of_3")
+        tap(id: "btn_rule_standard")
+        tap(id: "btn_serve_you")
         // LeftRightPickerOverlay "which player": left = player 2, right = player 1
         buttons[youServeLeft ? "← LEFT" : "RIGHT →"].firstMatch.tap()
     }

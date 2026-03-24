@@ -123,6 +123,21 @@ final class MatchViewTests: XCTestCase {
         app.score(opp: 3)
 
         XCTAssert(app.staticTexts["GOLDEN POINT"].exists)
+        XCTAssertFalse(app.staticTexts["SERVE FROM WHICH SIDE?"].exists)
+    }
+
+    func test_goldenPoint_canScoreWithoutDeciderPick() {
+        app.goToSinglesMatch(golden: true)
+        // Reach golden point (3:3)
+        app.score(you: 3)
+        app.score(opp: 3)
+
+        // Score the deciding point directly — no picker interaction needed
+        app.score(you: 1)
+
+        // New game starts with 0:0
+        XCTAssertEqual(app.staticTexts["score_you"].label, "0")
+        XCTAssertEqual(app.staticTexts["score_opp"].label, "0")
     }
 
     // ── Serve pick overlay (doubles, game 2) ──────────────────────────────────

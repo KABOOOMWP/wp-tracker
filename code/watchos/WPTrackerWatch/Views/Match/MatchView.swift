@@ -56,10 +56,9 @@ private struct MatchContent: View {
         let oppLeft = !srvLeft
         let youLeft = srvLeft
 
-        let needsDeciderPick =
-            (snapshot.game.phase == GamePhase.golden ||
-             snapshot.game.phase == GamePhase.starPoint) &&
-            snapshot.game.deciderReceiveSideOverride == nil
+        let isGoldenOrStar =
+            snapshot.game.phase == GamePhase.golden ||
+            snapshot.game.phase == GamePhase.starPoint
 
         GeometryReader { geo in
             let topPad      = geo.safeAreaInsets.top + ml.topVInset
@@ -107,8 +106,8 @@ private struct MatchContent: View {
                             serveStripe(leftSide: stripeLeft, accent: .oppAccent)
                         }
 
-                        // Score – bottom of panel, diagonal side
-                        panelScore(text: formatScore(snapshot, team: .opp), leftSide: oppLeft, id: "score_opp")
+                        // Score – bottom of panel, diagonal side (or centered at golden/star point)
+                        panelScore(text: formatScore(snapshot, team: .opp), leftSide: oppLeft, centered: isGoldenOrStar, id: "score_opp")
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
 
@@ -153,8 +152,8 @@ private struct MatchContent: View {
                             serveStripe(leftSide: stripeLeft, accent: .youAccent)
                         }
 
-                        // Score – bottom of panel, diagonal side
-                        panelScore(text: formatScore(snapshot, team: .you), leftSide: youLeft, id: "score_you")
+                        // Score – bottom of panel, diagonal side (or centered at golden/star point)
+                        panelScore(text: formatScore(snapshot, team: .you), leftSide: youLeft, centered: isGoldenOrStar, id: "score_you")
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
@@ -171,17 +170,6 @@ private struct MatchContent: View {
                 .position(x: undoCenterX, y: midCenterY)
                 .accessibilityIdentifier("btn_undo")
                 .accessibilityAddTraits(.isButton)
-
-                // ── Decider-side picker (full-screen overlay) ───────────────
-                if needsDeciderPick {
-                    let receivingTeam = srvTeam == .you ? Team.opp : Team.you
-                    LeftRightPickerOverlay(
-                        header: "SERVE FROM\nWHICH SIDE?",
-                        subtitle: "\(receivingTeam == .you ? "YOU" : "OPP") RECEIVE",
-                        onLeftTap:  { HapticManager.shared.pointYou(); store.setDeciderSide(side: .left) },
-                        onRightTap: { HapticManager.shared.pointYou(); store.setDeciderSide(side: .right) }
-                    )
-                }
 
                 // ── Serve-pick overlay (doubles game 2) ──────────────────────
                 if snapshot.awaitingServePick {
@@ -266,18 +254,18 @@ private struct MatchContent: View {
             .padding(.trailing, leftSide ? 0 : ml.stripePad)
     }
 
-    // Score number anchored to the bottom of the panel, diagonal side
-    private func panelScore(text: String, leftSide: Bool, id: String) -> some View {
+    // Score number anchored to the bottom of the panel, diagonal side (or centered)
+    private func panelScore(text: String, leftSide: Bool, centered: Bool = false, id: String) -> some View {
         Text(text)
             .font(.system(size: ml.scoreFont, weight: .bold))
             .foregroundColor(.white)
             .accessibilityIdentifier(id)
             .frame(
                 maxWidth: .infinity, maxHeight: .infinity,
-                alignment: leftSide ? .bottomLeading : .bottomTrailing
+                alignment: centered ? .bottom : (leftSide ? .bottomLeading : .bottomTrailing)
             )
-            .padding(.leading,  leftSide ? ml.scorePad : 0)
-            .padding(.trailing, leftSide ? 0 : ml.scorePad)
+            .padding(.leading,  (!centered && leftSide) ? ml.scorePad : 0)
+            .padding(.trailing, (!centered && !leftSide) ? ml.scorePad : 0)
             .padding(.bottom, ml.scorePadBottom)
     }
 }
