@@ -216,8 +216,9 @@ private struct StatRow: View {
 }
 
 private func formatDuration(startMs: Int64, endMs: Int64) -> String {
-    let totalMin = abs(endMs - startMs) / 60_000
-    let h = totalMin / 60
-    let m = totalMin % 60
-    return String(format: "%d:%02d", h, m)
+    let totalSec = abs(endMs - startMs) / 1_000
+    let h = totalSec / 3_600
+    let m = (totalSec % 3_600) / 60
+    let s = totalSec % 60
+    return String(format: "%d:%02d:%02d", h, m, s)
 }

@@ -11,6 +11,7 @@
 		AA0000000000000000000021 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000011 /* AppModel.swift */; };
 		AA0000000000000000000022 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000012 /* HapticManager.swift */; };
 		AA0000000000000000000029 /* WPColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000019 /* WPColors.swift */; };
+		AA000000000000000000002A /* WorkoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000001A /* WorkoutManager.swift */; };
 		AA0000000000000000000023 /* SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000013 /* SetupView.swift */; };
 		AA0000000000000000000024 /* MatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000014 /* MatchView.swift */; };
 		AA0000000000000000000025 /* SummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000015 /* SummaryView.swift */; };
@@ -51,6 +52,7 @@
 		AA0000000000000000000011 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		AA0000000000000000000012 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 		AA0000000000000000000019 /* WPColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPColors.swift; sourceTree = "<group>"; };
+		AA000000000000000000001A /* WorkoutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutManager.swift; sourceTree = "<group>"; };
 		AA0000000000000000000013 /* SetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupView.swift; sourceTree = "<group>"; };
 		AA0000000000000000000014 /* MatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchView.swift; sourceTree = "<group>"; };
 		AA0000000000000000000015 /* SummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryView.swift; sourceTree = "<group>"; };
@@ -120,6 +122,7 @@
 			children = (
 				AA0000000000000000000010 /* WPTrackerWatchApp.swift */,
 				AA0000000000000000000011 /* AppModel.swift */,
+				AA000000000000000000001A /* WorkoutManager.swift */,
 				AA0000000000000000000019 /* WPColors.swift */,
 				AA0000000000000000000006 /* Haptics */,
 				AA0000000000000000000007 /* Views */,
@@ -276,6 +279,7 @@
 			files = (
 				AA0000000000000000000020 /* WPTrackerWatchApp.swift in Sources */,
 				AA0000000000000000000021 /* AppModel.swift in Sources */,
+				AA000000000000000000002A /* WorkoutManager.swift in Sources */,
 				AA0000000000000000000022 /* HapticManager.swift in Sources */,
 				AA0000000000000000000029 /* WPColors.swift in Sources */,
 				AA0000000000000000000023 /* SetupView.swift in Sources */,
@@ -417,6 +421,8 @@
 				DEVELOPMENT_TEAM = 9P2T82QGN8;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "WP-Tracker";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "WP Tracker reads health data to display your workout.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "WP Tracker saves your padel match as a tennis workout.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "";
 				INFOPLIST_KEY_WKWatchOnly = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -448,6 +454,8 @@
 				DEVELOPMENT_TEAM = 9P2T82QGN8;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "WP-Tracker";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "WP Tracker reads health data to display your workout.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "WP Tracker saves your padel match as a tennis workout.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "";
 				INFOPLIST_KEY_WKWatchOnly = YES;
 				LD_RUNPATH_SEARCH_PATHS = (

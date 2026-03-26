@@ -40,6 +40,16 @@ class MatchStore: NSObject, ObservableObject {
     // Keeps the app alive while a match is in progress (prevents watchOS from
     // returning to the watch face when the display goes ambient).
     private var extendedSession: WKExtendedRuntimeSession?
+    #if os(watchOS)
+    private let workoutManager = WorkoutManager()
+    #endif
+
+    override init() {
+        super.init()
+        #if os(watchOS)
+        Task { await workoutManager.requestAuthorization() }
+        #endif
+    }
 
     var current: Snapshot? { history.last }
     var canUndo: Bool { history.count > 1 }
@@ -51,6 +61,9 @@ class MatchStore: NSObject, ObservableObject {
         history = [initial]
         screen   = .match
         beginExtendedSession()
+        #if os(watchOS)
+        workoutManager.startWorkout()
+        #endif
     }
 
     func score(team: Team) {
@@ -91,6 +104,9 @@ class MatchStore: NSObject, ObservableObject {
         matchEndedAt = Date()
         screen = .summary
         endExtendedSession()
+        #if os(watchOS)
+        workoutManager.endWorkout()
+        #endif
     }
 
     func newMatch() {
@@ -98,6 +114,9 @@ class MatchStore: NSObject, ObservableObject {
         matchEndedAt = nil
         screen       = .setup
         endExtendedSession()
+        #if os(watchOS)
+        workoutManager.endWorkout()
+        #endif
     }
 
     // MARK: – Extended runtime session
