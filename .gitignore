@@ -63,3 +63,6 @@ fastlane/test_output/
 *.tmp
 *.swp
 *~
+code/wearos/src/main/keystore/wp_padel_tracker.keystore
+code/wearos/src/main/assets/keystore.properties
+code/wearos/src/main/assets/keystore.properties
