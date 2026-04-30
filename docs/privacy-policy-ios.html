@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy – WP Padel Tracker (Apple Watch)</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #f9f9f9;
+      color: #1a1a1a;
+      line-height: 1.7;
+      padding: 2rem 1rem;
+    }
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    h1 { font-size: 1.6rem; margin-bottom: 0.25rem; }
+    .meta { color: #666; font-size: 0.85rem; margin-bottom: 2rem; }
+    h2 { font-size: 1.1rem; margin-top: 2rem; margin-bottom: 0.5rem; color: #111; }
+    p { margin-bottom: 0.75rem; }
+    ul { margin: 0.5rem 0 0.75rem 1.4rem; }
+    li { margin-bottom: 0.3rem; }
+    a { color: #0066cc; }
+    .badge {
+      display: inline-block;
+      background: #e3f2fd;
+      color: #1565c0;
+      border-radius: 4px;
+      padding: 0.1rem 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    hr { border: none; border-top: 1px solid #eee; margin: 2rem 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.75rem 0 1rem;
+      font-size: 0.9rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #e0e0e0;
+    }
+    th { background: #f5f5f5; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="badge">watchOS · Apple Watch</div>
+    <h1>Privacy Policy</h1>
+    <p class="meta">WP Padel Tracker &nbsp;·&nbsp; Last updated: April 30, 2026</p>
+
+    <p>
+      WP Padel Tracker is a padel match-scoring app for Apple Watch. This policy explains what
+      information the app accesses, how it is used, and your rights as a user.
+    </p>
+
+    <h2>1. Data We Collect</h2>
+    <p>
+      WP Padel Tracker collects <strong>no personal data</strong> and makes <strong>no network
+      requests</strong>. The app operates entirely on your device. The only external data interaction
+      is writing a workout record to Apple Health when a match is completed.
+    </p>
+    <p>During a match the app holds the following data <em>in memory only</em>:</p>
+    <ul>
+      <li>Current score, games, and sets</li>
+      <li>Serve rotation and server position</li>
+      <li>Match configuration (rules, play mode, number of sets)</li>
+      <li>In-match statistics (points played, break points, deuces)</li>
+      <li>Match start and end timestamps</li>
+    </ul>
+    <p>
+      When you complete a match, the app saves a single workout record to Apple Health (see
+      section 3 below). No other data is written to disk or any external service.
+    </p>
+
+    <h2>2. Permissions Requested</h2>
+    <p>The app requests only the HealthKit capability:</p>
+    <table>
+      <thead>
+        <tr><th>Permission</th><th>Why it is needed</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Health – Read</strong></td>
+          <td>Required by HealthKit to display your workout in the app's completion screen.</td>
+        </tr>
+        <tr>
+          <td><strong>Health – Write</strong></td>
+          <td>Saves your completed padel match as a Tennis workout in Apple Health.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      The app does <strong>not</strong> request internet access, location, camera, microphone,
+      contacts, or any other sensitive permission beyond HealthKit.
+    </p>
+
+    <h2>3. HealthKit Integration</h2>
+    <p>
+      WP Padel Tracker uses Apple HealthKit exclusively to log a workout session when a match ends.
+      The data written to Health is:
+    </p>
+    <ul>
+      <li>Activity type: Tennis (closest available category to padel)</li>
+      <li>Location type: Outdoor</li>
+      <li>Workout start time and end time</li>
+    </ul>
+    <p>
+      The app does <strong>not</strong> read heart rate, calories, distance, speed, or any other
+      biometric measurement from HealthKit.
+    </p>
+    <p>
+      Health data written by this app is governed by Apple's Health app and your device's privacy
+      settings. You can revoke HealthKit access at any time in
+      <strong>Settings → Privacy &amp; Security → Health → WP Padel Tracker</strong>, or delete
+      individual workout records directly in the Apple Health app.
+    </p>
+    <p>
+      Health data is never transmitted to the developer or any third party. It remains on your
+      device (and in iCloud Health sync if you have enabled it) under Apple's control, not ours.
+    </p>
+
+    <h2>4. No Internet Access</h2>
+    <p>
+      The app makes zero network requests. No data ever leaves your device through this app.
+    </p>
+
+    <h2>5. No Third-Party Analytics or Tracking</h2>
+    <p>
+      WP Padel Tracker contains no analytics SDKs, crash-reporting services, advertising networks,
+      or any other third-party tracking code. It uses only Apple system frameworks (HealthKit,
+      WatchKit, SwiftUI, Foundation).
+    </p>
+
+    <h2>6. Data Retention</h2>
+    <p>
+      The developer does not retain any user data because no data is ever transmitted to or stored
+      by the developer. Match state is held in device RAM and discarded when the app is closed.
+      Workout records in Apple Health are under your control and can be deleted at any time.
+    </p>
+
+    <h2>7. Children's Privacy</h2>
+    <p>
+      The app does not collect data from anyone, including children under the age of 13. It is safe
+      for use by all age groups.
+    </p>
+
+    <h2>8. Changes to This Policy</h2>
+    <p>
+      If this privacy policy is ever updated the new version will be published at this URL with a
+      revised "Last updated" date.
+    </p>
+
+    <h2>9. Contact</h2>
+    <p>
+      Questions or concerns about this policy can be directed to:
+      <a href="mailto:yan@arssoso.com">yan@arssoso.com</a>
+    </p>
+
+    <hr />
+    <p class="meta">
+      This privacy policy applies to the watchOS (Apple Watch) version of WP Padel Tracker
+      published on the App Store. For the Wear OS (Android) version, see the
+      <a href="privacy-policy-android.html">Wear OS privacy policy</a>.
+    </p>
+  </div>
+</body>
+</html>
