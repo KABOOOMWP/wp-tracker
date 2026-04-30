@@ -1,4 +1,4 @@
-# WP Tracker
+# WP Padel Tracker
 
 A padel match scoring app for smartwatches. Built with Kotlin Multiplatform, targeting **Wear OS** and **watchOS**.
 
@@ -6,7 +6,7 @@ A padel match scoring app for smartwatches. Built with Kotlin Multiplatform, tar
 
 ## Overview
 
-WP Tracker lets you track a live padel match from your wrist. Tap to score points, undo mistakes with a long-press, and follow the current serve side, score layout, and match status at a glance.
+WP Padel Tracker lets you track a live padel match from your wrist. Tap to score points, undo mistakes with a long-press, and follow the current serve side, score layout, and match status at a glance.
 
 **Supported formats:**
 - Singles and Doubles
@@ -90,6 +90,22 @@ The UI shows a contextual pill label derived by `MatchEngine.computePill()`:
 2. Select the `wearos` run configuration.
 3. Deploy to a Wear OS emulator or physical device.
 
+To build a debug APK:
+
+```bash
+cd code
+./gradlew :wearos:assembleDebug
+```
+
+To build a release AAB (for Play Console upload):
+
+```bash
+cd code
+./gradlew clean :wearos:bundleRelease
+```
+
+Output: `code/wearos/build/outputs/bundle/release/wearos-release.aab`
+
 To run shared module tests:
 
 ```bash
@@ -158,10 +174,10 @@ Recommended pipeline (e.g. GitHub Actions):
    ./gradlew :shared:commonTest
    ```
 
-2. Build the Wear OS APK (debug)
+2. Build the Wear OS AAB (release)
 
    ```bash
-   ./gradlew :wearos:assembleDebug
+   ./gradlew clean :wearos:bundleRelease
    ```
 
 3. Build the XCFramework for watchOS
@@ -175,11 +191,11 @@ Recommended pipeline (e.g. GitHub Actions):
 **On merge to `main`:**
 
 1. Run the full release build for both platforms
-2. Sign and upload the Wear OS APK to the Play Console internal track
+2. Sign and upload the Wear OS AAB to the Play Console internal track
 3. Archive the watchOS build for TestFlight distribution via `xcodebuild archive` + `altool`
 
 ---
 
 ## App Version
 
-Current version: **1.1.1** (`versionCode` = 20260313)
+Current version: **1.2.1** (`versionCode` = 20260313)

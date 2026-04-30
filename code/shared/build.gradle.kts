@@ -8,7 +8,7 @@ plugins {
 kotlin {
     // ── Android (Wear OS) ─────────────────────────────────────────────────
     android {
-        namespace  = "com.wptracker.shared"
+        namespace  = "com.wppadel.tracker.shared"
         compileSdk = 36
         minSdk     = 26
     }

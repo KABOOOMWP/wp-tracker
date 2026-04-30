@@ -1,7 +1,7 @@
 import SwiftUI
 
 // MARK: – Shared color palette
-// Single source of truth for all WP Tracker watchOS views.
+// Single source of truth for all WP Padel Tracker watchOS views.
 // Mirrors WPColors in the WearOS Theme.kt.
 
 extension Color {
