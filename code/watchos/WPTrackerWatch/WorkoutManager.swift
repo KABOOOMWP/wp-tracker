@@ -59,10 +59,11 @@ final class WorkoutManager: NSObject {
         guard let currentSession = session, let currentBuilder = builder else { return }
         currentSession.end()
         currentBuilder.endCollection(withEnd: Date()) { [weak self] _, _ in
-            currentBuilder.finishWorkout { _, _ in
-                Task { @MainActor [weak self] in
-                    self?.session = nil
-                    self?.builder = nil
+            currentBuilder.finishWorkout { [weak self] _, _ in
+                guard let self else { return }
+                Task { @MainActor in
+                    self.session = nil
+                    self.builder = nil
                 }
             }
         }
