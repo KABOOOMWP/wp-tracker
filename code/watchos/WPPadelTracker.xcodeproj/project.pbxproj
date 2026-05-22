@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		380766A72FB7556300F7E915 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 380766A62FB7556300F7E915 /* Assets.xcassets */; };
 		AA0000000000000000000020 /* WPTrackerWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000010 /* WPTrackerWatchApp.swift */; };
 		AA0000000000000000000021 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000011 /* AppModel.swift */; };
 		AA0000000000000000000022 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000012 /* HapticManager.swift */; };
@@ -47,6 +48,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		380766A62FB7556300F7E915 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		385761212F619F1E003B806B /* WPTrackerWatch Watch App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "WPTrackerWatch Watch App.entitlements"; sourceTree = "<group>"; };
 		AA0000000000000000000010 /* WPTrackerWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WPTrackerWatchApp.swift; sourceTree = "<group>"; };
 		AA0000000000000000000011 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
@@ -168,6 +170,7 @@
 		AA00000000000000000000A1 /* WPTrackerWatchUITests */ = {
 			isa = PBXGroup;
 			children = (
+				380766A62FB7556300F7E915 /* Assets.xcassets */,
 				AA0000000000000000000061 /* TestHelpers.swift */,
 				AA0000000000000000000062 /* MatchViewTests.swift */,
 				AA0000000000000000000063 /* SetupViewTests.swift */,
@@ -261,6 +264,7 @@
 		AA0000000000000000000083 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
+				380766A72FB7556300F7E915 /* Assets.xcassets in Resources */,
 			);
 		};
 /* End PBXResourcesBuildPhase section */

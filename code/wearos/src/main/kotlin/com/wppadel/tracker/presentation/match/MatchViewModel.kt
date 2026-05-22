@@ -51,4 +51,10 @@ class MatchViewModel : ViewModel() {
         val updated = MatchEngine.confirmOppPositionSwitch(snap, doSwitch)
         if (updated !== snap) _history[_history.lastIndex] = updated  // replace so undo skips overlay
     }
+
+    fun acknowledgeCourtSideChange() {
+        val snap = current ?: return
+        val updated = MatchEngine.acknowledgeCourtSideChange(snap)
+        if (updated !== snap) _history[_history.lastIndex] = updated  // replace so undo skips screen
+    }
 }

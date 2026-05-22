@@ -112,5 +112,12 @@ data class Snapshot(
      * While true the UI shows a position-switch picker for the OPP team.
      * Cleared by [MatchEngine.confirmOppPositionSwitch].
      */
-    val awaitingOppPositionSwitch: Boolean = false
+    val awaitingOppPositionSwitch: Boolean = false,
+    /**
+     * Set after each non-final set ends (singles and doubles).
+     * While true the UI shows a "change court sides" info screen.
+     * Cleared by [MatchEngine.acknowledgeCourtSideChange], which then sets the
+     * position-switch flags for doubles (or just clears for singles).
+     */
+    val awaitingCourtSideChange: Boolean = false
 )

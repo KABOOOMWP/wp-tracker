@@ -56,9 +56,8 @@ class StatsTest {
     @Test fun `totalPlayedPoints across full match with multiple sets`() {
         // Two sets, each won 6:0 (4 pts per game × 6 games = 24 pts per set)
         var s = makeSnapshot(config = singlesConfig(bestOf = 3))
-        repeat(2) {
-            repeat(6) { repeat(4) { s = s.you() } }
-        }
+        s = s.winSetAndContinue(Team.YOU)
+        s = s.winSetAndContinue(Team.YOU)
         assertEquals(48, s.stats.totalPlayedPoints)
         assertTrue(s.isMatchOver)
     }
@@ -171,16 +170,17 @@ class StatsTest {
 
     @Test fun `isMatchOver true exactly when required sets are won`() {
         var s = makeSnapshot(config = singlesConfig(bestOf = 3))
-        repeat(2) {
-            assertFalse(s.isMatchOver)
-            repeat(6) { repeat(4) { s = s.you() } }
-        }
+        assertFalse(s.isMatchOver)
+        s = s.winSetAndContinue(Team.YOU)
+        assertFalse(s.isMatchOver)
+        s = s.winSetAndContinue(Team.YOU)
         assertTrue(s.isMatchOver)
     }
 
     @Test fun `scoring after match ends returns identical snapshot`() {
         var s = makeSnapshot(config = singlesConfig(bestOf = 3))
-        repeat(2) { repeat(6) { repeat(4) { s = s.you() } } }
+        s = s.winSetAndContinue(Team.YOU)
+        s = s.winSetAndContinue(Team.YOU)
         assertTrue(s.isMatchOver)
         val frozen = s.you()
         assertEquals(s, frozen)
@@ -188,7 +188,8 @@ class StatsTest {
 
     @Test fun `stats do not increment after match is over`() {
         var s = makeSnapshot(config = singlesConfig(bestOf = 3))
-        repeat(2) { repeat(6) { repeat(4) { s = s.you() } } }
+        s = s.winSetAndContinue(Team.YOU)
+        s = s.winSetAndContinue(Team.YOU)
         val pointsAtEnd = s.stats.totalPlayedPoints
         val afterExtra = s.you().opp()
         assertEquals(pointsAtEnd, afterExtra.stats.totalPlayedPoints)

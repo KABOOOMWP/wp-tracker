@@ -151,10 +151,27 @@ object MatchEngine {
         )
     }
 
+    /**
+     * Called when the user dismisses the "change court sides" info screen after a set ends.
+     * For doubles: clears the flag and sets both position-switch flags.
+     * For singles: just clears the flag.
+     * No-op if the flag is not set.
+     */
+    fun acknowledgeCourtSideChange(snapshot: Snapshot): Snapshot {
+        if (!snapshot.awaitingCourtSideChange) return snapshot
+        val isDoubles = snapshot.config.playMode == PlayMode.DOUBLES
+        return snapshot.copy(
+            awaitingCourtSideChange = false,
+            awaitingYouPositionSwitch = isDoubles,
+            awaitingOppPositionSwitch = isDoubles
+        )
+    }
+
     /** Score a point for [team]. Returns the same snapshot if the match is already over or if
-     *  a position-switch confirmation is pending. The serve-pick overlay is handled by the UI. */
+     *  any inter-set confirmation is pending. The serve-pick overlay is handled by the UI. */
     fun score(snapshot: Snapshot, team: Team): Snapshot {
         if (snapshot.isMatchOver) return snapshot
+        if (snapshot.awaitingCourtSideChange) return snapshot
         if (snapshot.awaitingYouPositionSwitch || snapshot.awaitingOppPositionSwitch) return snapshot
         return applyPoint(snapshot, team)
     }
@@ -462,8 +479,7 @@ object MatchEngine {
             serveOrderIndex = nextOrderIndex,
             opponentServerConfirmed = snapshot.serve.opponentServerConfirmed
         )
-        // In doubles, ask both teams whether they want to switch court positions before play resumes.
-        val isDoubles = snapshot.config.playMode == PlayMode.DOUBLES
+        // Show court-side change info screen first; position-switch follows after acknowledgment.
         return snapshot.copy(
             match = newMatch,
             set = SetState(currentSetIndex = newSetsYou + newSetsOpp, youGames = 0, oppGames = 0),
@@ -471,8 +487,9 @@ object MatchEngine {
             serve = newServe,
             stats = stats,
             awaitingServePick = false,
-            awaitingYouPositionSwitch = isDoubles,
-            awaitingOppPositionSwitch = isDoubles
+            awaitingCourtSideChange = true,
+            awaitingYouPositionSwitch = false,
+            awaitingOppPositionSwitch = false
         )
     }
 
@@ -508,7 +525,8 @@ object MatchEngine {
             serverTeam = player.team(),
             serverPlayer = player,
             serveSide = serveSideFromRallyIndex(tbPointIndex),
-            serveOrderIndex = startOrderIndex // TB start index never changes within the TB
+            serveOrderIndex = startOrderIndex, // TB start index never changes within the TB
+            opponentServerConfirmed = snapshot.serve.opponentServerConfirmed
         )
     }
 

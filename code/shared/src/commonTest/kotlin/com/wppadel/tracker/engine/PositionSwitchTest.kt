@@ -19,16 +19,21 @@ class PositionSwitchTest {
 
     // ── Flag lifecycle ────────────────────────────────────────────────────────
 
-    @Test fun `doubles set end sets both awaiting flags`() {
-        val s = makeSnapshot(config = doublesConfig())
-            .winSet(Team.YOU)
+    @Test fun `set end shows court side change screen first`() {
+        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU)
+        assertTrue(s.awaitingCourtSideChange)
+        assertFalse(s.awaitingYouPositionSwitch)
+        assertFalse(s.awaitingOppPositionSwitch)
+    }
+
+    @Test fun `doubles set end sets both position switch flags after acknowledgment`() {
+        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU).acknowledge()
         assertTrue(s.awaitingYouPositionSwitch)
         assertTrue(s.awaitingOppPositionSwitch)
     }
 
-    @Test fun `singles set end does not set awaiting flags`() {
-        val s = makeSnapshot(config = singlesConfig())
-            .winSet(Team.YOU)
+    @Test fun `singles set end does not set position switch flags after acknowledgment`() {
+        val s = makeSnapshot(config = singlesConfig()).winSet(Team.YOU).acknowledge()
         assertFalse(s.awaitingYouPositionSwitch)
         assertFalse(s.awaitingOppPositionSwitch)
     }
@@ -36,12 +41,13 @@ class PositionSwitchTest {
     @Test fun `doubles match end does not set awaiting flags`() {
         // Best-of-1 doesn't exist, so use best-of-3 and win 2 sets straight
         var s = makeSnapshot(config = doublesConfig(bestOf = 3))
-        s = s.winSet(Team.YOU)  // set 1 → awaiting position switch
+        s = s.winSet(Team.YOU).acknowledge()  // set 1 → awaiting position switch
         // Bypass position switch (keep both) then win set 2
         s = MatchEngine.confirmYouPositionSwitch(s, false)
         s = MatchEngine.confirmOppPositionSwitch(s, false)
         s = s.winSet(Team.YOU)  // set 2 → match over
         assertTrue(s.isMatchOver)
+        assertFalse(s.awaitingCourtSideChange)
         assertFalse(s.awaitingYouPositionSwitch)
         assertFalse(s.awaitingOppPositionSwitch)
     }
@@ -49,27 +55,27 @@ class PositionSwitchTest {
     // ── YOU team confirmation ─────────────────────────────────────────────────
 
     @Test fun `confirmYouPositionSwitch keep clears YOU flag and OPP flag stays`() {
-        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU)
+        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU).acknowledge()
         val after = MatchEngine.confirmYouPositionSwitch(s, false)
         assertFalse(after.awaitingYouPositionSwitch)
         assertTrue(after.awaitingOppPositionSwitch)
     }
 
     @Test fun `confirmYouPositionSwitch switch clears YOU flag and OPP flag stays`() {
-        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU)
+        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU).acknowledge()
         val after = MatchEngine.confirmYouPositionSwitch(s, true)
         assertFalse(after.awaitingYouPositionSwitch)
         assertTrue(after.awaitingOppPositionSwitch)
     }
 
     @Test fun `confirmYouPositionSwitch keep preserves serve order`() {
-        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU)
+        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU).acknowledge()
         val after = MatchEngine.confirmYouPositionSwitch(s, false)
         assertEquals(s.config.serveOrder, after.config.serveOrder)
     }
 
     @Test fun `confirmYouPositionSwitch switch swaps A1 and A2 in serve order`() {
-        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU)
+        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU).acknowledge()
         val after = MatchEngine.confirmYouPositionSwitch(s, true)
         // Original order: A1, B1, A2, B2 → after swap: A2, B1, A1, B2
         val expected = s.config.serveOrder.map { p ->
@@ -79,7 +85,7 @@ class PositionSwitchTest {
     }
 
     @Test fun `confirmYouPositionSwitch switch does not affect B players in order`() {
-        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU)
+        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU).acknowledge()
         val after = MatchEngine.confirmYouPositionSwitch(s, true)
         val bPlayers = after.config.serveOrder.filter { it == Player.B1 || it == Player.B2 }
         val bExpected = s.config.serveOrder.filter { it == Player.B1 || it == Player.B2 }
@@ -89,7 +95,7 @@ class PositionSwitchTest {
     @Test fun `confirmYouPositionSwitch switch updates current server when YOU team serves`() {
         // After doublesConfig 6-0 set, next server index = 1 → B1 (OPP).
         // Use a snapshot where A1 would serve to verify the player flips.
-        val base = makeSnapshot(config = doublesConfig()).winSet(Team.YOU)
+        val base = makeSnapshot(config = doublesConfig()).winSet(Team.YOU).acknowledge()
         // Force the next server to A1 by manually adjusting — re-score from a
         // state where serveOrderIndex wraps to 0 (A1).
         // Easiest: start fresh with OPP-first order so after set 1 it's A-team's turn.
@@ -98,7 +104,7 @@ class PositionSwitchTest {
         // serveOrderIndex advances 1 per game → 24 points = 6 games from start, index 0→6 mod 4 = 2
         // Actually after 24 points (6-0 set win) the next index = (0+6+1) mod 4 = 7 mod 4 = 3 → B2
         // Let's just verify: if awaitingYouPositionSwitch and current server is B2, no change to server
-        val s = makeSnapshot(config = config).winSet(Team.YOU)
+        val s = makeSnapshot(config = config).winSet(Team.YOU).acknowledge()
         // current server after 6-0 = serveOrderIndex goes 0→6 games, last game winner rotates to idx=7%4=3 = B2? Wait: applySetWin advances by 1 AFTER the set win
         // Actually after winSet(YOU) the new serve order index = (0 + 1 per game for 6 games... no:
         // applySetWin only advances once: nextOrderIndex = (lastGameServeOrderIndex + 1) % size
@@ -126,21 +132,21 @@ class PositionSwitchTest {
     // ── OPP team confirmation ─────────────────────────────────────────────────
 
     @Test fun `confirmOppPositionSwitch keep clears OPP flag`() {
-        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU)
+        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU).acknowledge()
         val mid = MatchEngine.confirmYouPositionSwitch(s, false)
         val after = MatchEngine.confirmOppPositionSwitch(mid, false)
         assertFalse(after.awaitingOppPositionSwitch)
     }
 
     @Test fun `confirmOppPositionSwitch switch clears OPP flag`() {
-        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU)
+        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU).acknowledge()
         val mid = MatchEngine.confirmYouPositionSwitch(s, false)
         val after = MatchEngine.confirmOppPositionSwitch(mid, true)
         assertFalse(after.awaitingOppPositionSwitch)
     }
 
     @Test fun `confirmOppPositionSwitch keep preserves serve order`() {
-        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU)
+        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU).acknowledge()
         val mid = MatchEngine.confirmYouPositionSwitch(s, false)
         val before = mid.config.serveOrder
         val after = MatchEngine.confirmOppPositionSwitch(mid, false)
@@ -148,7 +154,7 @@ class PositionSwitchTest {
     }
 
     @Test fun `confirmOppPositionSwitch switch swaps B1 and B2 in serve order`() {
-        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU)
+        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU).acknowledge()
         val mid = MatchEngine.confirmYouPositionSwitch(s, false)
         val after = MatchEngine.confirmOppPositionSwitch(mid, true)
         val expected = mid.config.serveOrder.map { p ->
@@ -158,7 +164,7 @@ class PositionSwitchTest {
     }
 
     @Test fun `confirmOppPositionSwitch switch does not affect A players in order`() {
-        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU)
+        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU).acknowledge()
         val mid = MatchEngine.confirmYouPositionSwitch(s, false)
         val after = MatchEngine.confirmOppPositionSwitch(mid, true)
         val aPlayers = after.config.serveOrder.filter { it == Player.A1 || it == Player.A2 }
@@ -167,7 +173,7 @@ class PositionSwitchTest {
     }
 
     @Test fun `confirmOppPositionSwitch updates current server when OPP team serves`() {
-        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU)
+        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU).acknowledge()
         val mid = MatchEngine.confirmYouPositionSwitch(s, false)
         val after = MatchEngine.confirmOppPositionSwitch(mid, true)
         if (mid.serve.serverTeam == Team.OPP) {
@@ -191,7 +197,7 @@ class PositionSwitchTest {
     // ── Combined switches ─────────────────────────────────────────────────────
 
     @Test fun `both switches applied swaps all four players`() {
-        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU)
+        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU).acknowledge()
         val mid   = MatchEngine.confirmYouPositionSwitch(s, true)
         val after = MatchEngine.confirmOppPositionSwitch(mid, true)
         val expected = s.config.serveOrder.map { p ->
@@ -204,7 +210,7 @@ class PositionSwitchTest {
     }
 
     @Test fun `after both confirmed no awaiting flags remain`() {
-        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU)
+        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU).acknowledge()
         val mid   = MatchEngine.confirmYouPositionSwitch(s, true)
         val after = MatchEngine.confirmOppPositionSwitch(mid, false)
         assertFalse(after.awaitingYouPositionSwitch)
@@ -213,15 +219,22 @@ class PositionSwitchTest {
 
     // ── Score blocked while awaiting ─────────────────────────────────────────
 
-    @Test fun `score is blocked while awaiting YOU position switch`() {
+    @Test fun `score is blocked while awaiting court side change`() {
         val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU)
+        assertTrue(s.awaitingCourtSideChange)
+        val after = MatchEngine.score(s, Team.YOU)
+        assertSame(s, after)
+    }
+
+    @Test fun `score is blocked while awaiting YOU position switch`() {
+        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU).acknowledge()
         assertTrue(s.awaitingYouPositionSwitch)
         val after = MatchEngine.score(s, Team.YOU)
         assertSame(s, after)
     }
 
     @Test fun `score is blocked while awaiting OPP position switch`() {
-        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU)
+        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU).acknowledge()
         val mid = MatchEngine.confirmYouPositionSwitch(s, false)
         assertTrue(mid.awaitingOppPositionSwitch)
         val after = MatchEngine.score(mid, Team.YOU)
@@ -229,7 +242,7 @@ class PositionSwitchTest {
     }
 
     @Test fun `score proceeds after both switches confirmed`() {
-        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU)
+        val s = makeSnapshot(config = doublesConfig()).winSet(Team.YOU).acknowledge()
         val mid   = MatchEngine.confirmYouPositionSwitch(s, false)
         val ready = MatchEngine.confirmOppPositionSwitch(mid, false)
         val after = MatchEngine.score(ready, Team.YOU)
@@ -247,15 +260,18 @@ class PositionSwitchTest {
         val setWinState = priorPoint.winSet(Team.YOU)
         val history = mutableListOf(priorPoint, setWinState)
 
-        // Each confirmation replaces the top entry
-        val afterYou = MatchEngine.confirmYouPositionSwitch(setWinState, false)
+        // Each confirmation replaces the top entry (ack + 2 position switches)
+        val afterAck = MatchEngine.acknowledgeCourtSideChange(setWinState)
+        history[history.lastIndex] = afterAck
+        val afterYou = MatchEngine.confirmYouPositionSwitch(afterAck, false)
         history[history.lastIndex] = afterYou
         val afterOpp = MatchEngine.confirmOppPositionSwitch(afterYou, false)
         history[history.lastIndex] = afterOpp
 
-        // Single undo removes the entire position-switch sequence
+        // Single undo removes the entire inter-set sequence
         history.removeLast()
         val restored = history.last()
+        assertFalse(restored.awaitingCourtSideChange)
         assertFalse(restored.awaitingYouPositionSwitch)
         assertFalse(restored.awaitingOppPositionSwitch)
     }
@@ -265,13 +281,16 @@ class PositionSwitchTest {
         val setWinState = priorPoint.winSet(Team.YOU)
         val history = mutableListOf(priorPoint, setWinState)
 
-        val afterYou = MatchEngine.confirmYouPositionSwitch(setWinState, true)
+        val afterAck = MatchEngine.acknowledgeCourtSideChange(setWinState)
+        history[history.lastIndex] = afterAck
+        val afterYou = MatchEngine.confirmYouPositionSwitch(afterAck, true)
         history[history.lastIndex] = afterYou
         val afterOpp = MatchEngine.confirmOppPositionSwitch(afterYou, true)
         history[history.lastIndex] = afterOpp
 
         history.removeLast()
         val restored = history.last()
+        assertFalse(restored.awaitingCourtSideChange)
         assertFalse(restored.awaitingYouPositionSwitch)
         assertFalse(restored.awaitingOppPositionSwitch)
     }

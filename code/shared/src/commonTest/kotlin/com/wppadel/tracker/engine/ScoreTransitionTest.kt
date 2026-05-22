@@ -275,29 +275,26 @@ class ScoreTransitionTest {
 
     @Test fun `best-of-3 match win at 2 sets`() {
         var s = makeSnapshot(config = singlesConfig(bestOf = 3))
-        repeat(2) { // win 2 sets
-            repeat(6) {
-                s = s.scoreMany(Team.YOU, Team.YOU, Team.YOU, Team.YOU)
-            }
-        }
+        s = s.winSetAndContinue(Team.YOU)
+        s = s.winSetAndContinue(Team.YOU)
         assertEquals(2, s.match.setsWonYou)
         assertTrue(s.isMatchOver)
     }
 
     @Test fun `best-of-5 match needs 3 sets`() {
         var s = makeSnapshot(config = singlesConfig(bestOf = 5))
-        repeat(2) {
-            repeat(6) { s = s.scoreMany(Team.YOU, Team.YOU, Team.YOU, Team.YOU) }
-        }
+        s = s.winSetAndContinue(Team.YOU)
+        s = s.winSetAndContinue(Team.YOU)
         assertFalse(s.isMatchOver)
-        repeat(6) { s = s.scoreMany(Team.YOU, Team.YOU, Team.YOU, Team.YOU) }
+        s = s.winSetAndContinue(Team.YOU)
         assertEquals(3, s.match.setsWonYou)
         assertTrue(s.isMatchOver)
     }
 
     @Test fun `no more scoring after match is over`() {
         var s = makeSnapshot(config = singlesConfig(bestOf = 3))
-        repeat(2) { repeat(6) { s = s.scoreMany(Team.YOU, Team.YOU, Team.YOU, Team.YOU) } }
+        s = s.winSetAndContinue(Team.YOU)
+        s = s.winSetAndContinue(Team.YOU)
         assertTrue(s.isMatchOver)
         val frozen = s.you()
         assertEquals(s, frozen) // scoring on finished match returns same snapshot

@@ -108,6 +108,7 @@ final class MatchViewTests: XCTestCase {
         app.goToSinglesMatch(bestOf3: true)
         // Win set 1: 6-0 (24 YOU points)
         app.score(you: 24)
+        app.acknowledgeCourtSideChange()
         // In set 2, reach 5-0 (20 YOU points)
         app.score(you: 20)
         // Score 3 more to reach 40-0 (match/set point)
@@ -152,11 +153,21 @@ final class MatchViewTests: XCTestCase {
         XCTAssert(app.buttons["RIGHT →"].firstMatch.exists)
     }
 
-    // ── Position-switch overlays (doubles, after non-final sets) ─────────────
+    // ── Court-side change screen (after each non-final set) ──────────────────
+
+    func test_afterSet1_showsCourtSideChangeScreen() {
+        app.goToSinglesMatch()
+        app.score(you: 24)
+
+        XCTAssert(app.staticTexts["CHANGE SIDES"].waitForExistence(timeout: 3))
+    }
+
+    // ── Position-switch overlays (doubles, after court-side ack) ─────────────
 
     func test_doublesAfterSet1_showsYourTeamPositionSwitchOverlay() {
         app.goToDoublesMatch()
         app.scoreDoublesSetForYou()
+        app.acknowledgeCourtSideChange()
 
         XCTAssert(app.staticTexts["YOUR TEAM"].exists)
         XCTAssert(app.staticTexts["SWITCH SIDES?"].exists)
@@ -165,6 +176,7 @@ final class MatchViewTests: XCTestCase {
     func test_doublesAfterSet1_afterYouAnswer_showsOppPositionSwitchOverlay() {
         app.goToDoublesMatch()
         app.scoreDoublesSetForYou()
+        app.acknowledgeCourtSideChange()
         app.el("btn_position_switch_yes").tap() // YOU: switch
 
         XCTAssert(app.staticTexts["OPP TEAM"].exists)
@@ -174,6 +186,7 @@ final class MatchViewTests: XCTestCase {
     func test_doublesAfterSet1_afterBothAnswerKeep_matchContinues() {
         app.goToDoublesMatch()
         app.scoreDoublesSetForYou()
+        app.acknowledgeCourtSideChange()
         app.el("btn_position_switch_no").tap()  // YOU: keep
         app.el("btn_position_switch_no").tap()  // OPP: keep
 
@@ -185,6 +198,7 @@ final class MatchViewTests: XCTestCase {
     func test_doublesAfterSet1_afterBothAnswerSwitch_matchContinues() {
         app.goToDoublesMatch()
         app.scoreDoublesSetForYou()
+        app.acknowledgeCourtSideChange()
         app.el("btn_position_switch_yes").tap()  // YOU: switch
         app.el("btn_position_switch_yes").tap()  // OPP: switch
 
@@ -195,6 +209,7 @@ final class MatchViewTests: XCTestCase {
     func test_singlesAfterSet1_doesNotShowPositionSwitchOverlay() {
         app.goToSinglesMatch()
         app.score(you: 24)
+        app.acknowledgeCourtSideChange()
 
         XCTAssertFalse(app.staticTexts["SWITCH SIDES?"].exists)
     }

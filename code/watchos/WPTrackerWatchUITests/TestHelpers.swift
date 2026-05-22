@@ -25,6 +25,13 @@ extension XCUIApplication {
         tap(id: youServe ? "btn_serve_you" : "btn_serve_opp")
     }
 
+    /// Dismisses the "CHANGE SIDES" court-side change info screen.
+    func acknowledgeCourtSideChange() {
+        let btn = el("btn_court_side_ack")
+        XCTAssert(btn.waitForExistence(timeout: 5), "'CHANGE SIDES' screen not found")
+        btn.tap()
+    }
+
     func goToDoublesMatch(youServeLeft: Bool = true) {
         tap(id: "btn_play_doubles")
         tap(id: "btn_format_best_of_3")

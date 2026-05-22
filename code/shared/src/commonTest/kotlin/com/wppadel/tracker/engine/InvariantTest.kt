@@ -225,19 +225,11 @@ class InvariantTest {
 
     @Test fun `totalPlayedPoints consistent across set boundaries`() {
         var s = makeSnapshot(config = singlesConfig(bestOf = 3))
-        var scoreCalls = 0
-
-        repeat(2) {  // 2 sets
-            repeat(6) {  // 6 games per set
-                repeat(4) {  // 4 points per game
-                    s = s.you()
-                    scoreCalls++
-                }
-            }
-        }
-
+        // Two 6-0 sets = 48 points; use winSetAndContinue to clear inter-set overlays
+        s = s.winSetAndContinue(Team.YOU)
+        s = s.winSetAndContinue(Team.YOU)
         assertTrue(s.isMatchOver)
-        assertEquals(scoreCalls, s.stats.totalPlayedPoints)
+        assertEquals(48, s.stats.totalPlayedPoints)
     }
 
     @Test fun `totalPlayedPoints consistent in TB scenario`() {

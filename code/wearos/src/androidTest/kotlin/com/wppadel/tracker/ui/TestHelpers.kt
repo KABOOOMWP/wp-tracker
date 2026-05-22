@@ -3,6 +3,7 @@ package com.wppadel.tracker.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import com.wppadel.tracker.engine.MatchEngine
+import com.wppadel.tracker.engine.MatchEngine.acknowledgeCourtSideChange
 import com.wppadel.tracker.model.*
 import com.wppadel.tracker.presentation.theme.LocalIsRoundScreen
 import com.wppadel.tracker.presentation.theme.LocalWatchScale
@@ -84,6 +85,12 @@ fun playSet(snap: Snapshot, winner: Team): Snapshot =
 fun completedMatch(config: Config = singlesConfig(), winner: Team = Team.YOU): Snapshot {
     var s = startSnapshot(config).copy(match = MatchState(startedAt = 0L, endedAt = 1_000L))
     s = playSet(s, winner)
+    // Acknowledge court-side change (and confirm position switches for doubles) before set 2
+    s = acknowledgeCourtSideChange(s)
+    if (config.playMode == PlayMode.DOUBLES) {
+        s = MatchEngine.confirmYouPositionSwitch(s, false)
+        s = MatchEngine.confirmOppPositionSwitch(s, false)
+    }
     s = playSet(s, winner)
     // Force match-over flag so SummaryScreen receives a proper snapshot
     return s.copy(isMatchOver = true, match = s.match.copy(endedAt = 1_000L))

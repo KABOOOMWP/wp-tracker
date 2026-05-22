@@ -82,7 +82,8 @@ fun MatchScreen(
     val ml = remember(scale, isRound) { ML(scale, isRound) }
 
     val pill = MatchEngine.computePill(snapshot)
-    val awaitingServePick = snapshot.awaitingServePick
+    val awaitingCourtSideChange   = snapshot.awaitingCourtSideChange
+    val awaitingServePick         = snapshot.awaitingServePick
     val awaitingYouPositionSwitch = snapshot.awaitingYouPositionSwitch
     val awaitingOppPositionSwitch = snapshot.awaitingOppPositionSwitch
     val serverTeam = snapshot.serve.serverTeam
@@ -185,7 +186,12 @@ fun MatchScreen(
             }
         }
 
-        // ── Position-switch overlays (doubles, after each non-final set) ──
+        // ── Court-side change info screen (after each non-final set) ────────
+        if (awaitingCourtSideChange) {
+            CourtSideChangeOverlay { haptic.gameWin(); vm.acknowledgeCourtSideChange() }
+        }
+
+        // ── Position-switch overlays (doubles, after court-side ack) ─────────
         if (awaitingYouPositionSwitch) {
             PositionSwitchOverlay(team = Team.YOU, haptic = haptic) { doSwitch ->
                 vm.confirmYouPositionSwitch(doSwitch)
@@ -353,6 +359,43 @@ private fun StatusPill(pill: PillState, ml: ML, modifier: Modifier) {
             fontWeight    = FontWeight.Bold,
             letterSpacing = 0.8.sp
         )
+    }
+}
+
+@Composable
+private fun BoxScope.CourtSideChangeOverlay(onAcknowledge: () -> Unit) {
+    val scale     = LocalWatchScale.current
+    val titleFont = (18f * scale).coerceAtLeast(14f).sp
+    val subFont   = (11f * scale).coerceAtLeast(9f).sp
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+            .pointerInput(Unit) { detectTapGestures { onAcknowledge() } }
+            .testTag("btn_court_side_ack")
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy((8f * scale).dp),
+            modifier = Modifier.padding(horizontal = 12.dp)
+        ) {
+            Text(
+                text          = "CHANGE SIDES",
+                color         = Color.White,
+                fontSize      = titleFont,
+                fontWeight    = FontWeight.Bold,
+                letterSpacing = 0.5.sp,
+                textAlign     = TextAlign.Center
+            )
+            Text(
+                text     = "TAP TO CONTINUE",
+                color    = Color.White.copy(alpha = 0.6f),
+                fontSize = subFont,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 

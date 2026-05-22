@@ -16,12 +16,8 @@ import kotlin.test.*
  */
 class MatchCompletionTest {
 
-    // Helper: win a full set 6:0 (24 points)
-    private fun Snapshot.winSet(): Snapshot {
-        var s = this
-        repeat(6) { repeat(4) { s = s.you() } }
-        return s
-    }
+    // Helper: win a full set 6:0 for YOU and clear all inter-set overlays
+    private fun Snapshot.winSet(): Snapshot = winSetAndContinue(Team.YOU)
 
     // -----------------------------------------------------------------------
     // Best-of-3 completion
@@ -45,8 +41,7 @@ class MatchCompletionTest {
 
         s = s.winSet()            // you 1:0
         // opp wins set 2
-        var s2 = s
-        repeat(6) { repeat(4) { s2 = s2.opp() } }
+        var s2 = s.winSetAndContinue(Team.OPP)
         assertFalse(s2.isMatchOver)
         assertEquals(1, s2.match.setsWonYou)
         assertEquals(1, s2.match.setsWonOpp)
@@ -74,10 +69,10 @@ class MatchCompletionTest {
     @Test fun `best-of-5 3-1 sets - match over after 4th set`() {
         var s = makeSnapshot(config = singlesConfig(bestOf = 5))
 
-        s = s.winSet()   // you 1:0
-        repeat(6) { repeat(4) { s = s.opp() } }  // opp wins — you 1:1
-        s = s.winSet()   // you 2:1
-        s = s.winSet()   // you 3:1 — match over
+        s = s.winSet()                      // you 1:0
+        s = s.winSetAndContinue(Team.OPP)   // opp wins — you 1:1
+        s = s.winSet()                      // you 2:1
+        s = s.winSet()                      // you 3:1 — match over
         assertTrue(s.isMatchOver)
         assertEquals(3, s.match.setsWonYou)
         assertEquals(1, s.match.setsWonOpp)
@@ -86,12 +81,12 @@ class MatchCompletionTest {
     @Test fun `best-of-5 3-2 sets - match over after 5th set`() {
         var s = makeSnapshot(config = singlesConfig(bestOf = 5))
 
-        s = s.winSet()                                        // you 1:0
-        repeat(6) { repeat(4) { s = s.opp() } }              // opp wins — 1:1
-        s = s.winSet()                                        // you 2:1
-        repeat(6) { repeat(4) { s = s.opp() } }              // opp wins — 2:2
+        s = s.winSet()                      // you 1:0
+        s = s.winSetAndContinue(Team.OPP)   // opp wins — 1:1
+        s = s.winSet()                      // you 2:1
+        s = s.winSetAndContinue(Team.OPP)   // opp wins — 2:2
         assertFalse(s.isMatchOver)
-        s = s.winSet()                                        // you 3:2 — match over
+        s = s.winSet()                      // you 3:2 — match over
         assertTrue(s.isMatchOver)
         assertEquals(3, s.match.setsWonYou)
         assertEquals(2, s.match.setsWonOpp)
@@ -107,7 +102,7 @@ class MatchCompletionTest {
     @Test fun `best-of-5 - not over at 2-2 sets`() {
         var s = makeSnapshot(config = singlesConfig(bestOf = 5))
         repeat(2) { s = s.winSet() }
-        repeat(2) { repeat(6) { repeat(4) { s = s.opp() } } }
+        repeat(2) { s = s.winSetAndContinue(Team.OPP) }
         assertFalse(s.isMatchOver)
         assertEquals(2, s.match.setsWonYou)
         assertEquals(2, s.match.setsWonOpp)
@@ -138,7 +133,7 @@ class MatchCompletionTest {
 
     @Test fun `scoring after match ends returns identical snapshot`() {
         var s = makeSnapshot(config = singlesConfig(bestOf = 3))
-        s = s.winSet()
+        s = s.winSetAndContinue(Team.YOU)
         s = s.winSet()
         assertTrue(s.isMatchOver)
 
@@ -151,7 +146,7 @@ class MatchCompletionTest {
 
     @Test fun `scoring 10 more points after match ends keeps snapshot identical`() {
         var s = makeSnapshot(config = singlesConfig(bestOf = 3))
-        s = s.winSet()
+        s = s.winSetAndContinue(Team.YOU)
         s = s.winSet()
         assertTrue(s.isMatchOver)
 
@@ -239,7 +234,7 @@ class MatchCompletionTest {
 
     @Test fun `opp wins best-of-3 match 2-0`() {
         var s = makeSnapshot(config = singlesConfig(bestOf = 3))
-        repeat(2) { repeat(6) { repeat(4) { s = s.opp() } } }
+        repeat(2) { s = s.winSetAndContinue(Team.OPP) }
         assertTrue(s.isMatchOver)
         assertEquals(0, s.match.setsWonYou)
         assertEquals(2, s.match.setsWonOpp)

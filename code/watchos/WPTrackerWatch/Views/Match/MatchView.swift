@@ -187,7 +187,15 @@ private struct MatchContent: View {
                     )
                 }
 
-                // ── Position-switch overlays (doubles, after each non-final set) ──
+                // ── Court-side change info screen (after each non-final set) ────
+                if snapshot.awaitingCourtSideChange {
+                    CourtSideChangeOverlay {
+                        HapticManager.shared.gameWin()
+                        store.acknowledgeCourtSideChange()
+                    }
+                }
+
+                // ── Position-switch overlays (doubles, after court-side ack) ────
                 if snapshot.awaitingYouPositionSwitch {
                     LeftRightPickerOverlay(
                         header:      "YOUR TEAM",
@@ -368,6 +376,43 @@ private struct SetScoreDigit: View {
             .font(.system(size: max(8, (10 * watchScale).rounded()), weight: set.isCompleted && thisTeamWon ? .bold : .regular))
             .italic(thisTeamLost)
             .foregroundColor(team == .you ? .youAccent : .oppAccent)
+    }
+}
+
+// MARK: – Court-side change info overlay
+
+private struct CourtSideChangeOverlay: View {
+    let onAcknowledge: () -> Void
+    @Environment(\.watchScale) private var watchScale
+
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+
+            Button(action: onAcknowledge) {
+                Color.clear
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("btn_court_side_ack")
+
+            VStack(spacing: max(6, (8 * watchScale).rounded())) {
+                Text("CHANGE SIDES")
+                    .font(.system(size: max(14, (18 * watchScale).rounded()), weight: .bold))
+                    .foregroundColor(.white)
+                    .kerning(0.5)
+                    .multilineTextAlignment(.center)
+
+                Text("TAP TO CONTINUE")
+                    .font(.system(size: max(9, (11 * watchScale).rounded()), weight: .regular))
+                    .foregroundColor(.white.opacity(0.6))
+                    .kerning(0.5)
+            }
+            .allowsHitTesting(false)
+            .padding(.horizontal, 12)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 

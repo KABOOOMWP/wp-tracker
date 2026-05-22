@@ -128,3 +128,16 @@ fun Snapshot.scoreMany(vararg teams: Team): Snapshot =
 // Shortcuts
 fun Snapshot.you(): Snapshot = score(Team.YOU)
 fun Snapshot.opp(): Snapshot = score(Team.OPP)
+fun Snapshot.acknowledge(): Snapshot = MatchEngine.acknowledgeCourtSideChange(this)
+
+/**
+ * Scores [winner] 24 points (6-0 set) then clears all inter-set overlays so the
+ * next set can start immediately. Safe to call for the match-winning set too
+ * (acknowledge is a no-op when [awaitingCourtSideChange] is false).
+ */
+fun Snapshot.winSetAndContinue(winner: Team): Snapshot {
+    var s = scoreMany(*Array(24) { winner }).acknowledge()
+    if (s.awaitingYouPositionSwitch) s = MatchEngine.confirmYouPositionSwitch(s, false)
+    if (s.awaitingOppPositionSwitch) s = MatchEngine.confirmOppPositionSwitch(s, false)
+    return s
+}

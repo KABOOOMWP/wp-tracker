@@ -140,6 +140,8 @@ class MatchScreenTest {
 
         // Win set 1: 24 YOU points
         repeat(24) { rule.onNodeWithTag("tap_you").performTouchInput { click() } }
+        // Dismiss court-side change screen before set 2
+        rule.onNodeWithTag("btn_court_side_ack").performTouchInput { click() }
         // In set 2 reach 5-0 (20 YOU points)
         repeat(20) { rule.onNodeWithTag("tap_you").performTouchInput { click() } }
         // Now score 3 more points in the game to reach 40-0 (match/set point)
@@ -196,7 +198,20 @@ class MatchScreenTest {
         rule.onNodeWithText("RIGHT →").assertIsDisplayed()
     }
 
-    // ── Position-switch overlay (doubles, after each non-final set) ──────────
+    // ── Court-side change screen (after each non-final set) ──────────────────
+
+    @Test
+    fun afterSet1_showsCourtSideChangeScreen() {
+        val config = singlesConfig()
+        val vm = MatchViewModel().also { it.init(config) }
+        setMatchContent(config, vm)
+
+        repeat(24) { rule.onNodeWithTag("tap_you").performTouchInput { click() } }
+
+        rule.onNodeWithText("CHANGE SIDES").assertIsDisplayed()
+    }
+
+    // ── Position-switch overlay (doubles, after court-side ack) ──────────────
 
     @Test
     fun doublesAfterSet1_showsYourTeamPositionSwitchOverlay() {
@@ -205,6 +220,7 @@ class MatchScreenTest {
         setMatchContent(config, vm)
 
         playDoublesSetYou()
+        rule.onNodeWithTag("btn_court_side_ack").performTouchInput { click() }
 
         rule.onNodeWithText("SWITCH SIDES?").assertIsDisplayed()
         rule.onNodeWithText("YOUR TEAM").assertIsDisplayed()
@@ -217,6 +233,7 @@ class MatchScreenTest {
         setMatchContent(config, vm)
 
         playDoublesSetYou()
+        rule.onNodeWithTag("btn_court_side_ack").performTouchInput { click() }
         rule.onNodeWithTag("btn_position_switch_yes").performTouchInput { click() }
 
         rule.onNodeWithText("SWITCH SIDES?").assertIsDisplayed()
@@ -230,6 +247,7 @@ class MatchScreenTest {
         setMatchContent(config, vm)
 
         playDoublesSetYou()
+        rule.onNodeWithTag("btn_court_side_ack").performTouchInput { click() }
         rule.onNodeWithTag("btn_position_switch_no").performTouchInput { click() }  // YOU: keep
         rule.onNodeWithTag("btn_position_switch_no").performTouchInput { click() }  // OPP: keep
 
@@ -245,6 +263,7 @@ class MatchScreenTest {
         setMatchContent(config, vm)
 
         playDoublesSetYou()
+        rule.onNodeWithTag("btn_court_side_ack").performTouchInput { click() }
         rule.onNodeWithTag("btn_position_switch_yes").performTouchInput { click() }  // YOU: switch
         rule.onNodeWithTag("btn_position_switch_yes").performTouchInput { click() }  // OPP: switch
 
@@ -259,6 +278,7 @@ class MatchScreenTest {
         setMatchContent(config, vm)
 
         repeat(24) { rule.onNodeWithTag("tap_you").performTouchInput { click() } }
+        rule.onNodeWithTag("btn_court_side_ack").performTouchInput { click() }
 
         rule.onNodeWithText("SWITCH SIDES?").assertDoesNotExist()
     }

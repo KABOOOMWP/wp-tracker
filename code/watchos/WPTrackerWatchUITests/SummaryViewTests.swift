@@ -12,8 +12,10 @@ final class SummaryViewTests: XCTestCase {
         app.launch()
         // Win 2 sets 6-0, 6-0 as YOU → auto-navigates to summary after 0.4 s
         app.goToSinglesMatch()
-        app.score(you: 48)
-        XCTAssert(app.staticTexts["MATCH SUMMARY"].waitForExistence(timeout: 3))
+        app.score(you: 24)
+        app.acknowledgeCourtSideChange()
+        app.score(you: 24)
+        XCTAssert(app.staticTexts["MATCH SUMMARY"].waitForExistence(timeout: 8))
     }
 
     // ── Header & structure ────────────────────────────────────────────────────
@@ -42,8 +44,10 @@ final class SummaryViewTests: XCTestCase {
         app.terminate()
         app.launch()
         app.goToSinglesMatch()
-        app.score(opp: 48)
-        XCTAssert(app.staticTexts["MATCH SUMMARY"].waitForExistence(timeout: 3))
+        app.score(opp: 24)
+        app.acknowledgeCourtSideChange()
+        app.score(opp: 24)
+        XCTAssert(app.staticTexts["MATCH SUMMARY"].waitForExistence(timeout: 8))
 
         XCTAssert(app.staticTexts["OPPONENT WINS"].exists)
     }
@@ -99,9 +103,10 @@ final class SummaryViewTests: XCTestCase {
         app.score(you: 1)
         // Win 5 more games → set 1 won 6-0
         app.score(you: 20)
+        app.acknowledgeCourtSideChange()
         // Win set 2 6-0
         app.score(you: 24)
-        XCTAssert(app.staticTexts["MATCH SUMMARY"].waitForExistence(timeout: 3))
+        XCTAssert(app.staticTexts["MATCH SUMMARY"].waitForExistence(timeout: 8))
 
         XCTAssert(app.staticTexts["Golden won"].exists)
     }

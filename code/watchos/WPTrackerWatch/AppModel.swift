@@ -100,6 +100,12 @@ class MatchStore: NSObject, ObservableObject {
         if updated !== snap { history[history.count - 1] = updated }  // replace so undo skips overlay
     }
 
+    func acknowledgeCourtSideChange() {
+        guard let snap = current else { return }
+        let updated = MatchEngine.shared.acknowledgeCourtSideChange(snapshot: snap)
+        if updated !== snap { history[history.count - 1] = updated }  // replace so undo skips screen
+    }
+
     func endMatch() {
         matchEndedAt = Date()
         screen = .summary
