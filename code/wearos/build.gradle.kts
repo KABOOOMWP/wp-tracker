@@ -20,8 +20,8 @@ android {
         applicationId = "com.wppadel.tracker"
         minSdk        = 26
         targetSdk     = 36
-        versionCode   = 20260313
-        versionName   = "1.2.1"
+        versionCode   = 20260624
+        versionName   = "1.2.2"
     }
 
     signingConfigs {

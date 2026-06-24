@@ -198,4 +198,4 @@ Recommended pipeline (e.g. GitHub Actions):
 
 ## App Version
 
-Current version: **1.2.1** (`versionCode` = 20260313)
+Current version: **1.2.2** (`versionCode` = 20260624)
