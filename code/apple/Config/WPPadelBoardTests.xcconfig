@@ -1,0 +1,6 @@
+#include "Phone.xcconfig"
+#include "LinksShared.xcconfig"
+
+PRODUCT_BUNDLE_IDENTIFIER = $(PHONE_BUNDLE_ID).tests
+TEST_HOST = $(BUILT_PRODUCTS_DIR)/WPPadelBoard.app/WPPadelBoard
+BUNDLE_LOADER = $(TEST_HOST)

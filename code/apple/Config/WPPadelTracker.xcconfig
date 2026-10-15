@@ -1,0 +1,12 @@
+#include "Watch.xcconfig"
+#include "AppTarget.xcconfig"
+
+PRODUCT_BUNDLE_IDENTIFIER = $(WATCH_BUNDLE_ID)
+CODE_SIGN_ENTITLEMENTS = Config/WPPadelTracker.entitlements
+INFOPLIST_FILE = Config/WPPadelTracker-Info.plist
+INFOPLIST_KEY_CFBundleDisplayName = $(WATCH_DISPLAY_NAME)
+INFOPLIST_KEY_NSHealthUpdateUsageDescription = $(WATCH_DISPLAY_NAME) saves your padel match as a tennis workout.
+INFOPLIST_KEY_UISupportedInterfaceOrientations =
+INFOPLIST_KEY_WKCompanionAppBundleIdentifier = $(PHONE_BUNDLE_ID)
+INFOPLIST_KEY_WKRunsIndependently = YES
+SKIP_INSTALL = YES

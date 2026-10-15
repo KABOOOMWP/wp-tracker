@@ -1,0 +1,4 @@
+// Every watchOS target.
+SDKROOT = watchos
+TARGETED_DEVICE_FAMILY = 4
+WATCHOS_DEPLOYMENT_TARGET = 10.6

@@ -1,0 +1,9 @@
+// Both apps: they compile the Kotlin framework (a script outside the sandbox) and embed it.
+#include "LinksShared.xcconfig"
+
+// Debug builds get the "Testing" icons drawn by tool/testing_icons.swift.
+ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon
+ASSETCATALOG_COMPILER_APPICON_NAME[config=Debug] = AppIcon-Testing
+ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor
+ENABLE_USER_SCRIPT_SANDBOXING = NO
+LD_RUNPATH_SEARCH_PATHS = $(inherited) @executable_path/Frameworks

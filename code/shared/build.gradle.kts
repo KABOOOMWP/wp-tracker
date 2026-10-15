@@ -1,33 +1,33 @@
+import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
-    alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.android.kotlin.multiplatform.library)
+    alias(libs.plugins.wppadel.kotlin.multiplatform)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
+    explicitApi()
+
     // ── Android (Wear OS) ─────────────────────────────────────────────────
     android {
-        namespace  = "com.wppadel.tracker.shared"
-        compileSdk = 36
-        minSdk     = 26
+        namespace = "ch.wastedpotential.padel.shared"
+        // Runs commonTest on the Android host too, as the watch and phone run it
+        withHostTest {}
     }
 
     // ── JVM (unit tests + desktop tooling) ───────────────────────────────
     jvm()
 
-    // ── Apple Watch (XCFramework for Swift/Xcode) ─────────────────────────
-    // watchosArm64()       → arm64_32  (Series 4 – Series 10, Ultra 1/2)
-    // watchosDeviceArm64() → arm64     (future full-64-bit devices; required
-    //                                   for Xcode "Any watchOS Device" builds)
-    // watchosSimulatorArm64() → arm64  (Apple Silicon simulator)
-    // watchosX64()         → x86_64    (Intel simulator)
+    // ── Apple: watch (arm64_32, arm64, simulator) and iPhone (device, simulator) ──
+    // Xcode builds this through embedAndSignAppleFrameworkForXcode; the XCFramework is optional
     val xcf = XCFramework("Shared")
     listOf(
         watchosArm64(),
         watchosDeviceArm64(),
         watchosSimulatorArm64(),
-        watchosX64()
+        iosArm64(),
+        iosSimulatorArm64(),
     ).forEach {
         it.binaries.framework {
             baseName = "Shared"
@@ -37,10 +37,16 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            // No external dependencies – pure Kotlin
+            implementation(libs.kotlinx.serialization.json)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
     }
+}
+
+// Coverage floor for koverVerify, just below the measured value; raise it when coverage grows
+kover.reports.verify.rule {
+    minBound(99, CoverageUnit.LINE)
+    minBound(90, CoverageUnit.BRANCH)
 }

@@ -1,0 +1,32 @@
+# SwiftLint for the Apple apps: run `swiftlint --strict` from the repository root
+included:
+  - code/apple
+excluded:
+  - code/apple/build
+
+opt_in_rules:
+  - closure_spacing
+  - collection_alignment
+  - contains_over_first_not_nil
+  - empty_count
+  - empty_string
+  - first_where
+  - last_where
+  - modifier_order
+  - operator_usage_whitespace
+  - redundant_nil_coalescing
+  - sorted_imports
+  - toggle_bool
+  - vertical_whitespace_closing_braces
+  - yoda_condition
+
+# Same limit as .editorconfig
+line_length:
+  warning: 160
+  ignores_comments: true
+
+# Loop indices, coordinates and argument labels read better short
+identifier_name:
+  excluded: [i, s, x, y, sx, sy, to, id]
+type_name:
+  excluded: [Id]

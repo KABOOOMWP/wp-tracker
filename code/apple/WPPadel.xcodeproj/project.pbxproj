@@ -1,0 +1,757 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		BB0000000000000000000046 /* WPPadelTracker.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000018 /* WPPadelTracker.app */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		BB000000000000000000003D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA0000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AA0000000000000000000030;
+			remoteInfo = WPPadelTracker;
+		};
+		BB000000000000000000003F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA0000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AA0000000000000000000030;
+			remoteInfo = WPPadelTracker;
+		};
+		BB0000000000000000000041 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA0000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AA0000000000000000000030;
+			remoteInfo = WPPadelTracker;
+		};
+		BB0000000000000000000043 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA0000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 06FCCE728CF7734029894640;
+			remoteInfo = WPPadelBoard;
+		};
+		BB0000000000000000000045 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA0000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 06FCCE728CF7734029894640;
+			remoteInfo = WPPadelBoard;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BB000000000000000000001B /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				BB0000000000000000000046 /* WPPadelTracker.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		AA0000000000000000000018 /* WPPadelTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WPPadelTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA0000000000000000000060 /* WPPadelTrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WPPadelTrackerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB000000000000000000000C /* App.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = App.xcconfig; sourceTree = "<group>"; };
+		BB000000000000000000000D /* WPPadelTracker-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "WPPadelTracker-Info.plist"; sourceTree = "<group>"; };
+		BB000000000000000000000E /* WPPadelTracker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WPPadelTracker.entitlements; sourceTree = "<group>"; };
+		BB000000000000000000000F /* WPPadelBoard-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "WPPadelBoard-Info.plist"; sourceTree = "<group>"; };
+		BB000000000000000000001C /* WPPadelBoard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WPPadelBoard.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB000000000000000000002A /* WPPadelTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WPPadelTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB0000000000000000000031 /* WPPadelBoardTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WPPadelBoardTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB0000000000000000000038 /* WPPadelBoardUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WPPadelBoardUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CC0000000000000000000001 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
+		CC0000000000000000000002 /* Watch.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Watch.xcconfig; sourceTree = "<group>"; };
+		CC0000000000000000000003 /* Phone.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Phone.xcconfig; sourceTree = "<group>"; };
+		CC0000000000000000000004 /* LinksShared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = LinksShared.xcconfig; sourceTree = "<group>"; };
+		CC0000000000000000000005 /* AppTarget.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = AppTarget.xcconfig; sourceTree = "<group>"; };
+		CC0000000000000000000006 /* WPPadelTracker.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = WPPadelTracker.xcconfig; sourceTree = "<group>"; };
+		CC0000000000000000000007 /* WPPadelBoard.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = WPPadelBoard.xcconfig; sourceTree = "<group>"; };
+		CC0000000000000000000008 /* WPPadelTrackerTests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = WPPadelTrackerTests.xcconfig; sourceTree = "<group>"; };
+		CC0000000000000000000009 /* WPPadelBoardTests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = WPPadelBoardTests.xcconfig; sourceTree = "<group>"; };
+		CC000000000000000000000A /* WPPadelTrackerUITests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = WPPadelTrackerUITests.xcconfig; sourceTree = "<group>"; };
+		CC000000000000000000000B /* WPPadelBoardUITests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = WPPadelBoardUITests.xcconfig; sourceTree = "<group>"; };
+		CC000000000000000000000C /* compile-kotlin.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "compile-kotlin.sh"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		BB0000000000000000000004 /* Common */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Common;
+			sourceTree = "<group>";
+		};
+		BB0000000000000000000005 /* WPPadelTracker */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = WPPadelTracker;
+			sourceTree = "<group>";
+		};
+		BB0000000000000000000006 /* WPPadelBoard */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = WPPadelBoard;
+			sourceTree = "<group>";
+		};
+		BB0000000000000000000007 /* WPPadelTrackerTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = WPPadelTrackerTests;
+			sourceTree = "<group>";
+		};
+		BB0000000000000000000008 /* WPPadelTrackerUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = WPPadelTrackerUITests;
+			sourceTree = "<group>";
+		};
+		BB0000000000000000000009 /* WPPadelBoardTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = WPPadelBoardTests;
+			sourceTree = "<group>";
+		};
+		BB000000000000000000000A /* WPPadelBoardUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = WPPadelBoardUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		BB0000000000000000000012 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB0000000000000000000019 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB0000000000000000000021 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB0000000000000000000028 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB000000000000000000002F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB0000000000000000000036 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AA0000000000000000000002 = {
+			isa = PBXGroup;
+			children = (
+				BB000000000000000000000B /* Config */,
+				CC000000000000000000000D /* Scripts */,
+				BB0000000000000000000004 /* Common */,
+				BB0000000000000000000005 /* WPPadelTracker */,
+				BB0000000000000000000006 /* WPPadelBoard */,
+				BB0000000000000000000007 /* WPPadelTrackerTests */,
+				BB0000000000000000000008 /* WPPadelTrackerUITests */,
+				BB0000000000000000000009 /* WPPadelBoardTests */,
+				BB000000000000000000000A /* WPPadelBoardUITests */,
+				AA0000000000000000000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000000000018 /* WPPadelTracker.app */,
+				BB000000000000000000001C /* WPPadelBoard.app */,
+				AA0000000000000000000060 /* WPPadelTrackerUITests.xctest */,
+				BB000000000000000000002A /* WPPadelTrackerTests.xctest */,
+				BB0000000000000000000031 /* WPPadelBoardTests.xctest */,
+				BB0000000000000000000038 /* WPPadelBoardUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		BB000000000000000000000B /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				BB000000000000000000000C /* App.xcconfig */,
+				CC0000000000000000000001 /* Base.xcconfig */,
+				CC0000000000000000000002 /* Watch.xcconfig */,
+				CC0000000000000000000003 /* Phone.xcconfig */,
+				CC0000000000000000000004 /* LinksShared.xcconfig */,
+				CC0000000000000000000005 /* AppTarget.xcconfig */,
+				CC0000000000000000000006 /* WPPadelTracker.xcconfig */,
+				CC0000000000000000000007 /* WPPadelBoard.xcconfig */,
+				CC0000000000000000000008 /* WPPadelTrackerTests.xcconfig */,
+				CC0000000000000000000009 /* WPPadelBoardTests.xcconfig */,
+				CC000000000000000000000A /* WPPadelTrackerUITests.xcconfig */,
+				CC000000000000000000000B /* WPPadelBoardUITests.xcconfig */,
+				BB000000000000000000000D /* WPPadelTracker-Info.plist */,
+				BB000000000000000000000E /* WPPadelTracker.entitlements */,
+				BB000000000000000000000F /* WPPadelBoard-Info.plist */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		CC000000000000000000000D /* Scripts */ = {
+			isa = PBXGroup;
+			children = (
+				CC000000000000000000000C /* compile-kotlin.sh */,
+			);
+			path = Scripts;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		06FCCE728CF7734029894640 /* WPPadelBoard */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB000000000000000000001D /* Build configuration list for PBXNativeTarget "WPPadelBoard" */;
+			buildPhases = (
+				BB0000000000000000000017 /* Compile Kotlin Framework */,
+				BB0000000000000000000018 /* Sources */,
+				BB0000000000000000000019 /* Frameworks */,
+				BB000000000000000000001A /* Resources */,
+				BB000000000000000000001B /* Embed Watch Content */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BB000000000000000000003C /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				BB0000000000000000000004 /* Common */,
+				BB0000000000000000000006 /* WPPadelBoard */,
+			);
+			name = WPPadelBoard;
+			productName = WPPadelBoard;
+			productReference = BB000000000000000000001C /* WPPadelBoard.app */;
+			productType = "com.apple.product-type.application";
+		};
+		AA0000000000000000000030 /* WPPadelTracker */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB0000000000000000000014 /* Build configuration list for PBXNativeTarget "WPPadelTracker" */;
+			buildPhases = (
+				BB0000000000000000000010 /* Compile Kotlin Framework */,
+				BB0000000000000000000011 /* Sources */,
+				BB0000000000000000000012 /* Frameworks */,
+				BB0000000000000000000013 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				BB0000000000000000000004 /* Common */,
+				BB0000000000000000000005 /* WPPadelTracker */,
+			);
+			name = WPPadelTracker;
+			productName = WPPadelTracker;
+			productReference = AA0000000000000000000018 /* WPPadelTracker.app */;
+			productType = "com.apple.product-type.application";
+		};
+		AA0000000000000000000080 /* WPPadelTrackerUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB0000000000000000000024 /* Build configuration list for PBXNativeTarget "WPPadelTrackerUITests" */;
+			buildPhases = (
+				BB0000000000000000000020 /* Sources */,
+				BB0000000000000000000021 /* Frameworks */,
+				BB0000000000000000000022 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BB000000000000000000003E /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				BB0000000000000000000008 /* WPPadelTrackerUITests */,
+			);
+			name = WPPadelTrackerUITests;
+			productName = WPPadelTrackerUITests;
+			productReference = AA0000000000000000000060 /* WPPadelTrackerUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		BB0000000000000000000001 /* WPPadelTrackerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB000000000000000000002B /* Build configuration list for PBXNativeTarget "WPPadelTrackerTests" */;
+			buildPhases = (
+				BB0000000000000000000027 /* Sources */,
+				BB0000000000000000000028 /* Frameworks */,
+				BB0000000000000000000029 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BB0000000000000000000040 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				BB0000000000000000000007 /* WPPadelTrackerTests */,
+			);
+			name = WPPadelTrackerTests;
+			productName = WPPadelTrackerTests;
+			productReference = BB000000000000000000002A /* WPPadelTrackerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		BB0000000000000000000002 /* WPPadelBoardTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB0000000000000000000032 /* Build configuration list for PBXNativeTarget "WPPadelBoardTests" */;
+			buildPhases = (
+				BB000000000000000000002E /* Sources */,
+				BB000000000000000000002F /* Frameworks */,
+				BB0000000000000000000030 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BB0000000000000000000042 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				BB0000000000000000000009 /* WPPadelBoardTests */,
+			);
+			name = WPPadelBoardTests;
+			productName = WPPadelBoardTests;
+			productReference = BB0000000000000000000031 /* WPPadelBoardTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		BB0000000000000000000003 /* WPPadelBoardUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB0000000000000000000039 /* Build configuration list for PBXNativeTarget "WPPadelBoardUITests" */;
+			buildPhases = (
+				BB0000000000000000000035 /* Sources */,
+				BB0000000000000000000036 /* Frameworks */,
+				BB0000000000000000000037 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BB0000000000000000000044 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				BB000000000000000000000A /* WPPadelBoardUITests */,
+			);
+			name = WPPadelBoardUITests;
+			productName = WPPadelBoardUITests;
+			productReference = BB0000000000000000000038 /* WPPadelBoardUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AA0000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2600;
+				LastUpgradeCheck = 2600;
+				TargetAttributes = {
+					06FCCE728CF7734029894640 = {
+						CreatedOnToolsVersion = 26.0;
+					};
+					AA0000000000000000000030 = {
+						CreatedOnToolsVersion = 26.0;
+					};
+					AA0000000000000000000080 = {
+						CreatedOnToolsVersion = 26.0;
+						TestTargetID = AA0000000000000000000030;
+					};
+					BB0000000000000000000001 = {
+						CreatedOnToolsVersion = 26.0;
+						TestTargetID = AA0000000000000000000030;
+					};
+					BB0000000000000000000002 = {
+						CreatedOnToolsVersion = 26.0;
+						TestTargetID = 06FCCE728CF7734029894640;
+					};
+					BB0000000000000000000003 = {
+						CreatedOnToolsVersion = 26.0;
+						TestTargetID = 06FCCE728CF7734029894640;
+					};
+				};
+			};
+			buildConfigurationList = BB0000000000000000000049 /* Build configuration list for PBXProject "WPPadel" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = AA0000000000000000000002;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = AA0000000000000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AA0000000000000000000030 /* WPPadelTracker */,
+				06FCCE728CF7734029894640 /* WPPadelBoard */,
+				AA0000000000000000000080 /* WPPadelTrackerUITests */,
+				BB0000000000000000000001 /* WPPadelTrackerTests */,
+				BB0000000000000000000002 /* WPPadelBoardTests */,
+				BB0000000000000000000003 /* WPPadelBoardUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		BB0000000000000000000013 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB000000000000000000001A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB0000000000000000000022 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB0000000000000000000029 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB0000000000000000000030 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB0000000000000000000037 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		BB0000000000000000000010 /* Compile Kotlin Framework */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Compile Kotlin Framework";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/bin/sh \"$SRCROOT/Scripts/compile-kotlin.sh\"\n";
+		};
+		BB0000000000000000000017 /* Compile Kotlin Framework */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Compile Kotlin Framework";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/bin/sh \"$SRCROOT/Scripts/compile-kotlin.sh\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		BB0000000000000000000011 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB0000000000000000000018 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB0000000000000000000020 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB0000000000000000000027 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB000000000000000000002E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB0000000000000000000035 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		BB000000000000000000003C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AA0000000000000000000030 /* WPPadelTracker */;
+			targetProxy = BB000000000000000000003D /* PBXContainerItemProxy */;
+		};
+		BB000000000000000000003E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AA0000000000000000000030 /* WPPadelTracker */;
+			targetProxy = BB000000000000000000003F /* PBXContainerItemProxy */;
+		};
+		BB0000000000000000000040 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AA0000000000000000000030 /* WPPadelTracker */;
+			targetProxy = BB0000000000000000000041 /* PBXContainerItemProxy */;
+		};
+		BB0000000000000000000042 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 06FCCE728CF7734029894640 /* WPPadelBoard */;
+			targetProxy = BB0000000000000000000043 /* PBXContainerItemProxy */;
+		};
+		BB0000000000000000000044 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 06FCCE728CF7734029894640 /* WPPadelBoard */;
+			targetProxy = BB0000000000000000000045 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		BB0000000000000000000015 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CC0000000000000000000006 /* WPPadelTracker.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		BB0000000000000000000016 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CC0000000000000000000006 /* WPPadelTracker.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		BB000000000000000000001E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CC0000000000000000000007 /* WPPadelBoard.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		BB000000000000000000001F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CC0000000000000000000007 /* WPPadelBoard.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		BB0000000000000000000025 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CC000000000000000000000A /* WPPadelTrackerUITests.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		BB0000000000000000000026 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CC000000000000000000000A /* WPPadelTrackerUITests.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		BB000000000000000000002C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CC0000000000000000000008 /* WPPadelTrackerTests.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		BB000000000000000000002D /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CC0000000000000000000008 /* WPPadelTrackerTests.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		BB0000000000000000000033 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CC0000000000000000000009 /* WPPadelBoardTests.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		BB0000000000000000000034 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CC0000000000000000000009 /* WPPadelBoardTests.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		BB000000000000000000003A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CC000000000000000000000B /* WPPadelBoardUITests.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		BB000000000000000000003B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CC000000000000000000000B /* WPPadelBoardUITests.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		BB0000000000000000000047 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CC0000000000000000000001 /* Base.xcconfig */;
+			buildSettings = {
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		BB0000000000000000000048 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CC0000000000000000000001 /* Base.xcconfig */;
+			buildSettings = {
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BB0000000000000000000014 /* Build configuration list for PBXNativeTarget "WPPadelTracker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB0000000000000000000015 /* Debug */,
+				BB0000000000000000000016 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BB000000000000000000001D /* Build configuration list for PBXNativeTarget "WPPadelBoard" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB000000000000000000001E /* Debug */,
+				BB000000000000000000001F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BB0000000000000000000024 /* Build configuration list for PBXNativeTarget "WPPadelTrackerUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB0000000000000000000025 /* Debug */,
+				BB0000000000000000000026 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BB000000000000000000002B /* Build configuration list for PBXNativeTarget "WPPadelTrackerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB000000000000000000002C /* Debug */,
+				BB000000000000000000002D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BB0000000000000000000032 /* Build configuration list for PBXNativeTarget "WPPadelBoardTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB0000000000000000000033 /* Debug */,
+				BB0000000000000000000034 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BB0000000000000000000039 /* Build configuration list for PBXNativeTarget "WPPadelBoardUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB000000000000000000003A /* Debug */,
+				BB000000000000000000003B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BB0000000000000000000049 /* Build configuration list for PBXProject "WPPadel" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB0000000000000000000047 /* Debug */,
+				BB0000000000000000000048 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AA0000000000000000000001 /* Project object */;
+}

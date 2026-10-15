@@ -1,0 +1,6 @@
+#include "Watch.xcconfig"
+#include "LinksShared.xcconfig"
+
+PRODUCT_BUNDLE_IDENTIFIER = $(WATCH_BUNDLE_ID).tests
+TEST_HOST = $(BUILT_PRODUCTS_DIR)/WPPadelTracker.app/WPPadelTracker
+BUNDLE_LOADER = $(TEST_HOST)

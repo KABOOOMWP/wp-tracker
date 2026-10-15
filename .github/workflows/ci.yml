@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  android:
+    name: Config, shared JVM and Android
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: code
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: App config
+        working-directory: .
+        run: |
+          python3 tool/app_config.py check
+          python3 -m unittest discover -s tool -v
+      # The wrapper starts on this JDK; gradle-daemon-jvm.properties asks for 25
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "25"
+      - uses: gradle/actions/setup-gradle@v5
+      - name: Kotlin style and static analysis (ktlint, detekt)
+        run: ./gradlew spotlessCheck detekt
+      - name: Shared tests (JVM and Android host)
+        run: ./gradlew :shared:jvmTest :shared:testAndroidHostTest
+      - name: Android unit tests
+        run: ./gradlew :android:common:testDebugUnitTest :android:watch:testDebugUnitTest :android:phone:testDebugUnitTest
+      - name: Coverage floors (Kover)
+        run: ./gradlew koverVerify
+      - name: Android lint
+        run: ./gradlew :android:common:lintDebug :android:watch:lintDebug :android:phone:lintDebug
+      - name: Upload reports
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: android-reports
+          path: code/**/build/reports/
+
+  apple:
+    name: Shared native and Apple apps
+    runs-on: macos-26
+    timeout-minutes: 90
+    defaults:
+      run:
+        working-directory: code
+    steps:
+      - uses: actions/checkout@v5
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - name: Swift style (SwiftLint)
+        working-directory: .
+        run: |
+          command -v swiftlint || brew install swiftlint
+          swiftlint lint --strict
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "25"
+      - uses: gradle/actions/setup-gradle@v5
+      - name: Shared tests (all targets)
+        run: ./gradlew :shared:allTests
+      - name: watchOS app tests
+        run: |
+          xcodebuild test -project apple/WPPadel.xcodeproj -scheme WPPadelTracker \
+            -destination "id=$(python3 ../tool/simulator.py watchOS)" \
+            -resultBundlePath build/WPPadelTracker.xcresult CODE_SIGNING_ALLOWED=NO
+      - name: iPhone app tests
+        run: |
+          xcodebuild test -project apple/WPPadel.xcodeproj -scheme WPPadelBoard \
+            -destination "id=$(python3 ../tool/simulator.py iOS)" \
+            -resultBundlePath build/WPPadelBoard.xcresult CODE_SIGNING_ALLOWED=NO
+      - name: Upload results
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: apple-results
+          path: |
+            code/build/*.xcresult
+            code/shared/build/reports/

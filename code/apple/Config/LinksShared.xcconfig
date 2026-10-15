@@ -1,0 +1,3 @@
+// Targets that link the Shared Kotlin framework, built by Scripts/compile-kotlin.sh.
+FRAMEWORK_SEARCH_PATHS = $(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
+OTHER_LDFLAGS = $(inherited) -framework Shared

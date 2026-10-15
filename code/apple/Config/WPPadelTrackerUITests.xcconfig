@@ -1,0 +1,4 @@
+#include "Watch.xcconfig"
+
+PRODUCT_BUNDLE_IDENTIFIER = $(WATCH_BUNDLE_ID).uitests
+TEST_TARGET_NAME = WPPadelTracker

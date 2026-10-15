@@ -1,0 +1,4 @@
+#include "Phone.xcconfig"
+
+PRODUCT_BUNDLE_IDENTIFIER = $(PHONE_BUNDLE_ID).uitests
+TEST_TARGET_NAME = WPPadelBoard

@@ -1,0 +1,27 @@
+{
+  "_comment": [
+    "THE SINGLE SOURCE OF TRUTH FOR NAMES, IDS, TEAM AND VERSION OF EVERY APP.",
+    "Edit this file, then run `python3 tool/app_config.py apply`.",
+    "Gradle reads it directly; Xcode reads the generated code/apple/Config/App.xcconfig.",
+    "`python3 tool/app_config.py check` fails on drift; the Android and Xcode builds run it."
+  ],
+  "owner": "Wasted Potential (WP)",
+  "version": {
+    "_comment": "name is what users see; build must grow with every store upload. Android versionCode = build * 10 + versionCodeOffset.",
+    "name": "1.3.0",
+    "build": 20261012
+  },
+  "apple": {
+    "team": "9P2T82QGN8",
+    "phone": { "name": "WP Padel Board",   "bundleId": "ch.wastedpotential.padel" },
+    "watch": { "name": "WP Padel Tracker", "bundleId": "ch.wastedpotential.padel.watchkitapp" }
+  },
+  "android": {
+    "_comment": [
+      "Both apps need the same applicationId (and signing key), or the Wear Data Layer will not connect them.",
+      "They are one Play app, so each bundle needs its own versionCode: versionCodeOffset (0-9) keeps them apart."
+    ],
+    "phone": { "name": "WP Padel Board",   "applicationId": "ch.wastedpotential.padel", "versionCodeOffset": 1 },
+    "watch": { "name": "WP Padel Tracker", "applicationId": "ch.wastedpotential.padel", "versionCodeOffset": 2 }
+  }
+}

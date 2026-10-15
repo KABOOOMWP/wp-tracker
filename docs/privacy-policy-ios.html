@@ -57,7 +57,7 @@
   <div class="container">
     <div class="badge">watchOS · Apple Watch</div>
     <h1>Privacy Policy</h1>
-    <p class="meta">WP Padel Tracker &nbsp;·&nbsp; Last updated: April 30, 2026</p>
+    <p class="meta">WP Padel Tracker &nbsp;·&nbsp; Last updated: October 12, 2026</p>
 
     <p>
       WP Padel Tracker is a padel match-scoring app for Apple Watch. This policy explains what
@@ -70,7 +70,7 @@
       requests</strong>. The app operates entirely on your device. The only external data interaction
       is writing a workout record to Apple Health when a match is completed.
     </p>
-    <p>During a match the app holds the following data <em>in memory only</em>:</p>
+    <p>During a match the app keeps the following data <em>on your watch</em>:</p>
     <ul>
       <li>Current score, games, and sets</li>
       <li>Serve rotation and server position</li>
@@ -79,8 +79,17 @@
       <li>Match start and end timestamps</li>
     </ul>
     <p>
-      When you complete a match, the app saves a single workout record to Apple Health (see
-      section 3 below). No other data is written to disk or any external service.
+      This data is saved in the app's private storage on the watch so a match survives the app
+      being closed or restarted. It is deleted when you start a new match, and removed entirely if
+      you delete the app. When a match ends, the app also saves a single workout record to Apple
+      Health (see section 3 below). Nothing is sent to any external service.
+    </p>
+
+    <p>
+      <strong>WP Padel Board (iPhone companion).</strong> The watch sends the live score to the
+      paired iPhone over Apple's WatchConnectivity link, directly between your own devices. The
+      team names you type on the iPhone are sent to the watch the same way, and are stored on both
+      devices until you change them. Nothing is sent to the developer or any other service.
     </p>
 
     <h2>2. Permissions Requested</h2>
@@ -91,12 +100,8 @@
       </thead>
       <tbody>
         <tr>
-          <td><strong>Health – Read</strong></td>
-          <td>Required by HealthKit to display your workout in the app's completion screen.</td>
-        </tr>
-        <tr>
           <td><strong>Health – Write</strong></td>
-          <td>Saves your completed padel match as a Tennis workout in Apple Health.</td>
+          <td>Saves your padel match as a Tennis workout in Apple Health. The app reads nothing from Health.</td>
         </tr>
       </tbody>
     </table>
@@ -112,7 +117,7 @@
     </p>
     <ul>
       <li>Activity type: Tennis (closest available category to padel)</li>
-      <li>Location type: Outdoor</li>
+      <li>Location type: Unknown (padel is played indoors and outdoors)</li>
       <li>Workout start time and end time</li>
     </ul>
     <p>
@@ -145,7 +150,7 @@
     <h2>6. Data Retention</h2>
     <p>
       The developer does not retain any user data because no data is ever transmitted to or stored
-      by the developer. Match state is held in device RAM and discarded when the app is closed.
+      by the developer. The running match is kept only on your watch and deleted when you start a new match.
       Workout records in Apple Health are under your control and can be deleted at any time.
     </p>
 

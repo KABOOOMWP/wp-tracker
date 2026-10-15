@@ -1,0 +1,22 @@
+# Overrides on top of detekt's default rules (buildUponDefaultConfig)
+
+complexity:
+  CyclomaticComplexMethod:
+    # A when over an enum is one decision, not one per entry
+    ignoreSimpleWhenEntries: true
+  TooManyFunctions:
+    # Counts what a type offers, not its private helpers
+    ignorePrivate: true
+
+naming:
+  FunctionNaming:
+    # Compose functions are PascalCase
+    ignoreAnnotated: ['Composable']
+
+style:
+  MaxLineLength:
+    # Same limit as ktlint (.editorconfig)
+    maxLineLength: 140
+  ReturnCount:
+    # Early returns for the no-op cases are the house style
+    excludeGuardClauses: true

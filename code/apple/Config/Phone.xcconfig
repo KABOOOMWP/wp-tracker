@@ -1,0 +1,4 @@
+// Every iPhone target: iPhone only, no iPad.
+SDKROOT = iphoneos
+TARGETED_DEVICE_FAMILY = 1
+IPHONEOS_DEPLOYMENT_TARGET = 17.0
