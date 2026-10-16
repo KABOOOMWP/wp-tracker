@@ -40,7 +40,7 @@ public data class SessionState(
                 isAwaitingSummary = history.isAwaitingSummary,
                 setup = setup.screen.takeIf { screen == AppScreen.SETUP },
                 handlesBack = when (screen) {
-                    AppScreen.SETUP -> setup.back() != null
+                    AppScreen.SETUP -> setup.canGoBack
                     AppScreen.MATCH -> true
                     AppScreen.SUMMARY -> false
                 },

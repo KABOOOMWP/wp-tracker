@@ -117,11 +117,4 @@ final class ScoreboardModelTests: XCTestCase {
         model.sendSavedNames()
         XCTAssertEqual(watch.sent, [TeamNames(you: "Blue", opp: "Red")])
     }
-
-    func test_watchLink_isSafeWhileOffline() {
-        let (model, _) = model()
-        let link = WatchLink(model: model, session: nil)
-        link.send(TeamNames(you: "Blue", opp: "Red"))
-        XCTAssertNil(model.board)
-    }
 }

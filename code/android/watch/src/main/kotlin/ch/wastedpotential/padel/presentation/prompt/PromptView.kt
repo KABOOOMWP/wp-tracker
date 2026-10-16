@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import ch.wastedpotential.padel.board.BoardText
 import ch.wastedpotential.padel.board.BoardWhite
@@ -116,6 +117,7 @@ private fun LeftRightPicker(prompt: Prompt, onChoose: (Int) -> Unit) {
     }
 }
 
+/** Draws the choice's text (with its arrow); TalkBack reads its label (the words only). */
 @Composable
 private fun RowScope.PickerHalf(choice: Choice, onClick: () -> Unit) {
     Box(
@@ -124,8 +126,9 @@ private fun RowScope.PickerHalf(choice: Choice, onClick: () -> Unit) {
             .weight(1f).fillMaxHeight()
             .background(choice.tone.panel)
             .clickable(interactionSource = null, indication = null, role = Role.Button, onClick = onClick)
+            .semantics { contentDescription = choice.label }
             .testTag(choice.tag),
     ) {
-        BoardText(choice.label, M.PICKER_FONT, BoardWhite, minSize = M.PICKER_FONT_MIN)
+        BoardText(choice.text, M.PICKER_FONT, BoardWhite, minSize = M.PICKER_FONT_MIN)
     }
 }

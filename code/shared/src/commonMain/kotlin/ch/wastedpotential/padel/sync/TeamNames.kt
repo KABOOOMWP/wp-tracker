@@ -15,7 +15,7 @@ public data class TeamNames(val you: String = DEFAULT_YOU, val opp: String = DEF
     public fun summaryName(team: Team): String = name(team).uppercase()
 
     /** Applies an edit: input is trimmed, a blank field keeps the current name, and names are capped. */
-    public fun edited(you: String, opp: String): TeamNames = TeamNames(
+    internal fun edited(you: String, opp: String): TeamNames = TeamNames(
         you = you.trim().ifEmpty { this.you }.take(MAX_LENGTH),
         opp = opp.trim().ifEmpty { this.opp }.take(MAX_LENGTH),
     )
@@ -23,8 +23,8 @@ public data class TeamNames(val you: String = DEFAULT_YOU, val opp: String = DEF
     public fun encode(): String = json.encodeToString(serializer(), this)
 
     public companion object {
-        public const val DEFAULT_YOU: String = UiText.YOU
-        public const val DEFAULT_OPP: String = UiText.OPPONENT
+        internal const val DEFAULT_YOU: String = UiText.YOU
+        internal const val DEFAULT_OPP: String = UiText.OPPONENT
         public const val MAX_LENGTH: Int = 24
         private val json = Json { ignoreUnknownKeys = true }
 

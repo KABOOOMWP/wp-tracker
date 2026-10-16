@@ -40,10 +40,14 @@ public object UiText {
     public const val YOUR_TEAM: String = "YOUR TEAM"
     public const val OPP_TEAM: String = "OPP TEAM"
     public const val SWITCH_SIDES: String = "SWITCH SIDES?"
-    public const val LEFT: String = "← LEFT"
-    public const val RIGHT: String = "RIGHT →"
-    public const val SWITCH: String = "← SWITCH"
-    public const val KEEP: String = "KEEP →"
+    public const val LEFT: String = "LEFT"
+    public const val RIGHT: String = "RIGHT"
+    public const val SWITCH: String = "SWITCH"
+    public const val KEEP: String = "KEEP"
+
+    /** Drawn beside a left/right answer (Choice.text), never spoken. */
+    internal const val ARROW_LEFT: String = "←"
+    internal const val ARROW_RIGHT: String = "→"
 
     // Accessibility: spoken by TalkBack and VoiceOver, never drawn
 

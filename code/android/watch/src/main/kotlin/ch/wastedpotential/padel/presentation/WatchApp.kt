@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import ch.wastedpotential.padel.board.LocalBoardScale
 import ch.wastedpotential.padel.display.BoardColors
 import ch.wastedpotential.padel.display.BoardMetrics
+import ch.wastedpotential.padel.display.UiTimings
 import ch.wastedpotential.padel.match.AppScreen
 import ch.wastedpotential.padel.presentation.match.MatchScreen
 import ch.wastedpotential.padel.presentation.setup.SetupView
@@ -24,7 +25,7 @@ val LocalIsRoundScreen = staticCompositionLocalOf { false }
 
 /** The whole watch UI: the screen the session is on, each action wired to the view model and its feedback. */
 @Composable
-fun WatchApp(vm: WatchViewModel, haptics: Haptics) {
+fun WatchApp(vm: WatchViewModel, haptics: Haptics, undoHoldMs: Long = UiTimings.END_MATCH_HOLD_MS) {
     val state = vm.state
     // Back steps through the setup and never leaves a running match (a wrist flick can send it)
     BackHandler(enabled = state?.handlesBack == true) { vm.back() }
@@ -43,6 +44,7 @@ fun WatchApp(vm: WatchViewModel, haptics: Haptics) {
                     onUndo = { haptics.play(vm.undo()) },
                     onEndMatch = vm::end,
                     onAnswer = { i -> haptics.play(vm.answerPrompt(i)) },
+                    holdMs = undoHoldMs,
                 )
             }
 

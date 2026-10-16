@@ -13,17 +13,18 @@ struct ChoiceStack: View {
             ForEach(choices.indices, id: \.self) { i in
                 if i > 0 { PillDivider(label: pills[i - 1]) }
                 let choice = choices[i]
-                // A tap gesture, not a Button: a watchOS Button would swallow the swipe back
+                // A tap gesture with a button trait: one VoiceOver element per choice, spoken as its label
                 ZStack {
                     Color.panel(choice.tone)
-                    Text(choice.label)
+                    Text(choice.text)
                         .font(.system(size: scaled(metrics.CHOICE_FONT, scale), weight: .bold))
                         .foregroundStyle(Color.accent(choice.tone))
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .contentShape(Rectangle())
                 .onTapGesture { onPick(i) }
-                .accessibilityElement(children: .combine)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(choice.label)
                 .accessibilityAddTraits(.isButton)
                 .accessibilityIdentifier(choice.tag)
                 .accessibilityAction { onPick(i) }

@@ -12,7 +12,7 @@ dependencies {
     implementation(project(":android:common"))
 
     implementation(libs.activity.compose)
-    implementation(libs.lifecycle.viewmodel.compose)
+    implementation(libs.lifecycle.viewmodel)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.compose.ui.tooling.preview)
     debugImplementation(libs.compose.ui.tooling)
@@ -32,6 +32,6 @@ dependencies {
 
 // Coverage floor for koverVerify, just below the measured value; raise it when coverage grows
 kover.reports.verify.rule {
-    minBound(52, CoverageUnit.LINE)
-    minBound(65, CoverageUnit.BRANCH)
+    minBound(97, CoverageUnit.LINE)
+    minBound(70, CoverageUnit.BRANCH)
 }

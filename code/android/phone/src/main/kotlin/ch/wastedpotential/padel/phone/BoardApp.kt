@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -178,7 +177,7 @@ private fun EditButton(modifier: Modifier, onClick: () -> Unit) {
         modifier = modifier
             .padding(M.EDIT_PAD.dp)
             .size(MinTouchTarget)
-            .clickable(role = Role.Button, onClickLabel = UiText.EDIT_NAMES, onClick = onClick)
+            .clickable(interactionSource = null, indication = null, onClickLabel = UiText.EDIT_NAMES, role = Role.Button, onClick = onClick)
             .testTag(UiTags.EDIT_NAMES),
     ) {
         Image(

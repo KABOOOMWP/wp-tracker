@@ -1,11 +1,41 @@
 import Foundation
 import Shared
+import WatchConnectivity
 @testable import WPPadelTracker
 
 /// Records every scoreboard the session mirrors.
 final class FakePhone: NSObject, ScoreboardSink {
     var sent: [Scoreboard] = []
     func send(board: Scoreboard) { sent.append(board) }
+}
+
+/// A WCSession stand-in: activated and reachable unless a test says otherwise; records what the link sends.
+final class FakeLinkSession: LinkSession {
+    weak var delegate: (any WCSessionDelegate)?
+    var activationState: WCSessionActivationState = .activated
+    var isReachable = true
+    var receivedApplicationContext: [String: Any] = [:]
+    var contextFails = false
+
+    private(set) var activations = 0
+    private(set) var contexts: [[String: String]] = []
+    private(set) var messages: [[String: String]] = []
+    private(set) var messageErrorHandlers: [((any Error) -> Void)?] = []
+
+    func activate() { activations += 1 }
+
+    func updateApplicationContext(_ context: [String: Any]) throws {
+        if contextFails { throw TestError() }
+        contexts.append(context as? [String: String] ?? [:])
+    }
+
+    func sendMessage(_ message: [String: Any], replyHandler: (([String: Any]) -> Void)?, errorHandler: ((any Error) -> Void)?) {
+        messages.append(message as? [String: String] ?? [:])
+        messageErrorHandlers.append(errorHandler)
+    }
+
+    func queueUserInfo(_ userInfo: [String: Any]) {}
+    func cancelQueuedUserInfo() {}
 }
 
 /// Records the feedback MatchStore plays.

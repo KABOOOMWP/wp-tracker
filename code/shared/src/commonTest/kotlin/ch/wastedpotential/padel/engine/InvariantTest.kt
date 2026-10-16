@@ -9,7 +9,7 @@ import ch.wastedpotential.padel.model.GamePhase
 import ch.wastedpotential.padel.model.PillState
 import ch.wastedpotential.padel.model.PlayMode
 import ch.wastedpotential.padel.model.RuleMode
-import ch.wastedpotential.padel.model.ServeSide
+import ch.wastedpotential.padel.model.SetScore
 import ch.wastedpotential.padel.model.Snapshot
 import ch.wastedpotential.padel.model.Team
 import kotlin.random.Random
@@ -152,7 +152,8 @@ class InvariantTest {
             assertEquals(winner, after.match.completedSets.last().winner)
         }
         assertEquals(after.isMatchOver, pill == PillState.MATCH_POINT && setOver, "a match point was announced")
-        if (!after.isMatchOver) assertEquals(0, after.game.rally, "a new game starts at love")
+        assertEquals(0, after.game.rally, "a new game starts at love, after the winning point too")
+        if (setOver) assertEquals(SetScore(0, 0), after.set, "a new set starts at love, after the winning point too")
     }
 
     private fun checkPointInGame(before: Snapshot, after: Snapshot, tally: Tally) {
@@ -170,7 +171,6 @@ class InvariantTest {
 
     private fun checkState(s: Snapshot, tally: Tally) {
         val game = s.game
-        assertEquals(if (game.rally % 2 == 0) ServeSide.RIGHT else ServeSide.LEFT, s.serve.serveSide, "serve side follows the rally")
         assertTrue(s.serve.serverPlayer in s.config.serveOrder)
         for (set in s.match.completedSets) {
             val high = maxOf(set.youGames, set.oppGames)

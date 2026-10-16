@@ -15,9 +15,21 @@ public enum class Tone {
     }
 }
 
-/** One tappable answer; [tag] is the id UI tests find it by. */
+/** The glyph drawn beside a left/right answer, pointing to the half it sits in. */
+public enum class Arrow { LEFT, RIGHT }
+
+/**
+ * One tappable answer. [label] is the words only, what a screen reader says; [text] adds the [arrow] glyph for drawing.
+ * [tag] is the id UI tests find it by.
+ */
 @Serializable
-public data class Choice(val label: String, val tone: Tone, val tag: String)
+public data class Choice(val label: String, val tone: Tone, val tag: String, val arrow: Arrow? = null) {
+    public val text: String get() = when (arrow) {
+        Arrow.LEFT -> "${UiText.ARROW_LEFT} $label"
+        Arrow.RIGHT -> "$label ${UiText.ARROW_RIGHT}"
+        null -> label
+    }
+}
 
 public enum class PromptKind {
     /** One choice: any tap answers it (choice 0). */
@@ -37,7 +49,7 @@ public data class Prompt(val kind: PromptKind, val header: String, val subtitle:
             UiText.WHO_SERVES,
             if (team == Team.YOU) UiText.YOUR_SIDE else UiText.OPPONENT_SIDE,
             Tone.NEUTRAL,
-            listOf(Choice(UiText.LEFT, Tone.YOU, leftTag), Choice(UiText.RIGHT, Tone.OPP, rightTag)),
+            listOf(Choice(UiText.LEFT, Tone.YOU, leftTag, Arrow.LEFT), Choice(UiText.RIGHT, Tone.OPP, rightTag, Arrow.RIGHT)),
         )
     }
 }

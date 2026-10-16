@@ -42,13 +42,25 @@ class PickTest(unittest.TestCase):
     def test_nothing_installed(self):
         self.assertIsNone(simulator.pick({IOS + "26-0": [device("iPhone 18", "phone")]}, "watchOS"))
 
+    def test_prefers_an_unpaired_watch_on_the_newest_runtime(self):
+        devices = {WATCH + "27-0": [device("Apple Watch Series 12 (46mm)", "paired"), device("Apple Watch Ultra 4", "free")],
+                   WATCH + "26-5": [device("Apple Watch Series 11", "old-free")]}
+        self.assertEqual("free", simulator.pick(devices, "watchOS", paired={"paired"})["udid"])
+        self.assertEqual("paired", simulator.pick(devices, "watchOS", paired={"paired", "free"})["udid"], "all paired: the first")
+
+    def test_paired_watches_come_from_the_pairs_listing(self):
+        pairs = {"P1": {"watch": {"udid": "W1"}, "phone": {"udid": "I1"}}, "P2": {"watch": {"udid": "W2"}, "phone": {"udid": "I1"}}}
+        self.assertEqual({"W1", "W2"}, simulator.paired_watches(pairs))
+        self.assertEqual(set(), simulator.paired_watches({}))
+
 
 class MainTest(unittest.TestCase):
 
-    def run_main(self, args, devices=None):
-        listing = mock.Mock(stdout=json.dumps({"devices": devices or {}}))
+    def run_main(self, args, devices=None, pairs=None):
+        listings = {"devices": mock.Mock(stdout=json.dumps({"devices": devices or {}})),
+                    "pairs": mock.Mock(stdout=json.dumps({"pairs": pairs or {}}))}
         out, err = io.StringIO(), io.StringIO()
-        with mock.patch.object(simulator.subprocess, "run", return_value=listing) as run, \
+        with mock.patch.object(simulator.subprocess, "run", side_effect=lambda cmd, **_: listings[cmd[3]]) as run, \
                 contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
             code = simulator.main(["simulator.py", *args])
         return code, out.getvalue(), err.getvalue(), run
@@ -56,7 +68,18 @@ class MainTest(unittest.TestCase):
     def test_prints_the_udid(self):
         code, out, err, run = self.run_main(["watchOS"], {WATCH + "12-0": [device("Apple Watch Series 12 (46mm)", "W1")]})
         self.assertEqual((0, "W1\n", ""), (code, out, err))
-        self.assertEqual(["xcrun", "simctl", "list", "devices", "available", "--json"], run.call_args.args[0])
+        self.assertEqual([["xcrun", "simctl", "list", "devices", "available", "--json"], ["xcrun", "simctl", "list", "pairs", "--json"]],
+                         [call.args[0] for call in run.call_args_list])
+
+    def test_a_watch_paired_with_a_phone_is_passed_over(self):
+        devices = {WATCH + "27-0": [device("Apple Watch Series 12 (46mm)", "W1"), device("Apple Watch Series 12 (42mm)", "W2")]}
+        pairs = {"P1": {"watch": {"udid": "W1"}, "phone": {"udid": "I1"}}}
+        self.assertEqual("W2\n", self.run_main(["watchOS"], devices, pairs)[1])
+
+    def test_an_iphone_is_picked_without_the_pairs_listing(self):
+        code, out, _, run = self.run_main(["iOS"], {IOS + "26-0": [device("iPhone 18 Pro", "I1")]})
+        self.assertEqual((0, "I1\n"), (code, out))
+        self.assertEqual(1, run.call_count)
 
     def test_fails_when_no_simulator_matches(self):
         code, out, err, _ = self.run_main(["iOS"])

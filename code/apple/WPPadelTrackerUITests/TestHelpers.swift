@@ -23,7 +23,11 @@ extension XCUIApplication {
     static func watch(scenario: String? = nil) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["-UITesting"] + (scenario.map { ["-UITestMatch", $0] } ?? [])
-        app.launch()
+        // A refused launch is retried once; an app the companion sync uninstalled cannot be (README, Testing)
+        let flake = XCTExpectedFailure.Options()
+        flake.isStrict = false
+        XCTExpectFailure("simulator launch flake", options: flake) { app.launch() }
+        if app.state != .runningForeground { app.launch() }
         // The simulator sometimes shows the watch face over a relaunched app; this brings the app back
         app.activate()
         return app

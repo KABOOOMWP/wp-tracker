@@ -32,6 +32,6 @@ dependencies {
 
 // Coverage floor for koverVerify, just below the measured value; raise it when coverage grows
 kover.reports.verify.rule {
-    minBound(42, CoverageUnit.LINE)
-    minBound(18, CoverageUnit.BRANCH)
+    minBound(95, CoverageUnit.LINE)
+    minBound(99, CoverageUnit.BRANCH)
 }

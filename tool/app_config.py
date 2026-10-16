@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
-"""Propagates app.json to the files that cannot read it.
-
-  python3 tool/app_config.py apply   writes code/apple/Config/App.xcconfig
-  python3 tool/app_config.py check   fails if that file is stale or app.json is invalid
-Exit codes: 0 ok, 1 invalid or stale config, 2 bad usage.
-Gradle reads app.json itself, so Android needs no generated file.
+"""Propagates app.json to the files that cannot read it (Gradle reads app.json itself).
+`apply` writes code/apple/Config/App.xcconfig; `check` fails when it is stale or app.json is invalid. See USAGE.
 """
 import json
 import re
@@ -16,7 +12,10 @@ CONFIG = ROOT / "app.json"
 XCCONFIG = ROOT / "code" / "apple" / "Config" / "App.xcconfig"
 PROJECT = ROOT / "code" / "apple" / "WPPadel.xcodeproj" / "project.pbxproj"
 
-USAGE = "usage: app_config.py {apply|check}"
+USAGE = """usage: app_config.py {apply|check}
+  apply   writes code/apple/Config/App.xcconfig from app.json
+  check   fails if that file is stale or app.json is invalid
+exit codes: 0 ok, 1 invalid or stale config, 2 bad usage"""
 ID = re.compile(r"^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)+$")
 TEAM = re.compile(r"^[A-Z0-9]{10}$")
 VERSION_NAME = re.compile(r"^\d+\.\d+\.\d+$")
@@ -108,7 +107,9 @@ def xcconfig(config):
 
 def stray_versions(project_text):
     """Xcode writes Version/Build into the project when edited in the General tab; that overrides app.json."""
-    return re.findall(r"(?:MARKETING_VERSION|CURRENT_PROJECT_VERSION|DEVELOPMENT_TEAM|PRODUCT_BUNDLE_IDENTIFIER) = [^$\";]+;", project_text)
+    # Bare or quoted values; only a $(…) reference to App.xcconfig is allowed
+    return re.findall(r"(?:MARKETING_VERSION|CURRENT_PROJECT_VERSION|DEVELOPMENT_TEAM|PRODUCT_BUNDLE_IDENTIFIER) = \"?(?!\$\()[^;\"]*\"?;",
+                      project_text)
 
 
 def run(command):

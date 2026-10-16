@@ -114,6 +114,7 @@ let source = NSImage(contentsOfFile: storeIcon)!.cgImage(forProposedRect: nil, c
 let store = render(Int(full)) { $0.draw(source, in: square(scale: 1)) }
 for device in Device.allCases {
     let icon = testingIcon(store, device)
+    // The master in WP_Logo/testing is what gets reviewed; the copy in the appiconset is what Xcode consumes
     try write(icon, to: "WP_Logo/testing/testing-\(device)-1024.png")
     try write(icon, to: "\(appleIconSet)/testing-\(device)-1024.png")
     let layer = androidLayer(store, icon)

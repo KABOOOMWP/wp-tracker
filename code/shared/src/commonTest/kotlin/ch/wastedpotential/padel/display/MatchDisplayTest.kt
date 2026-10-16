@@ -11,6 +11,7 @@ import ch.wastedpotential.padel.model.PillState
 import ch.wastedpotential.padel.model.Player
 import ch.wastedpotential.padel.model.RuleMode
 import ch.wastedpotential.padel.model.SetScore
+import ch.wastedpotential.padel.model.Snapshot
 import ch.wastedpotential.padel.model.Team
 import ch.wastedpotential.padel.sync.TeamNames
 import kotlin.test.Test
@@ -90,6 +91,31 @@ class MatchDisplayTest {
         assertFalse(d.scoreOnLeft(Team.OPP))
     }
 
+    @Test fun `the layout alternates with every point also through deuce and the tie-break`() {
+        val fromLove = makeSnapshot()
+        assertEquals(listOf(false, true, false, true), fromLove.youOnLeftOver(4))
+        val deuce = makeSnapshot(youPoints = 3, oppPoints = 3, phase = GamePhase.DEUCE)
+        assertEquals(listOf(false, true, false), deuce.youOnLeftOver(3), "deuce, advantage, deuce")
+        assertEquals(
+            listOf(false, true, false, true),
+            makeSnapshot(youGames = 6, oppGames = 6, gameMode = GameMode.TIEBREAK).youOnLeftOver(4),
+        )
+    }
+
+    @Test fun `a new game and a new set start even again`() {
+        val fortyThirty = makeSnapshot().you().opp().you().opp().you()
+        assertTrue(MatchDisplay.youScoreOnLeft(fortyThirty.game))
+        assertFalse(MatchDisplay.youScoreOnLeft(fortyThirty.you().game), "the game is won")
+        val tieBreak = makeSnapshot(youGames = 6, oppGames = 6, gameMode = GameMode.TIEBREAK, youPoints = 6, oppPoints = 5)
+        assertTrue(MatchDisplay.youScoreOnLeft(tieBreak.game))
+        assertFalse(MatchDisplay.youScoreOnLeft(tieBreak.you().game), "7-5 wins the set")
+    }
+
+    private fun Snapshot.youOnLeftOver(points: Int): List<Boolean> {
+        var s = this
+        return List(points) { MatchDisplay.youScoreOnLeft(s.game).also { s = if (it) s.opp() else s.you() } }
+    }
+
     @Test fun `golden and star points centre the scores`() {
         assertTrue(
             MatchDisplay.of(
@@ -137,6 +163,15 @@ class MatchDisplayTest {
         assertEquals(2, MatchDisplay.setScores(s).size)
     }
 
+    @Test fun `the winning point leaves love-all and no pill next to the final sets`() {
+        val d = MatchDisplay.of(makeSnapshot(setsWonYou = 1, youGames = 5, youPoints = 3).you())
+        assertEquals("0", d.youScore)
+        assertEquals("0", d.oppScore)
+        assertNull(d.pillLabel)
+        assertEquals(listOf(SetScore(6, 0, true), SetScore(6, 0, true)), d.setScores)
+        assertEquals("You 0, Opponent 0, 6–0, 6–0", d.spokenScore(TeamNames.DEFAULT))
+    }
+
     // ── Prompts ──────────────────────────────────────────────────────────────
 
     @Test fun `no prompt during normal play`() {
@@ -167,6 +202,25 @@ class MatchDisplayTest {
         assertEquals(UiText.OPP_TEAM, opp.header)
         assertEquals(Tone.OPP, opp.headerTone)
         assertEquals(listOf(UiText.SWITCH, UiText.KEEP), opp.choices.map { it.label })
+    }
+
+    @Test fun `left-right answers draw an arrow towards their half but are spoken as words`() {
+        val pick = Prompt.whoServes(Team.OPP, "l", "r")
+        val switch = MatchDisplay.prompt(makeSnapshot().copy(awaitingOppPositionSwitch = true))!!
+        for (prompt in listOf(pick, switch)) {
+            assertEquals(listOf(Arrow.LEFT, Arrow.RIGHT), prompt.choices.map { it.arrow }, prompt.header)
+            prompt.choices.forEach { assertFalse('←' in it.label || '→' in it.label, "${it.label} is spoken") }
+        }
+        assertEquals(listOf("LEFT", "RIGHT"), pick.choices.map { it.label })
+        assertEquals(listOf("← LEFT", "RIGHT →"), pick.choices.map { it.text })
+        assertEquals(listOf("SWITCH", "KEEP"), switch.choices.map { it.label })
+        assertEquals(listOf("← SWITCH", "KEEP →"), switch.choices.map { it.text })
+    }
+
+    @Test fun `an answer without an arrow draws its label as it is`() {
+        val tap = MatchDisplay.prompt(makeSnapshot().copy(awaitingCourtSideChange = true))!!.choices.single()
+        assertNull(tap.arrow)
+        assertEquals(tap.label, tap.text)
     }
 
     // ── Accessibility ────────────────────────────────────────────────────────

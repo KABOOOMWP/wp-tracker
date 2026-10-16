@@ -16,8 +16,11 @@ final class MatchStore: ObservableObject {
     private let workout: WorkoutManager?
     private let haptics: FeedbackPlayer?
     private let sleep: Sleep
-    /// The pending auto summary, so tests can wait for it.
-    private(set) var summaryTimer: Task<Void, Never>?
+    private var summaryTimer: Task<Void, Never>?
+    #if DEBUG
+    /// Tests only: the pending auto summary, so they can await it.
+    var pendingSummary: Task<Void, Never>? { summaryTimer }
+    #endif
 
     init(store: TextStore, names: NamesModel, phone: ScoreboardSink?, workout: WorkoutManager?,
          haptics: FeedbackPlayer?, sleep: @escaping Sleep = { try await Task.sleep(for: $0) }) {

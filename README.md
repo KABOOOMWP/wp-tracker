@@ -41,7 +41,7 @@ The Android watch and phone apps talk over the Wear Data Layer, so they share on
 ```
 wp-tracker/
 ├── app.json   # names, ids, team and version of every app — edit only here
-├── tool/       # app_config.py (applies / checks app.json), simulator.py (CI simulator picker), their tests, and testing_icons.swift (redraws the "Testing" icons that Debug builds show)
+├── tool/       # app_config.py (applies / checks app.json), simulator.py (CI simulator picker), xccov_floor.py (Swift coverage floor), their tests, and testing_icons.swift (redraws the "Testing" icons that Debug builds show)
 ├── .github/    # CI workflow and Dependabot
 ├── .editorconfig, .swiftlint.yml  # code style (ktlint reads .editorconfig) and SwiftLint rules
 ├── code/
@@ -60,7 +60,7 @@ wp-tracker/
 │       ├── WPPadel*Tests/, *UITests/  # unit and UI tests per app
 │       └── Config/                 # Info.plists, entitlements, generated App.xcconfig
 ├── docs/           # Privacy policies (published as a static site)
-├── WP_Logo/        # Logo and icon sources
+├── WP_Logo/        # Logo and icon sources; testing/ holds the two approved "Testing" icon masters
 └── initial_spark/  # Original concept (German)
 ```
 
@@ -98,7 +98,7 @@ prod.alias=…
 prod.password=…
 ```
 
-Without that file (in CI, for example), the key comes from the environment: `WPPADEL_KEYSTORE_FILE`, `WPPADEL_KEYSTORE_PASSWORD`, `WPPADEL_KEY_ALIAS` and `WPPADEL_KEY_PASSWORD`. Keep the keystore itself out of git too. With no key at all, a release build stops with "No release key"; the passwords may stay empty until a release, which then stops with "Release key passwords are empty"; with a key whose keystore is missing, AGP stops at `validateSigningRelease`. Debug builds need no key.
+Without that file (in CI, for example), the key comes from the environment: `WPPADEL_KEYSTORE_FILE`, `WPPADEL_KEYSTORE_PASSWORD`, `WPPADEL_KEY_ALIAS` and `WPPADEL_KEY_PASSWORD`. Keep the keystore itself out of git too. With no key at all, a release build stops with "No release key"; the passwords may stay empty until a release, which then stops with "Release key incomplete" naming the empty or missing properties (or variables); with a key whose keystore is missing, AGP stops at `validateSigningRelease`. Debug builds need no key and never fail on an incomplete one.
 
 To show a sample scoreboard on a debug build of the phone app without a watch: `adb shell am start -n ch.wastedpotential.padel/ch.wastedpotential.padel.phone.MainActivity --es sample_board match` (or `summary`). Release builds ignore the extra.
 
@@ -154,21 +154,26 @@ The current version is `version.name` / `version.build` in [`app.json`](app.json
 
 | Suite | Command | Runs on |
 |---|---|---|
-| Shared engine, logic and sync (29 classes) | `./gradlew :shared:allTests` | JVM, Android host, watchOS and iOS simulators |
+| Shared engine, logic and sync (28 classes) | `./gradlew :shared:allTests` | JVM, Android host, watchOS and iOS simulators |
 | Android shared code (file store, test link, Data Layer ordering) | `./gradlew :android:common:testDebugUnitTest` | JVM |
 | Wear OS view model (incl. the auto summary) | `./gradlew :android:watch:testDebugUnitTest` | JVM |
 | Android phone view model | `./gradlew :android:phone:testDebugUnitTest` | JVM |
 | Wear OS UI (Compose) | `ANDROID_SERIAL=<watch> ./gradlew :android:watch:connectedDebugAndroidTest` | Wear OS emulator or watch |
 | Android phone UI (Compose) | `ANDROID_SERIAL=<phone> ./gradlew :android:phone:connectedDebugAndroidTest` | phone or phone emulator |
+| Build logic (release key, app.json parsing) | `./gradlew :build-logic:test` | JVM |
 | Kotlin coverage floors (line and branch, Kover) | `./gradlew koverVerify` | JVM |
 | Android lint (warnings are errors) | `./gradlew :android:common:lintDebug :android:watch:lintDebug :android:phone:lintDebug` | JVM |
 | Kotlin style and static analysis (ktlint, detekt) | `./gradlew spotlessCheck detekt` (`./gradlew spotlessApply` formats) | JVM |
 | Swift style | `swiftlint lint --strict` (from the repository root; `swiftlint --fix` formats) | macOS |
 | watchOS unit + UI | `xcodebuild test -project apple/WPPadel.xcodeproj -scheme WPPadelTracker -destination 'platform=watchOS Simulator,name=Apple Watch Series 12 (46mm)'` | watchOS simulator or watch |
 | iPhone unit + UI | `xcodebuild test -project apple/WPPadel.xcodeproj -scheme WPPadelBoard -destination 'platform=iOS Simulator,name=iPhone 18 Pro'` | iOS simulator or iPhone |
-| App config and simulator tools | `python3 -m unittest discover -s tool` (from the repository root) | any Python 3.9+ |
+| Swift coverage floor of an app target | `python3 tool/xccov_floor.py <bundle>.xcresult <Target>.app <min-line-%>` after an `xcodebuild test … -enableCodeCoverage YES -resultBundlePath <bundle>.xcresult` | macOS |
+| Release shrinking (R8, no key needed) | `./gradlew :android:watch:minifyReleaseWithR8 :android:phone:minifyReleaseWithR8` | JVM |
+| App config, simulator and coverage tools | `python3 -m unittest discover -s tool` (from the repository root) | any Python 3.9+ |
 
-`koverVerify` runs the JVM and Android host unit tests of `shared` and `android/*` and fails when a module's line or branch coverage drops below the floor in its `build.gradle.kts`. `./gradlew koverHtmlReport` writes the per-module report to `<module>/build/reports/kover/html/index.html` (for example `shared/build/reports/kover/html/index.html`). Composables are left out of the measurement because the Compose UI tests cover them on a device.
+`koverVerify` runs the JVM and Android host unit tests of `shared` and `android/*` and fails when a module's line or branch coverage drops below the floor in its `build.gradle.kts`. `./gradlew koverHtmlReport` writes the per-module report to `<module>/build/reports/kover/html/index.html` (for example `shared/build/reports/kover/html/index.html`). Left out of the measurement is what only a device can run: composables and the lambdas inside them, the Compose files' top-level icons and colours, the activities, the Data Layer link and the vibrator factory (the Compose UI tests and `DataLayerChannelTest` cover them on a device). The floors therefore measure the view models, the storage and the link helpers (`code/build-logic/src/main/kotlin/wppadel/Coverage.kt` lists the exclusions).
+
+Both Xcode schemes record code coverage for their app target (`WPPadelTracker`, `WPPadelBoard`), from the unit and the UI tests together, so every `xcodebuild test` result bundle carries it; `xcrun xccov view --report --only-targets <bundle>.xcresult` prints the line coverage per target, and `tool/xccov_floor.py` fails below a floor (CI runs it with the floors in `ci.yml`, see [CI/CD](#cicd)).
 
 Run the Gradle commands from `code/`. For the Wear OS UI tests, use a **Wear OS** emulator image (for example `system-images;android-37.0;android-wear-signed;arm64-v8a`); a phone image refuses to install the watch app. With both a watch and a phone connected, pick one with `ANDROID_SERIAL`.
 
@@ -180,13 +185,17 @@ The UI tests launch the apps with `-UITesting` (these launch arguments exist in 
 - **watchOS:** the match and team names stay in memory, there is no phone link, and no HealthKit prompt covers the screen. `-UITestMatch <scenario>` opens on a match played through the real session (`UITestScenario`: a won set in singles or doubles, a won or lost match, a match won under Golden Point rules, match point, a tie-break), so long tests do not tap their way there.
 - **iPhone:** there is no watch link, and `-UITestBoard match|summary` shows a sample scoreboard built with the real shared engine.
 
+Run the watch UI tests on a watch simulator that is **not paired** with an iPhone simulator (`xcrun simctl list pairs`; `tool/simulator.py watchOS` prefers one). On a paired watch whose iPhone has no WP Padel Board, the watch's companion sync uninstalls the watch app about 15 s into the run (`appconduitd`: "Uninstalling … because its counterpart is not installed on phone"): the test running at that moment fails with "Failed to launch … FBSApplicationLibrary returned nil", xcodebuild restarts the runner, reinstalls the app and the remaining tests pass. `XCUIApplication.watch()` retries a refused `launch()` once; that does not cover the uninstall.
+
+Run the two Apple schemes one after the other, not in parallel: WPPadelBoard embeds the watch app, so both builds write the same watchOS `Shared.framework` under `code/shared/build/xcode-frameworks`, and one link fails with "found architecture 'arm64', required architecture 'arm64_32'".
+
 The first device run of a new bundle ID (for example a UI-test runner) needs Xcode with your account signed in, so it can create the provisioning profile. After that, `xcodebuild` works from the terminal too.
 
 ---
 
 ## Key Dependencies
 
-Kotlin, the Android Gradle Plugin, Compose, Coroutines, Serialization, Play services Wearable, ktlint, detekt and Kover: every version is pinned in [`code/gradle/libs.versions.toml`](code/gradle/libs.versions.toml), and Gradle's in [`code/gradle/wrapper/gradle-wrapper.properties`](code/gradle/wrapper/gradle-wrapper.properties).
+Kotlin, the Android Gradle Plugin, Compose, Coroutines, Serialization, Play services Wearable, ktlint, detekt and Kover: every version is pinned in [`code/gradle/libs.versions.toml`](code/gradle/libs.versions.toml), Gradle's in [`code/gradle/wrapper/gradle-wrapper.properties`](code/gradle/wrapper/gradle-wrapper.properties), and the JDK toolchain resolver plugin's in [`code/settings.gradle.kts`](code/settings.gradle.kts) (a settings plugin cannot use the catalog). detekt is a 2.0 pre-release on purpose: the `dev.detekt` plugin id exists only from 2.0, which has no stable release yet; move to the first stable 2.0 when it ships.
 
 ---
 
@@ -194,10 +203,10 @@ Kotlin, the Android Gradle Plugin, Compose, Coroutines, Serialization, Play serv
 
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every push to `main` and every pull request:
 
-- **ubuntu:** `app_config.py check` and the `tool` tests, ktlint and detekt, `:shared:jvmTest` and `:shared:testAndroidHostTest`, the three Android unit test suites, the Kover coverage floors (`koverVerify`) and Android lint.
-- **macOS:** SwiftLint, `:shared:allTests` (including the watchOS and iOS simulator targets), then `xcodebuild test` for **WPPadelTracker** and **WPPadelBoard** on the newest installed simulators (`tool/simulator.py` picks them), unsigned (`CODE_SIGNING_ALLOWED=NO`).
+- **ubuntu:** `app_config.py check` and the `tool` tests, ktlint and detekt, the build-logic tests, `:shared:jvmTest` and `:shared:testAndroidHostTest`, the three Android unit test suites, the Kover coverage floors (`koverVerify`), Android lint, and R8 over both apps' release variant (`minifyReleaseWithR8`, which needs no signing key), so a broken ProGuard rule or a stripped class shows up before a store build.
+- **macOS:** SwiftLint, `:shared:allTests` (including the watchOS and iOS simulator targets), then `xcodebuild test` for **WPPadelTracker** and **WPPadelBoard** on the newest installed simulators (`tool/simulator.py` picks them, an unpaired watch when there is one), unsigned (`CODE_SIGNING_ALLOWED=NO`) and with code coverage, which `tool/xccov_floor.py` checks against the line floor of each app target set in `ci.yml` (just below the measured value, like the Kover floors).
 
-There are no release or upload jobs: store builds are made and signed locally. Dependabot ([`.github/dependabot.yml`](.github/dependabot.yml)) proposes Gradle and GitHub Actions updates weekly, one grouped pull request each.
+There are no release or upload jobs: store builds are made and signed locally. Dependabot ([`.github/dependabot.yml`](.github/dependabot.yml)) proposes Gradle and GitHub Actions updates weekly, one grouped pull request each; every action is pinned to a commit with its version in a comment, and Dependabot moves both.
 
 ## Contributing
 

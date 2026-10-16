@@ -77,8 +77,11 @@ internal data class SetupState(
     /** Answers the current screen; [index] counts its choices top to bottom (or left, right). Null when out of range. */
     fun choose(index: Int): SetupState? = options.getOrNull(index)?.next?.invoke()
 
-    /** The previous step, or null on the first one (then back should leave the app). */
-    fun back(): SetupState? = if (step == SetupStep.PLAY_MODE) null else copy(step = SetupStep.entries[step.ordinal - 1], config = null)
+    /** False on the first step, where back should leave the app. */
+    val canGoBack: Boolean get() = step != SetupStep.PLAY_MODE
+
+    /** The previous step, or null on the first one. */
+    fun back(): SetupState? = if (canGoBack) copy(step = SetupStep.entries[step.ordinal - 1], config = null) else null
 
     /** Singles is set up once the server's team is known; doubles still asks which player serves. */
     private fun served(team: Team) = if (playMode == PlayMode.SINGLES) {

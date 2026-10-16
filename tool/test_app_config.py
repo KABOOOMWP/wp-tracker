@@ -125,7 +125,18 @@ class XcconfigTest(unittest.TestCase):
     def test_stray_versions_spots_hard_coded_values(self):
         self.assertEqual(["MARKETING_VERSION = 1.0;", "DEVELOPMENT_TEAM = ABCDE12345;"],
                          app_config.stray_versions("MARKETING_VERSION = 1.0;\nDEVELOPMENT_TEAM = ABCDE12345;"))
-        self.assertEqual([], app_config.stray_versions('PRODUCT_BUNDLE_IDENTIFIER = "$(PHONE_BUNDLE_ID)";'))
+
+    def test_stray_versions_spots_quoted_values_too(self):
+        # Xcode quotes a value with a hyphen or an empty string (a cleared team)
+        quoted = 'MARKETING_VERSION = "1.0-beta";\nCURRENT_PROJECT_VERSION = "7";\nDEVELOPMENT_TEAM = "";'
+        self.assertEqual(['MARKETING_VERSION = "1.0-beta";', 'CURRENT_PROJECT_VERSION = "7";', 'DEVELOPMENT_TEAM = "";'],
+                         app_config.stray_versions(quoted))
+
+    def test_stray_versions_allows_references_to_the_xcconfig(self):
+        for line in ['PRODUCT_BUNDLE_IDENTIFIER = "$(PHONE_BUNDLE_ID)";', "PRODUCT_BUNDLE_IDENTIFIER = $(PHONE_BUNDLE_ID);",
+                     'PRODUCT_BUNDLE_IDENTIFIER = "$(PHONE_BUNDLE_ID).tests";', "MARKETING_VERSION = $(MARKETING_VERSION);"]:
+            with self.subTest(line=line):
+                self.assertEqual([], app_config.stray_versions(line))
 
 
 class MainTest(unittest.TestCase):

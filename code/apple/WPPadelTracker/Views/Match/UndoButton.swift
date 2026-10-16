@@ -14,6 +14,7 @@ struct UndoButton: View {
     @State private var holdCompleted = false
 
     private var size: CGFloat { scaled(metrics.UNDO_BUTTON, scale, min: CGFloat(metrics.UNDO_BUTTON_MIN)) }
+    private var bounds: CGRect { CGRect(origin: .zero, size: CGSize(width: size, height: size)) }
     private var holdMs: Int64 { UiTimings.shared.END_MATCH_HOLD_MS }
 
     var body: some View {
@@ -40,7 +41,7 @@ struct UndoButton: View {
         .gesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in if hold == nil { press() } }
-                .onEnded { _ in release() }
+                .onEnded { release(inside: bounds.contains($0.location)) }
         )
         // VoiceOver can't hold: it activates what the button shows, and offers ending the match as an action
         .accessibilityElement()
@@ -62,11 +63,12 @@ struct UndoButton: View {
         }
     }
 
-    private func release() {
+    /// A release outside the button, like on Wear OS, only cancels the hold.
+    private func release(inside: Bool) {
         hold?.cancel()
         hold = nil
         resetRing()
-        guard !holdCompleted else { return }
+        guard inside, !holdCompleted else { return }
         if endMode { onEndMatch() } else { onUndo() }
     }
 

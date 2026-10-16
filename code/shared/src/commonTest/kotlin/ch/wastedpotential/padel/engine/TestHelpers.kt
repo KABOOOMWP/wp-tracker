@@ -8,10 +8,8 @@ import ch.wastedpotential.padel.model.MatchState
 import ch.wastedpotential.padel.model.PlayMode
 import ch.wastedpotential.padel.model.Player
 import ch.wastedpotential.padel.model.RuleMode
-import ch.wastedpotential.padel.model.ServeSide
 import ch.wastedpotential.padel.model.ServeState
 import ch.wastedpotential.padel.model.SetScore
-import ch.wastedpotential.padel.model.SetState
 import ch.wastedpotential.padel.model.Snapshot
 import ch.wastedpotential.padel.model.StatsState
 import ch.wastedpotential.padel.model.Team
@@ -64,7 +62,6 @@ internal fun makeSnapshot(
     gameMode: GameMode = GameMode.REGULAR,
     serverTeam: Team? = null,
     serverPlayer: Player? = null,
-    serveSide: ServeSide = ServeSide.RIGHT,
     serveOrderIndex: Int = 0,
 ): Snapshot {
     val server = serverPlayer ?: serverTeam?.let { Player.of(it, leftSide = false) } ?: config.serveOrder[serveOrderIndex]
@@ -72,9 +69,9 @@ internal fun makeSnapshot(
     return Snapshot(
         config = config,
         match = MatchState(completedSets = List(setsWonYou) { SetScore(6, 0, true) } + List(setsWonOpp) { SetScore(0, 6, true) }),
-        set = SetState(youGames = youGames, oppGames = oppGames),
+        set = SetScore(youGames, oppGames),
         game = GameState(mode = gameMode, youPoints = youPoints, oppPoints = oppPoints, phase = phase, starAdvCount = starAdvCount),
-        serve = ServeState(serverPlayer = server, serveSide = serveSide, serveOrderIndex = serveOrderIndex),
+        serve = ServeState(serverPlayer = server, serveOrderIndex = serveOrderIndex),
         stats = StatsState(),
     )
 }

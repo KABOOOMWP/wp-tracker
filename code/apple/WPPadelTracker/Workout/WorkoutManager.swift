@@ -47,13 +47,15 @@ final class WorkoutManager {
     }
     func finish() { enqueue { [self] in await save() } }
 
-    /// Waits until every step asked for so far has run.
+    #if DEBUG
+    /// Tests only: waits until every step asked for so far has run.
     func settle() async {
         while let current = last {
             await current.value
             if last == current { return }
         }
     }
+    #endif
 
     private func enqueue(_ step: @escaping @MainActor () async -> Void) {
         let previous = last

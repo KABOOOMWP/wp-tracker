@@ -10,6 +10,8 @@ dependencies {
     compileOnly(libs.spotless.gradlePlugin)
     compileOnly(libs.detekt.gradlePlugin)
     compileOnly(libs.kover.gradlePlugin)
+
+    testImplementation(libs.kotlin.test.junit)
 }
 
 gradlePlugin {

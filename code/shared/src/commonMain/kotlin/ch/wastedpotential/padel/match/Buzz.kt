@@ -16,7 +16,7 @@ public data class Buzz(val pulses: List<Pulse>) {
     public val startsMs: List<Long> get() = pulses.runningFold(0L) { start, p -> start + p.ms + UiTimings.PULSE_GAP_MS }.dropLast(1)
 
     /** From the first pulse's start to the last pulse's end. */
-    public val durationMs: Long get() = startsMs.last() + pulses.last().ms
+    internal val durationMs: Long get() = startsMs.last() + pulses.last().ms
 
     /** Waveform timings: off/on pairs, starting without a delay. */
     public val timings: LongArray get() = LongArray(pulses.size * 2) { i ->

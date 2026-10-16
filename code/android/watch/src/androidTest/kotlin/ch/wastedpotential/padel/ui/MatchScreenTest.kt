@@ -1,12 +1,18 @@
 package ch.wastedpotential.padel.ui
 
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.advanceEventTime
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertContentDescriptionEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.center
+import androidx.compose.ui.test.down
+import androidx.compose.ui.test.hasStateDescription
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -48,8 +54,16 @@ class MatchScreenTest {
     @Test
     fun initialState_bothScoresAreZero() {
         showMatch()
-        rule.onNodeWithTag(UiTags.SCORE_YOU).assertTextEquals("0")
-        rule.onNodeWithTag(UiTags.SCORE_OPP).assertTextEquals("0")
+        rule.boardPart(UiTags.SCORE_YOU).assertTextEquals("0")
+        rule.boardPart(UiTags.SCORE_OPP).assertTextEquals("0")
+    }
+
+    @Test
+    fun theBoard_readsAsOneElement() {
+        val vm = showMatch()
+        rule.tap(UiTags.TAP_YOU)
+        val display = vm.state!!.display!!
+        rule.onNodeWithTag(UiTags.MATCH_BOARD).assertContentDescriptionEquals(display.spokenScore(vm.names))
     }
 
     @Test
@@ -58,7 +72,7 @@ class MatchScreenTest {
         rule.onNodeWithText(UiText.YOU).assertIsDisplayed()
         rule.onNodeWithText(UiText.OPPONENT).assertIsDisplayed()
         rule.onNodeWithTag(UiTags.UNDO).assertIsDisplayed().assertContentDescriptionEquals(UiText.UNDO)
-        rule.onNodeWithTag(UiTags.SERVE_STRIPE).assertIsDisplayed()
+        rule.boardPart(UiTags.SERVE_STRIPE).assertIsDisplayed()
     }
 
     @Test
@@ -77,23 +91,23 @@ class MatchScreenTest {
     fun tappingYouZone_incrementsYourScore() {
         showMatch()
         rule.tap(UiTags.TAP_YOU)
-        rule.onNodeWithTag(UiTags.SCORE_YOU).assertTextEquals("15")
-        rule.onNodeWithTag(UiTags.SCORE_OPP).assertTextEquals("0")
+        rule.boardPart(UiTags.SCORE_YOU).assertTextEquals("15")
+        rule.boardPart(UiTags.SCORE_OPP).assertTextEquals("0")
     }
 
     @Test
     fun tappingOppZone_incrementsOpponentScore() {
         showMatch()
         rule.tap(UiTags.TAP_OPP)
-        rule.onNodeWithTag(UiTags.SCORE_OPP).assertTextEquals("15")
-        rule.onNodeWithTag(UiTags.SCORE_YOU).assertTextEquals("0")
+        rule.boardPart(UiTags.SCORE_OPP).assertTextEquals("15")
+        rule.boardPart(UiTags.SCORE_YOU).assertTextEquals("0")
     }
 
     @Test
     fun scoringSequence_followsStandardPointProgression() {
         showMatch()
         rule.tap(UiTags.TAP_YOU, 3)
-        rule.onNodeWithTag(UiTags.SCORE_YOU).assertTextEquals("40")
+        rule.boardPart(UiTags.SCORE_YOU).assertTextEquals("40")
     }
 
     @Test
@@ -133,16 +147,16 @@ class MatchScreenTest {
         showMatch()
         rule.tap(UiTags.TAP_YOU, 2)
         rule.tap(UiTags.UNDO)
-        rule.onNodeWithTag(UiTags.SCORE_YOU).assertTextEquals("15")
+        rule.boardPart(UiTags.SCORE_YOU).assertTextEquals("15")
         rule.tap(UiTags.UNDO)
-        rule.onNodeWithTag(UiTags.SCORE_YOU).assertTextEquals("0")
+        rule.boardPart(UiTags.SCORE_YOU).assertTextEquals("0")
     }
 
     @Test
     fun undo_atStart_doesNothing() {
         val vm = showMatch()
         rule.tap(UiTags.UNDO)
-        rule.onNodeWithTag(UiTags.SCORE_YOU).assertTextEquals("0")
+        rule.boardPart(UiTags.SCORE_YOU).assertTextEquals("0")
         assertEquals(AppScreen.MATCH, vm.state!!.screen)
     }
 
@@ -164,20 +178,23 @@ class MatchScreenTest {
         rule.tap(UiTags.TAP_OPP, 3)
         rule.onNodeWithText(UiText.GOLDEN_POINT).assertIsDisplayed()
         rule.tap(UiTags.TAP_YOU)
-        rule.onNodeWithTag(UiTags.SCORE_YOU).assertTextEquals("0")
-        rule.onNodeWithTag(UiTags.SCORE_OPP).assertTextEquals("0")
+        rule.boardPart(UiTags.SCORE_YOU).assertTextEquals("0")
+        rule.boardPart(UiTags.SCORE_OPP).assertTextEquals("0")
         rule.onNodeWithText(UiText.GOLDEN_POINT).assertDoesNotExist()
     }
 
     // ── Prompts ───────────────────────────────────────────────────────────────
 
     @Test
-    fun doublesGame2_showsServePick() {
-        showMatch(doublesConfig())
+    fun doublesGame2_showsServePick_drawnWithArrowsAndSpokenAsWords() {
+        val vm = showMatch(doublesConfig())
         rule.tap(UiTags.TAP_YOU, 4)
         rule.onNodeWithText(UiText.WHO_SERVES).assertIsDisplayed()
-        rule.onNodeWithText(UiText.LEFT).assertIsDisplayed()
-        rule.onNodeWithText(UiText.RIGHT).assertIsDisplayed()
+        val (left, right) = vm.state!!.display!!.prompt!!.choices
+        rule.onNodeWithTag(UiTags.PICK_LEFT).assertIsDisplayed().assertTextEquals(left.text).assertContentDescriptionEquals(UiText.LEFT)
+        rule.onNodeWithTag(UiTags.PICK_RIGHT).assertIsDisplayed().assertTextEquals(right.text).assertContentDescriptionEquals(UiText.RIGHT)
+        assertEquals(listOf(UiText.LEFT, UiText.RIGHT), listOf(left.label, right.label))
+        rule.onNodeWithText(UiText.LEFT).assertDoesNotExist() // the drawn text carries the arrow
         rule.tap(UiTags.PICK_RIGHT)
         rule.onNodeWithText(UiText.WHO_SERVES).assertDoesNotExist()
     }
@@ -198,7 +215,7 @@ class MatchScreenTest {
         rule.tap(UiTags.TAP_YOU, 24)
         rule.tap(UiTags.COURT_SIDE_ACK)
         rule.onNodeWithText(UiText.SWITCH_SIDES).assertDoesNotExist()
-        rule.onNodeWithTag(UiTags.SCORE_YOU).assertTextEquals("0")
+        rule.boardPart(UiTags.SCORE_YOU).assertTextEquals("0")
     }
 
     @Test
@@ -212,7 +229,7 @@ class MatchScreenTest {
         rule.onNodeWithText(UiText.OPP_TEAM).assertIsDisplayed()
         rule.tap(UiTags.SWITCH_NO)
         rule.onNodeWithText(UiText.SWITCH_SIDES).assertDoesNotExist()
-        rule.onNodeWithTag(UiTags.SCORE_YOU).assertTextEquals("0")
+        rule.boardPart(UiTags.SCORE_YOU).assertTextEquals("0")
     }
 
     /** A 6-0 doubles set for you; the serve pick after game 1 is answered right. */
@@ -226,9 +243,13 @@ class MatchScreenTest {
 
     @Test
     fun holdingUndo_thenTapping_endsTheMatch() {
-        val vm = showMatch()
+        val vm = rule.showApp(testViewModel(singlesConfig(), scheduler = scheduler), undoHoldMs = HOLD_MS)
         rule.tap(UiTags.TAP_YOU)
-        rule.onNodeWithTag(UiTags.UNDO).performTouchInput { longClick(durationMillis = UiTimings.END_MATCH_HOLD_MS + HOLD_MARGIN_MS) }
+        rule.onNodeWithTag(UiTags.UNDO).performTouchInput {
+            down(center)
+            advanceEventTime(HOLD_MS + HOLD_MARGIN_MS)
+            up()
+        }
         rule.onNodeWithContentDescription(UiText.END_MATCH).assertIsDisplayed()
         rule.tap(UiTags.UNDO)
         rule.onNodeWithText(UiText.MATCH_ENDED).assertIsDisplayed()
@@ -257,21 +278,28 @@ class MatchScreenTest {
     // ── TalkBack ──────────────────────────────────────────────────────────────
 
     @Test
-    fun talkBack_zonesAreLabelledAndScoreOnClick() {
+    fun talkBack_zonesAreLabelledWithTheirScoreAndHint_andScoreOnClick() {
         showMatch()
-        rule.onNodeWithTag(UiTags.TAP_OPP).assertContentDescriptionEquals(UiText.pointFor(UiText.OPPONENT))
-        rule.onNodeWithTag(UiTags.TAP_YOU).assertContentDescriptionEquals(UiText.pointFor(UiText.YOU))
+        rule.onNodeWithTag(UiTags.TAP_OPP).assertContentDescriptionEquals(UiText.pointFor(UiText.OPPONENT)).assert(hasStateDescription("0"))
+        rule.onNodeWithTag(UiTags.TAP_YOU).assertContentDescriptionEquals(UiText.pointFor(UiText.YOU)).assert(hasStateDescription("0"))
+            .assert(hasClickLabel(UiText.SCORE_HINT))
             .performSemanticsAction(SemanticsActions.OnClick)
-        rule.onNodeWithTag(UiTags.SCORE_YOU).assertTextEquals("15")
+        rule.boardPart(UiTags.SCORE_YOU).assertTextEquals("15")
+        rule.onNodeWithTag(UiTags.TAP_YOU).assert(hasStateDescription("15"))
+        rule.onNodeWithTag(UiTags.TAP_OPP).assert(hasStateDescription("0"))
     }
+
+    /** The click label, what TalkBack says after "Double-tap to". */
+    private fun hasClickLabel(label: String) =
+        SemanticsMatcher("click label '$label'") { it.config.getOrNull(SemanticsActions.OnClick)?.label == label }
 
     @Test
     fun talkBack_scoresForEitherTeamFromEitherZone() {
         showMatch()
         rule.onNodeWithTag(UiTags.TAP_YOU).performCustomAccessibilityActionWithLabel(UiText.pointFor(UiText.OPPONENT))
         rule.onNodeWithTag(UiTags.TAP_OPP).performCustomAccessibilityActionWithLabel(UiText.pointFor(UiText.YOU))
-        rule.onNodeWithTag(UiTags.SCORE_OPP).assertTextEquals("15")
-        rule.onNodeWithTag(UiTags.SCORE_YOU).assertTextEquals("15")
+        rule.boardPart(UiTags.SCORE_OPP).assertTextEquals("15")
+        rule.boardPart(UiTags.SCORE_YOU).assertTextEquals("15")
     }
 
     @Test
@@ -279,13 +307,16 @@ class MatchScreenTest {
         val vm = showMatch()
         rule.tap(UiTags.TAP_YOU, 2)
         rule.onNodeWithTag(UiTags.TAP_YOU).performCustomAccessibilityActionWithLabel(UiText.UNDO)
-        rule.onNodeWithTag(UiTags.SCORE_YOU).assertTextEquals("15")
+        rule.boardPart(UiTags.SCORE_YOU).assertTextEquals("15")
         rule.onNodeWithTag(UiTags.TAP_YOU).performCustomAccessibilityActionWithLabel(UiText.END_MATCH)
         rule.onNodeWithText(UiText.MATCH_ENDED).assertIsDisplayed()
         assertEquals(1, vm.state!!.summary!!.pointsYou)
     }
 
     private companion object {
+        /** The end-match hold of this test's app, on the test clock like UndoButtonTest. */
+        const val HOLD_MS = 600L
+
         /** Past the hold by a few frames, so the ring has surely filled. */
         const val HOLD_MARGIN_MS = 300L
     }

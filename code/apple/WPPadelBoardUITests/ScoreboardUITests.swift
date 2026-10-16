@@ -53,6 +53,20 @@ final class ScoreboardUITests: XCTestCase {
         XCTAssert(app.staticTexts["You, vs, Opponent"].waitForExistence(timeout: timeout))
     }
 
+    func test_theEditor_capsANameWhileTyping_soTheBoardShowsWhatTheFieldShowed() {
+        launch()
+        let typed = "ABCDEFGHIJKLMNOPQRSTUVWXYZABCD"   // 30 letters, no space: nothing for autocorrect to touch
+        let capped = String(typed.prefix(24))          // TeamNames.MAX_LENGTH
+        app.buttons[Id.editNames].tap()
+        let field = app.textFields[Id.fieldYou]
+        XCTAssert(field.waitForExistence(timeout: timeout))
+        field.typeText(typed)
+        XCTAssertEqual(field.value as? String, capped)
+
+        app.buttons[Id.namesDone].tap()
+        XCTAssert(app.staticTexts["\(capped), vs, Opponent"].waitForExistence(timeout: timeout))
+    }
+
     func test_matchBoard_mirrorsTheWatch_asOneElement() {
         launch(board: "match")
         XCTAssert(app.otherElements["You 40, Opponent 15, 0–0"].waitForExistence(timeout: timeout))

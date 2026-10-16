@@ -9,14 +9,14 @@ plugins {
 kotlin {
     explicitApi()
 
-    // ── Android (Wear OS) ─────────────────────────────────────────────────
+    // ── Android (Wear OS and phone) ───────────────────────────────────────
     android {
         namespace = "ch.wastedpotential.padel.shared"
         // Runs commonTest on the Android host too, as the watch and phone run it
         withHostTest {}
     }
 
-    // ── JVM (unit tests + desktop tooling) ───────────────────────────────
+    // ── JVM (unit tests) ──────────────────────────────────────────────────
     jvm()
 
     // ── Apple: watch (arm64_32, arm64, simulator) and iPhone (device, simulator) ──

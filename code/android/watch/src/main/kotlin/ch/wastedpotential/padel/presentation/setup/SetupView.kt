@@ -42,7 +42,7 @@ fun SetupView(screen: SetupScreen, onChoose: (Int) -> Unit) {
                         .clickable(interactionSource = null, indication = null, role = Role.Button) { onChoose(i) }
                         .testTag(choice.tag),
                 ) {
-                    BoardText(choice.label, BoardMetrics.CHOICE_FONT, choice.tone.accent)
+                    BoardText(choice.text, BoardMetrics.CHOICE_FONT, choice.tone.accent)
                 }
             }
         }

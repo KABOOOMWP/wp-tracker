@@ -128,6 +128,16 @@ class BoardAppTest {
     }
 
     @Test
+    fun theFields_areLabelledForTalkBack_alsoOnceThePlaceholderIsGone() {
+        show()
+        rule.onNodeWithTag(UiTags.EDIT_NAMES).performClick()
+        rule.onNodeWithTag(UiTags.FIELD_YOU).assertContentDescriptionEquals(UiText.YOUR_TEAM_FIELD)
+        rule.onNodeWithTag(UiTags.FIELD_OPP).assertContentDescriptionEquals(UiText.OPPONENT_FIELD)
+        rule.onNodeWithTag(UiTags.FIELD_YOU).performTextInput("Ana")
+        rule.onNodeWithTag(UiTags.FIELD_YOU).assertContentDescriptionEquals(UiText.YOUR_TEAM_FIELD).assertTextEquals("Ana")
+    }
+
+    @Test
     fun theEditor_opensWithTheFirstFieldFocused() {
         show()
         rule.onNodeWithTag(UiTags.EDIT_NAMES).performClick()

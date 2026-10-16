@@ -90,7 +90,7 @@ class SummaryScreenTest {
         val vm = rule.showApp(finishedMatch())
         rule.onNodeWithText(UiText.UNDO_LAST_POINT).performScrollTo().performClick()
         assertEquals(AppScreen.MATCH, vm.state!!.screen)
-        rule.onNodeWithTag(UiTags.SCORE_YOU).assertTextEquals("40")
+        rule.boardPart(UiTags.SCORE_YOU).assertTextEquals("40")
     }
 
     @Test
@@ -103,6 +103,6 @@ class SummaryScreenTest {
         rule.onNodeWithText(UiText.MATCH_ENDED).assertIsDisplayed()
         rule.onNodeWithText(UiText.RESUME_MATCH).performScrollTo().performClick()
         assertEquals(AppScreen.MATCH, vm.state!!.screen)
-        rule.onNodeWithTag(UiTags.SCORE_YOU).assertTextEquals("15")
+        rule.boardPart(UiTags.SCORE_YOU).assertTextEquals("15")
     }
 }

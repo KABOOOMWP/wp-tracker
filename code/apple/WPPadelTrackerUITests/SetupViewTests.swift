@@ -53,11 +53,21 @@ final class SetupViewTests: XCTestCase {
 
     func test_doubles_asksWhichPlayerServes_thenStarts() {
         for id in [Id.doubles, Id.bestOf3, Id.standard, Id.serveYou] { app.tap(id) }
-        XCTAssertEqual(label(Id.serverLeft), "← LEFT")
-        XCTAssertEqual(label(Id.serverRight), "RIGHT →")
+        // Spoken as words; the arrows are drawn only
+        XCTAssertEqual(label(Id.serverLeft), "LEFT")
+        XCTAssertEqual(label(Id.serverRight), "RIGHT")
 
         app.answer(Id.serverRight)
         XCTAssertEqual(app.score(Id.tapYou), "0")
+    }
+
+    func test_swipingRight_onThePicker_returnsToTheServeStep() {
+        for id in [Id.doubles, Id.bestOf3, Id.standard, Id.serveYou] { app.tap(id) }
+        XCTAssert(app.el(Id.serverLeft).waitForExistence(timeout: screenTimeout))
+
+        // The swipe starts on a picker button and must still win
+        app.swipeRight()
+        XCTAssert(app.el(Id.serveYou).waitForExistence(timeout: screenTimeout))
     }
 
     func test_swipingRight_stepsBackThroughTheSetup() {

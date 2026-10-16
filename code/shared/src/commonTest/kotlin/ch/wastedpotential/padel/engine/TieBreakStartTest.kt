@@ -3,7 +3,6 @@ package ch.wastedpotential.padel.engine
 import ch.wastedpotential.padel.model.Config
 import ch.wastedpotential.padel.model.GameMode
 import ch.wastedpotential.padel.model.Player
-import ch.wastedpotential.padel.model.ServeSide
 import ch.wastedpotential.padel.model.SetScore
 import ch.wastedpotential.padel.model.Team
 import kotlin.test.Test
@@ -22,14 +21,13 @@ class TieBreakStartTest {
     )
         .winGame(Team.YOU)
 
-    @Test fun `the next player in the order opens the tie-break from the right`() {
+    @Test fun `the next player in the order opens the tie-break`() {
         for (config in listOf(singlesConfig(), doublesConfig())) {
             val order = config.serveOrder
             for (index in order.indices) {
                 val s = opener(config, index)
                 assertEquals(GameMode.TIEBREAK, s.game.mode)
                 assertEquals(order[(index + 1) % order.size], s.serve.serverPlayer, "after ${order[index]}")
-                assertEquals(ServeSide.RIGHT, s.serve.serveSide)
             }
         }
     }

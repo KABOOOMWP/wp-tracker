@@ -69,16 +69,16 @@ internal fun UndoButton(
             .pointerInput(Unit) {
                 awaitEachGesture {
                     awaitFirstDown(requireUnconsumed = false)
-                    val hold = scope.launch {
-                        ring.animateTo(1f, tween(holdMs.toInt(), easing = LinearEasing))
-                        endMode = !endMode
-                        ring.snapTo(0f)
-                    }
-                    val released = waitForUpOrCancellation() != null
-                    val wasTap = released && hold.isActive
-                    hold.cancel()
+                    val fill = scope.launch { ring.animateTo(1f, tween(holdMs.toInt(), easing = LinearEasing)) }
+                    // Decided here, in one coroutine: null = held the whole time, true = released, false = cancelled
+                    val released = withTimeoutOrNull(holdMs) { waitForUpOrCancellation() != null }
+                    fill.cancel()
                     scope.launch { ring.snapTo(0f) }
-                    if (wasTap) tap()
+                    when (released) {
+                        null -> endMode = !endMode
+                        true -> tap()
+                        false -> Unit
+                    }
                 }
             },
     ) {

@@ -15,7 +15,8 @@ struct SetupView: View {
                 ChoiceStack(choices: screen.choices, pills: screen.pills) { store.chooseSetup($0) }
             }
         }
-        .gesture(
+        // High priority: the swipe wins over the choices and the picker's buttons; a tap never moves far enough to count
+        .highPriorityGesture(
             DragGesture(minimumDistance: SwipeBack.minimumDistance).onEnded { drag in
                 if SwipeBack.matches(drag.translation) { store.back() }
             }

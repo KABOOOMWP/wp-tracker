@@ -7,6 +7,7 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -26,9 +27,10 @@ val LocalBoardScale = staticCompositionLocalOf { 1f }
 @Composable @ReadOnlyComposable
 fun scaledDp(size: Float, min: Float = 0f): Dp = (size * LocalBoardScale.current).coerceAtLeast(min).dp
 
-/** A BoardMetrics font size at the current scale, never below [min]. */
+/** A BoardMetrics font size at the current scale, never below [min]; fixed like Apple's points, not the font setting. */
 @Composable @ReadOnlyComposable
-fun scaledSp(size: Float, min: Float = 0f): TextUnit = (size * LocalBoardScale.current).coerceAtLeast(min).sp
+fun scaledSp(size: Float, min: Float = 0f): TextUnit =
+    ((size * LocalBoardScale.current).coerceAtLeast(min) / LocalDensity.current.fontScale).sp
 
 /** The board's white: text, lines and icons. */
 val BoardWhite: Color = Color(BoardColors.WHITE)
@@ -77,7 +79,7 @@ fun BoardText(
             fontSize = fontSize,
             fontWeight = weight,
             fontStyle = if (italic) FontStyle.Italic else FontStyle.Normal,
-            letterSpacing = spacing.sp,
+            letterSpacing = (spacing / LocalDensity.current.fontScale).sp,
             textAlign = align,
         ),
         maxLines = if (fit) 1 else Int.MAX_VALUE,

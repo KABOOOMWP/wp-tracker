@@ -183,6 +183,19 @@ class MatchHistoryTest {
         assertEquals(1, h.size)
     }
 
+    @Test fun `answerPrompt does nothing on an empty history or on the summary`() {
+        assertEquals(Feedback.NONE, MatchHistory().answerPrompt(0))
+        val h = started().apply {
+            scoreTimes(Team.YOU, 24)
+            end(5_000)
+        }
+        assertTrue(h.current!!.awaitingCourtSideChange, "ended while the side change was open")
+        val revision = h.revision
+        assertEquals(Feedback.NONE, h.answerPrompt(0))
+        assertTrue(h.current!!.awaitingCourtSideChange)
+        assertEquals(revision, h.revision)
+    }
+
     // ── End, summary and reopen ──────────────────────────────────────────────
 
     @Test fun `end moves to the summary and blocks undo and points`() {
@@ -334,6 +347,17 @@ class MatchHistoryTest {
         assertEquals(AppScreen.SETUP, restored.screen)
         assertEquals(h.epoch, restored.epoch)
         assertEquals(h.revision, restored.revision)
+    }
+
+    @Test fun `decode reads a file saved before the live set carried isCompleted and the serve its side`() {
+        val h = started().apply { scoreTimes(Team.YOU, 5) }
+        val data = h.encode()
+        assertTrue("\"set\":{\"youGames\":1,\"oppGames\":0,\"isCompleted\":false}" in data)
+        val legacy = data
+            .replace(",\"isCompleted\":false", "")
+            .replace("\"serverPlayer\":", "\"serveSide\":\"LEFT\",\"serverPlayer\":")
+        assertTrue("\"isCompleted\"" !in legacy && "\"serveSide\"" in legacy, legacy)
+        assertEquals(h.current, assertNotNull(MatchHistory.decode(legacy)).current)
     }
 
     @Test fun `decode rejects garbage`() {

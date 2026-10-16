@@ -15,7 +15,7 @@ public object BoardColors {
     public const val BUTTON: Long = 0xFF242424
 }
 
-/** Opacities for secondary elements, applied to WHITE (BACKGROUND for SCRIM, an accent for LOST_SET). */
+/** Opacities for secondary elements, applied to WHITE (BACKGROUND for SCRIM, an accent for DIM on lost sets). */
 public object BoardAlpha {
     public const val RULE: Float = 0.12f // line between the stat groups
     public const val ICON: Float = 0.35f // phone name-editor button
@@ -29,8 +29,8 @@ public object BoardAlpha {
 }
 
 /**
- * Sizes on a reference watch, in points (Apple) or dp (Android), multiplied by each screen's scale.
- * A *_MIN value is the floor of its size after scaling; the reference widths differ by platform.
+ * Sizes on a reference watch, multiplied by each screen's scale: points on Apple (text included), dp on Android,
+ * where text ignores the system font size like Apple points. A *_MIN value is the floor of its size after scaling.
  */
 public object BoardMetrics {
     public const val APPLE_REFERENCE_WIDTH: Float = 184f

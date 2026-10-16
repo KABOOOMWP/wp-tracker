@@ -171,7 +171,7 @@ final class MatchStoreTests: XCTestCase {
         XCTAssertTrue(store.state.isAwaitingSummary)
         XCTAssertEqual(store.state.screen, .match)
 
-        let timer = try XCTUnwrap(store.summaryTimer)
+        let timer = try XCTUnwrap(store.pendingSummary)
         await sleeper.waitForRequest()
         XCTAssertEqual(sleeper.requested, [.milliseconds(UiTimings.shared.AUTO_SUMMARY_DELAY_MS)])
         XCTAssertEqual(store.state.screen, .match)
@@ -180,18 +180,18 @@ final class MatchStoreTests: XCTestCase {
         await timer.value
         XCTAssertEqual(store.state.screen, .summary)
         XCTAssertEqual(store.state.summary?.winner, .you)
-        XCTAssertNil(store.summaryTimer)
+        XCTAssertNil(store.pendingSummary)
     }
 
     func test_anUndoDuringThePause_keepsTheMatch() async throws {
         let store = makeStore()
         winMatch(store)
-        let timer = try XCTUnwrap(store.summaryTimer)
+        let timer = try XCTUnwrap(store.pendingSummary)
         await sleeper.waitForRequest()
 
         store.undo()
         XCTAssertFalse(store.state.isAwaitingSummary)
-        XCTAssertNil(store.summaryTimer)
+        XCTAssertNil(store.pendingSummary)
         sleeper.fire()
         await timer.value
         XCTAssertEqual(store.state.screen, .match)
@@ -202,7 +202,7 @@ final class MatchStoreTests: XCTestCase {
         winMatch(makeStore())
         let store = makeStore()
         XCTAssertTrue(store.state.isAwaitingSummary)
-        let timer = try XCTUnwrap(store.summaryTimer)
+        let timer = try XCTUnwrap(store.pendingSummary)
         await sleeper.waitForRequest()
         sleeper.fire()
         await timer.value
@@ -233,7 +233,7 @@ final class MatchStoreTests: XCTestCase {
     func test_theAutoSummary_pausesTheWorkout() async throws {
         let store = makeStore(withWorkout: true)
         winMatch(store)
-        let timer = try XCTUnwrap(store.summaryTimer)
+        let timer = try XCTUnwrap(store.pendingSummary)
         await sleeper.waitForRequest()
         sleeper.fire()
         await timer.value

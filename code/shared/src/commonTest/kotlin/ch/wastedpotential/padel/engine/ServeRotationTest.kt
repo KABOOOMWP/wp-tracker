@@ -2,12 +2,11 @@ package ch.wastedpotential.padel.engine
 
 import ch.wastedpotential.padel.model.Config
 import ch.wastedpotential.padel.model.Player
-import ch.wastedpotential.padel.model.ServeSide
 import ch.wastedpotential.padel.model.Team
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-/** Who serves each game in singles and doubles, from either first server, and from which side. */
+/** Who serves each game in singles and doubles, from either first server. */
 class ServeRotationTest {
 
     /** The server of each game from the first one; [winnerOf] says who wins game n (in turn by default). */
@@ -37,12 +36,5 @@ class ServeRotationTest {
     @Test fun `the rotation carries on into the next set`() {
         assertEquals(Player.A2, servers(doublesConfig(), 7) { Team.YOU }.last(), "A1 B1 A2 B2 A1 B1 win the set 6-0, A2 opens the next")
         assertEquals(Player.B2, servers(doublesConfigOppFirst(), 7) { Team.OPP }.last())
-    }
-
-    @Test fun `the serve side alternates with every point and a new game starts from the right`() {
-        var s = makeSnapshot()
-        val sides = List(6) { s.serve.serveSide.also { s = s.you() } }
-        assertEquals(listOf(ServeSide.RIGHT, ServeSide.LEFT, ServeSide.RIGHT, ServeSide.LEFT, ServeSide.RIGHT, ServeSide.LEFT), sides)
-        assertEquals(1, s.set.youGames, "the fourth point won the game")
     }
 }

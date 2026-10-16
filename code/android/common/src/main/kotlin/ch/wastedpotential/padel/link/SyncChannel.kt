@@ -2,6 +2,7 @@ package ch.wastedpotential.padel.link
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.DataEvent
 import com.google.android.gms.wearable.DataItem
@@ -30,6 +31,7 @@ class DataLayerChannel(context: Context) : SyncChannel {
 
     override fun send(path: String, data: String) {
         client.putDataItem(PutDataRequest.create(path).setData(data.encodeToByteArray()).setUrgent())
+            .addOnFailureListener { Log.w(TAG, "Cannot send $path", it) }
     }
 
     override fun listen(path: String, onData: (String) -> Unit) {
@@ -50,6 +52,10 @@ class DataLayerChannel(context: Context) : SyncChannel {
     }
 
     override fun close() = listeners.close()
+
+    private companion object {
+        const val TAG = "DataLayerChannel"
+    }
 }
 
 /** A channel's listeners: none is taken once closed, and closing removes each one exactly once. */

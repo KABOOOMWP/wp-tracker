@@ -39,8 +39,6 @@ public enum class PlayMode { SINGLES, DOUBLES }
 
 public enum class RuleMode { STANDARD, GOLDEN, STAR }
 
-internal enum class ServeSide { LEFT, RIGHT }
-
 internal enum class GameMode { REGULAR, TIEBREAK }
 
 /** Where the current game stands. Advantage phases show "AD"; GOLDEN and STAR_POINT are deciding points. */
@@ -71,9 +69,3 @@ internal enum class GamePhase {
 
 /** What the status pill shows; MatchEngine.computePill picks the first that applies, from the top. */
 internal enum class PillState { MATCH_POINT, SET_POINT, GOLDEN_POINT, STAR_POINT, BREAK_POINT, TIEBREAK, HIDDEN }
-
-/** A corner of the match screen a score can sit in. */
-internal enum class ScorePosition { BOTTOM_LEFT, BOTTOM_RIGHT, TOP_LEFT, TOP_RIGHT }
-
-/** The two scores sit diagonally; MatchEngine.computeScoreLayout picks the diagonal from the rally count. */
-internal data class ScoreLayout(val youPosition: ScorePosition, val oppPosition: ScorePosition)

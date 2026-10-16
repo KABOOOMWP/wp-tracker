@@ -8,7 +8,7 @@ import WatchConnectivity
 /// and receives the team names typed on the phone. WCSession is thread-safe; `latest` sits behind a lock.
 final class PhoneLink: NSObject, ScoreboardSink, WCSessionDelegate {
 
-    private let session: WCSession?
+    private let session: (any LinkSession)?
     private let names: NamesModel
     private let latestText = OSAllocatedUnfairLock<String?>(initialState: nil)
     private static let log = Logger.app("link")
@@ -17,7 +17,7 @@ final class PhoneLink: NSObject, ScoreboardSink, WCSessionDelegate {
     var latest: String? { latestText.withLock { $0 } }
 
     /// `session: nil` keeps the link offline (unit tests).
-    init(names: NamesModel, session: WCSession? = WCSession.isSupported() ? .default : nil) {
+    init(names: NamesModel, session: (any LinkSession)? = WCSession.isSupported() ? WCSession.default : nil) {
         self.names = names
         self.session = session
         super.init()
@@ -49,14 +49,17 @@ final class PhoneLink: NSObject, ScoreboardSink, WCSessionDelegate {
         } catch {
             Self.log.error("Scoreboard not sent: \(error.localizedDescription)")
         }
-        if session.isReachable { session.sendMessage(payload, replyHandler: nil, errorHandler: nil) }
+        if session.isReachable {
+            session.sendMessage(payload, replyHandler: nil) { Self.log.error("Live scoreboard not sent: \($0.localizedDescription)") }
+        }
     }
 
     // MARK: WCSessionDelegate (called off the main thread)
 
+    /// Applies the names the phone stored while this app was away (read through the LinkSession, so tests cover it).
     func session(_ session: WCSession, activationDidCompleteWith state: WCSessionActivationState, error: Error?) {
         if let error { Self.log.error("Activation failed: \(error.localizedDescription)") }
-        receive(session.receivedApplicationContext)
+        receive(self.session?.receivedApplicationContext ?? [:])
     }
 
     func sessionReachabilityDidChange(_ session: WCSession) { flush() }

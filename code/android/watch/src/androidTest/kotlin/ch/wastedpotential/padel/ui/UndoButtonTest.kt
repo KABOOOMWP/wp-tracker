@@ -1,6 +1,7 @@
 package ch.wastedpotential.padel.ui
 
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.advanceEventTime
@@ -9,6 +10,7 @@ import androidx.compose.ui.test.center
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.down
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.moveTo
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performSemanticsAction
@@ -55,6 +57,20 @@ class UndoButtonTest {
         rule.onNodeWithContentDescription(UiText.END_MATCH).assertIsDisplayed()
         rule.onNodeWithTag(UiTags.UNDO).performTouchInput { click() }
         assertEquals(listOf(UiText.END_MATCH), calls)
+    }
+
+    @Test
+    fun aPressThatSlidesOff_neitherUndoesNorToggles() {
+        show()
+        rule.onNodeWithTag(UiTags.UNDO).performTouchInput {
+            down(center)
+            advanceEventTime(MARGIN_MS)
+            moveTo(Offset(center.x, -height.toFloat()))
+            advanceEventTime(HOLD_MS)
+            up()
+        }
+        rule.onNodeWithContentDescription(UiText.UNDO).assertIsDisplayed()
+        assertEquals(emptyList<String>(), calls)
     }
 
     @Test

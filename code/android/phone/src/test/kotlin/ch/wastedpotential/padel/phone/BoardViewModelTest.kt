@@ -106,7 +106,7 @@ class BoardViewModelTest {
     @Test fun `edited names are shown, saved and sent`() {
         val vm = vm()
         vm.editNames(" Ana ", "")
-        val expected = TeamNames("Ana", TeamNames.DEFAULT_OPP)
+        val expected = TeamNames("Ana", TeamNames.DEFAULT.opp)
         assertEquals(expected, vm.shown.names)
         assertEquals(expected, TeamNames.decode(watch.lastSent(SyncKeys.NAMES_PATH)!!))
         assertEquals(expected, vm(link = null).shown.names)

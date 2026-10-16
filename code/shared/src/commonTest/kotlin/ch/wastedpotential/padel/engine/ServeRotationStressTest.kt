@@ -2,7 +2,6 @@ package ch.wastedpotential.padel.engine
 
 import ch.wastedpotential.padel.model.GameMode
 import ch.wastedpotential.padel.model.Player
-import ch.wastedpotential.padel.model.ServeSide
 import ch.wastedpotential.padel.model.Team
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -20,7 +19,6 @@ class ServeRotationStressTest {
         }
         assertEquals(GameMode.TIEBREAK, s.game.mode)
         assertEquals(Player.A1, s.serve.serverPlayer, "B2 served game 12")
-        assertEquals(ServeSide.RIGHT, s.serve.serveSide)
     }
 
     @Test fun `singles alternate twelve games into a tie-break opened by the next player`() {
@@ -34,13 +32,12 @@ class ServeRotationStressTest {
         assertEquals(Player.A1, s.serve.serverPlayer, "B1 served game 12")
     }
 
-    @Test fun `a long doubles tie-break keeps one serve then two each and alternates sides`() {
+    @Test fun `a long doubles tie-break keeps one serve then two each`() {
         var s = makeSnapshot(config = doublesConfig(), youGames = 6, oppGames = 6, gameMode = GameMode.TIEBREAK)
         val afterOpener = listOf(Player.B1, Player.A2, Player.B2, Player.A1)
         repeat(34) { point ->
             val expected = if (point == 0) Player.A1 else afterOpener[(point - 1) / 2 % 4]
             assertEquals(expected, s.serve.serverPlayer, "point $point")
-            assertEquals(if (point % 2 == 0) ServeSide.RIGHT else ServeSide.LEFT, s.serve.serveSide, "point $point")
             s = if (point % 2 == 0) s.you() else s.opp()
         }
         assertEquals(17 to 17, s.game.youPoints to s.game.oppPoints)

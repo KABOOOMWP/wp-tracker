@@ -87,7 +87,7 @@ private fun SummaryButton(label: String, tag: String, onClick: () -> Unit) {
             .padding(horizontal = scaledDp(M.SUMMARY_BUTTON_PAD))
             .height(scaledDp(M.SUMMARY_BUTTON, min = M.SUMMARY_BUTTON_MIN))
             .background(Color(BoardColors.BUTTON), CircleShape)
-            .clickable(role = Role.Button, onClick = onClick)
+            .clickable(interactionSource = null, indication = null, role = Role.Button, onClick = onClick)
             .testTag(tag),
     ) {
         BoardText(label, M.BUTTON_FONT, BoardWhite, minSize = M.BUTTON_FONT_MIN)

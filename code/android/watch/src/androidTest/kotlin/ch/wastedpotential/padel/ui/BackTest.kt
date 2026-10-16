@@ -3,7 +3,6 @@ package ch.wastedpotential.padel.ui
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.espresso.Espresso
 import ch.wastedpotential.padel.display.UiTags
 import ch.wastedpotential.padel.match.AppScreen
@@ -26,7 +25,7 @@ class BackTest {
     fun duringAMatch_backIsSwallowed() {
         val vm = rule.showApp(testViewModel(singlesConfig()).apply { score(Team.YOU) })
         Espresso.pressBack()
-        rule.onNodeWithTag(UiTags.SCORE_YOU).assertTextEquals("15")
+        rule.boardPart(UiTags.SCORE_YOU).assertTextEquals("15")
         assertEquals(AppScreen.MATCH, vm.state!!.screen)
         assertFalse("the match stays in front", rule.activity.isFinishing)
     }

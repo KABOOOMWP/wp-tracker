@@ -23,7 +23,7 @@ class AndroidApplicationPlugin : Plugin<Project> {
                 resValue("string", "app_name", app.name)
             }
             buildFeatures.resValues = true
-            if (key != null && key.isComplete) {
+            if (key is ReleaseKey.Found) {
                 signingConfigs.create("release") {
                     storeFile = key.storeFile
                     storePassword = key.storePassword
@@ -42,12 +42,11 @@ class AndroidApplicationPlugin : Plugin<Project> {
         tasks.named("preBuild") { dependsOn(":$VERIFY_APP_CONFIG") }
         // Without a key a release would come out unsigned; Android Studio's signing wizard injects its own
         val injected = providers.gradleProperty("android.injected.signing.store.file").isPresent
-        val missing = when {
-            injected -> null
-            key == null -> "No release key: add code/$KEYSTORE_PROPERTIES or set $RELEASE_KEY_ENV (see README, Release signing)"
-            !key.isComplete -> "Release key passwords are empty: fill them in code/$KEYSTORE_PROPERTIES"
-            else -> null
-        }
+        val missing = when (key) {
+            is ReleaseKey.Found -> null
+            is ReleaseKey.Incomplete -> key.reason
+            ReleaseKey.Missing -> "No release key: add code/$KEYSTORE_PROPERTIES or set $RELEASE_KEY_ENV (see README, Release signing)"
+        }.takeUnless { injected }
         if (missing != null) {
             tasks.matching { it.name == "packageRelease" || it.name == "signReleaseBundle" }.configureEach {
                 doFirst { throw GradleException(missing) }

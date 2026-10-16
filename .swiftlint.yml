@@ -1,6 +1,7 @@
-# SwiftLint for the Apple apps: run `swiftlint --strict` from the repository root
+# SwiftLint for all Swift (the Apple apps and the tool scripts): run `swiftlint --strict` from the repository root
 included:
   - code/apple
+  - tool
 excluded:
   - code/apple/build
 

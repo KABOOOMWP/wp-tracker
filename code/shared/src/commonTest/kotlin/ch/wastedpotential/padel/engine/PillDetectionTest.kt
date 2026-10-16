@@ -119,6 +119,14 @@ class PillDetectionTest {
         assertEquals(PillState.STAR_POINT, pill(starPoint(serverTeam = Team.OPP)))
     }
 
+    @Test fun `nothing is announced once the match is won`() {
+        val matchPoint = makeSnapshot(setsWonYou = 1, youGames = 5, youPoints = 3, serverTeam = Team.OPP)
+        assertEquals(PillState.MATCH_POINT, pill(matchPoint))
+        assertEquals(PillState.HIDDEN, pill(matchPoint.you()))
+        val tieBreak = makeSnapshot(setsWonOpp = 1, youGames = 6, oppGames = 6, gameMode = GameMode.TIEBREAK, oppPoints = 6)
+        assertEquals(PillState.HIDDEN, pill(tieBreak.opp()))
+    }
+
     @Test fun `a match point outranks the tie-break`() {
         val s = makeSnapshot(setsWonYou = 1, youGames = 6, oppGames = 6, gameMode = GameMode.TIEBREAK, youPoints = 6, oppPoints = 5)
         assertEquals(PillState.MATCH_POINT, pill(s))

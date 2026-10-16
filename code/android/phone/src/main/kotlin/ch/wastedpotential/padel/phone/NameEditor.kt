@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,6 +29,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -130,7 +131,8 @@ private fun NameField(
             cursorBrush = SolidColor(Color(BoardColors.YOU_ACCENT)),
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = imeAction),
             keyboardActions = KeyboardActions { onAction() },
-            modifier = Modifier.fillMaxWidth().focusRequester(focus).testTag(tag),
+            // The label above is its own node, so TalkBack needs the field labelled itself
+            modifier = Modifier.fillMaxWidth().focusRequester(focus).semantics { contentDescription = label }.testTag(tag),
             decorationBox = { field ->
                 Box(
                     Modifier.background(
@@ -159,7 +161,7 @@ private fun TextButton(label: String, tag: String, onClick: () -> Unit) {
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .defaultMinSize(minWidth = MinTouchTarget, minHeight = MinTouchTarget)
-            .clickable(role = Role.Button, onClick = onClick)
+            .clickable(interactionSource = null, indication = null, role = Role.Button, onClick = onClick)
             .padding(horizontal = SMALL_GAP.dp)
             .testTag(tag),
     ) {

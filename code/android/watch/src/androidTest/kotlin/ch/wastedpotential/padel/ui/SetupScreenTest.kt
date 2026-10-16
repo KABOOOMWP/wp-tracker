@@ -65,7 +65,7 @@ class SetupScreenTest {
         clickText(UiText.SINGLES, UiText.BEST_OF_3, UiText.RULE_STANDARD, UiText.SERVE_YOU)
         assertEquals(AppScreen.MATCH, vm.state!!.screen)
         assertEquals(Team.YOU, vm.state!!.display!!.servingTeam)
-        rule.onNodeWithTag(UiTags.SCORE_YOU).assertTextEquals("0")
+        rule.boardPart(UiTags.SCORE_YOU).assertTextEquals("0")
     }
 
     @Test

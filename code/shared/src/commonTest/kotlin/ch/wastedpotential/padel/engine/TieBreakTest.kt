@@ -4,7 +4,6 @@ import ch.wastedpotential.padel.model.Config
 import ch.wastedpotential.padel.model.GameMode
 import ch.wastedpotential.padel.model.GamePhase
 import ch.wastedpotential.padel.model.Player
-import ch.wastedpotential.padel.model.ServeSide
 import ch.wastedpotential.padel.model.SetScore
 import ch.wastedpotential.padel.model.Team
 import kotlin.test.Test
@@ -52,12 +51,6 @@ class TieBreakTest {
         assertEquals(0, s.match.setsWon(Team.YOU))
         assertEquals(GameMode.TIEBREAK, s.game.mode)
         assertEquals(1, s.opp().you().you().match.setsWon(Team.YOU), "9-7")
-    }
-
-    @Test fun `the serve side alternates every point from the right`() {
-        var s = tieBreak()
-        val sides = List(5) { s.serve.serveSide.also { s = s.you() } }
-        assertEquals(listOf(ServeSide.RIGHT, ServeSide.LEFT, ServeSide.RIGHT, ServeSide.LEFT, ServeSide.RIGHT), sides)
     }
 
     @Test fun `singles serve one point then two each`() {

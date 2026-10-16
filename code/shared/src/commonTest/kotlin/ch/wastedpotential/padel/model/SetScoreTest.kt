@@ -3,10 +3,11 @@ package ch.wastedpotential.padel.model
 import ch.wastedpotential.padel.display.SummaryStats
 import ch.wastedpotential.padel.engine.makeSnapshot
 import ch.wastedpotential.padel.engine.singlesConfig
-import ch.wastedpotential.padel.engine.winSet
+import ch.wastedpotential.padel.engine.winGame
 import ch.wastedpotential.padel.match.MatchHistory
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -30,6 +31,16 @@ class SetScoreTest {
         assertNull(SetScore(5, 3, false).winner)
         assertNull(SetScore(0, 0, false).winner)
         assertNull(SetScore(6, 6, false).winner)
+    }
+
+    @Test fun `a set is live unless said completed`() {
+        assertEquals(SetScore(3, 2, false), SetScore(3, 2))
+        assertFalse(SetScore(3, 2).isCompleted)
+    }
+
+    @Test fun `a completed set cannot be level`() {
+        assertFailsWith<IllegalArgumentException> { SetScore(6, 6, true) }
+        assertFailsWith<IllegalArgumentException> { SetScore(0, 0, true) }
     }
 
     @Test fun `games are read per team`() {
@@ -56,7 +67,9 @@ class SetScoreTest {
     }
 
     @Test fun `the engine records the set winner as it completes the set`() {
-        val s = makeSnapshot(youGames = 5, oppGames = 6).winSet(Team.OPP)
+        val s = makeSnapshot(youGames = 5, oppGames = 6).winGame(Team.OPP)
+        assertEquals(SetScore(5, 7, true), s.match.completedSets.single())
         assertEquals(Team.OPP, s.match.completedSets.single().winner)
+        assertTrue(s.awaitingCourtSideChange, "that one game ended the set")
     }
 }

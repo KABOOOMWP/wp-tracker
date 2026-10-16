@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -19,12 +18,14 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.tooling.preview.Preview
 import ch.wastedpotential.padel.board.MatchBoard
 import ch.wastedpotential.padel.board.scaledDp
 import ch.wastedpotential.padel.display.MatchDisplay
 import ch.wastedpotential.padel.display.UiTags
 import ch.wastedpotential.padel.display.UiText
+import ch.wastedpotential.padel.display.UiTimings
 import ch.wastedpotential.padel.model.Team
 import ch.wastedpotential.padel.presentation.LocalIsRoundScreen
 import ch.wastedpotential.padel.presentation.WATCH_PREVIEW
@@ -43,6 +44,7 @@ fun MatchScreen(
     onUndo: () -> Unit,
     onEndMatch: () -> Unit,
     onAnswer: (Int) -> Unit,
+    holdMs: Long = UiTimings.END_MATCH_HOLD_MS,
 ) {
     val view = LocalView.current
     DisposableEffect(view) {
@@ -73,40 +75,47 @@ fun MatchScreen(
 
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
-            TapZone(UiTags.TAP_OPP, UiText.pointFor(names.name(Team.OPP)), actions) { onScore(Team.OPP) }
-            TapZone(UiTags.TAP_YOU, UiText.pointFor(names.name(Team.YOU)), actions) { onScore(Team.YOU) }
+            TapZone(UiTags.TAP_OPP, UiText.pointFor(names.name(Team.OPP)), display.score(Team.OPP), actions) { onScore(Team.OPP) }
+            TapZone(UiTags.TAP_YOU, UiText.pointFor(names.name(Team.YOU)), display.score(Team.YOU), actions) { onScore(Team.YOU) }
         }
 
-        // Drawing only; taps fall through to the zones underneath
+        // Drawing only; taps fall through to the zones underneath. TalkBack reads it as one element, as the phone and watchOS do
         MatchBoard(
             display = display,
             names = names,
-            modifier = Modifier.fillMaxSize().padding(
-                start = hInset,
-                end = hInset,
-                top = scaledDp(M.TOP_INSET, min = M.TOP_INSET_MIN),
-                bottom = scaledDp(M.BOTTOM_INSET),
-            ),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    start = hInset,
+                    end = hInset,
+                    top = scaledDp(M.TOP_INSET, min = M.TOP_INSET_MIN),
+                    bottom = scaledDp(M.BOTTOM_INSET),
+                )
+                .semantics(mergeDescendants = true) { contentDescription = display.spokenScore(names) }
+                .testTag(UiTags.MATCH_BOARD),
         )
 
         UndoButton(
             onUndo = onUndo,
             onEndMatch = onEndMatch,
             modifier = Modifier.align(Alignment.CenterEnd).padding(end = scaledDp(M.UNDO_EDGE_PAD)).testTag(UiTags.UNDO),
+            holdMs = holdMs,
         )
 
         display.prompt?.let { PromptView(it, onAnswer) }
     }
 }
 
+/** A button labelled "Point for <team>"; TalkBack values it with that team's [score] and hints [UiText.SCORE_HINT], like watchOS. */
 @Composable
-private fun ColumnScope.TapZone(tag: String, label: String, actions: List<CustomAccessibilityAction>, onTap: () -> Unit) {
+private fun ColumnScope.TapZone(tag: String, label: String, score: String, actions: List<CustomAccessibilityAction>, onTap: () -> Unit) {
     Box(
         Modifier
             .weight(1f).fillMaxWidth()
-            .clickable(interactionSource = null, indication = null, onClickLabel = label, role = Role.Button, onClick = onTap)
+            .clickable(interactionSource = null, indication = null, onClickLabel = UiText.SCORE_HINT, role = Role.Button, onClick = onTap)
             .semantics {
                 contentDescription = label
+                stateDescription = score
                 customActions = actions
             }
             .testTag(tag),

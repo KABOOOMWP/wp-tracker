@@ -7,7 +7,6 @@ import ch.wastedpotential.padel.model.GameMode
 import ch.wastedpotential.padel.model.GamePhase
 import ch.wastedpotential.padel.model.Player
 import ch.wastedpotential.padel.model.RuleMode
-import ch.wastedpotential.padel.model.ServeSide
 import ch.wastedpotential.padel.model.SetScore
 import ch.wastedpotential.padel.model.Snapshot
 import ch.wastedpotential.padel.model.Team
@@ -53,13 +52,13 @@ class UndoTest {
         assertEquals(1, scored.game.youPoints)
     }
 
-    @Test fun `undo the game-winning point restores 40-0 with the same server and side`() {
+    @Test fun `undo the game-winning point restores 40-0 with the same server`() {
         val h = history(singlesConfig(), Y, Y, Y)
         val scored = h.assertUndoRestores(Y)
         assertEquals(1, scored.set.youGames)
         assertEquals(Player.B1, scored.serve.serverPlayer)
         assertEquals(Player.A1, h.current!!.serve.serverPlayer)
-        assertEquals(ServeSide.LEFT, h.current!!.serve.serveSide)
+        assertEquals(3, h.current!!.game.rally)
     }
 
     @Test fun `undo a lost advantage restores the advantage`() {

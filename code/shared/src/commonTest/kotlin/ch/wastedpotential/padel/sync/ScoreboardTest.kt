@@ -82,6 +82,11 @@ class ScoreboardTest {
         assertNull(Scoreboard.decode(data.replace("\"epoch\":${h.epoch},", "")))
     }
 
+    @Test fun `the live set is sent with isCompleted so a phone that requires it can read the board`() {
+        val data = board(history().apply { score(Team.YOU) }).encode()
+        assertTrue("\"setScores\":[{\"youGames\":0,\"oppGames\":0,\"isCompleted\":false}]" in data, data)
+    }
+
     @Test fun `decode ignores fields a newer watch adds`() {
         val data = board(MatchHistory()).encode().dropLast(1) + ",\"later\":true}"
         assertNotNull(Scoreboard.decode(data))

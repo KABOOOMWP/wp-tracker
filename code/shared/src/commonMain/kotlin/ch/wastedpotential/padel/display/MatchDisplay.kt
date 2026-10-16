@@ -4,7 +4,6 @@ import ch.wastedpotential.padel.engine.MatchEngine
 import ch.wastedpotential.padel.model.GameMode
 import ch.wastedpotential.padel.model.GameState
 import ch.wastedpotential.padel.model.PillState
-import ch.wastedpotential.padel.model.ScorePosition
 import ch.wastedpotential.padel.model.SetScore
 import ch.wastedpotential.padel.model.Snapshot
 import ch.wastedpotential.padel.model.Team
@@ -40,20 +39,20 @@ public data class MatchDisplay(
     }
 
     public companion object {
-        internal fun of(snapshot: Snapshot): MatchDisplay {
-            val layout = MatchEngine.computeScoreLayout(snapshot)
-            return MatchDisplay(
-                youScore = scoreText(snapshot.game, Team.YOU),
-                oppScore = scoreText(snapshot.game, Team.OPP),
-                youScoreOnLeft = layout.youPosition == ScorePosition.BOTTOM_LEFT,
-                scoresCentered = snapshot.game.phase.isDecider,
-                servingTeam = snapshot.serve.serverTeam,
-                serveStripeOnLeft = snapshot.serve.serverPlayer.isLeftSide,
-                pillLabel = pillLabel(MatchEngine.computePill(snapshot)),
-                setScores = setScores(snapshot),
-                prompt = prompt(snapshot),
-            )
-        }
+        internal fun of(snapshot: Snapshot): MatchDisplay = MatchDisplay(
+            youScore = scoreText(snapshot.game, Team.YOU),
+            oppScore = scoreText(snapshot.game, Team.OPP),
+            youScoreOnLeft = youScoreOnLeft(snapshot.game),
+            scoresCentered = snapshot.game.phase.isDecider,
+            servingTeam = snapshot.serve.serverTeam,
+            serveStripeOnLeft = snapshot.serve.serverPlayer.isLeftSide,
+            pillLabel = pillLabel(MatchEngine.computePill(snapshot)),
+            setScores = setScores(snapshot),
+            prompt = prompt(snapshot),
+        )
+
+        /** The scores alternate diagonally with the rally: even puts You bottom-right, odd bottom-left. Tie-breaks too. */
+        internal fun youScoreOnLeft(game: GameState): Boolean = game.rally % 2 == 1
 
         /** 0/15/30/40/AD in a regular game, the raw points in a tie-break. */
         internal fun scoreText(game: GameState, team: Team): String {
@@ -81,8 +80,7 @@ public data class MatchDisplay(
         /** The completed sets plus the live games of the current set (none once the match is won). */
         internal fun setScores(snapshot: Snapshot): List<SetScore> {
             val completed = snapshot.match.completedSets
-            if (snapshot.isMatchOver) return completed
-            return completed + SetScore(snapshot.set.youGames, snapshot.set.oppGames, isCompleted = false)
+            return if (snapshot.isMatchOver) completed else completed + snapshot.set
         }
 
         /** The open prompt, if any. Choice 0 is always the left or only answer. */
@@ -109,7 +107,10 @@ public data class MatchDisplay(
             if (team == Team.YOU) UiText.YOUR_TEAM else UiText.OPP_TEAM,
             UiText.SWITCH_SIDES,
             Tone.of(team),
-            listOf(Choice(UiText.SWITCH, Tone.YOU, UiTags.SWITCH_YES), Choice(UiText.KEEP, Tone.OPP, UiTags.SWITCH_NO)),
+            listOf(
+                Choice(UiText.SWITCH, Tone.YOU, UiTags.SWITCH_YES, Arrow.LEFT),
+                Choice(UiText.KEEP, Tone.OPP, UiTags.SWITCH_NO, Arrow.RIGHT),
+            ),
         )
     }
 }

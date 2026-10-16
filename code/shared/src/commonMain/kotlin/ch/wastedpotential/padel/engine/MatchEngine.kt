@@ -9,12 +9,8 @@ import ch.wastedpotential.padel.model.PillState
 import ch.wastedpotential.padel.model.PlayMode
 import ch.wastedpotential.padel.model.Player
 import ch.wastedpotential.padel.model.RuleMode
-import ch.wastedpotential.padel.model.ScoreLayout
-import ch.wastedpotential.padel.model.ScorePosition
-import ch.wastedpotential.padel.model.ServeSide
 import ch.wastedpotential.padel.model.ServeState
 import ch.wastedpotential.padel.model.SetScore
-import ch.wastedpotential.padel.model.SetState
 import ch.wastedpotential.padel.model.Snapshot
 import ch.wastedpotential.padel.model.StatsState
 import ch.wastedpotential.padel.model.Team
@@ -33,7 +29,7 @@ internal object MatchEngine {
     fun initialSnapshot(config: Config, startedAt: Long): Snapshot = Snapshot(
         config = config,
         match = MatchState(startedAt = startedAt),
-        set = SetState(),
+        set = SetScore(0, 0),
         game = GameState(),
         serve = serveAt(config, 0, opponentServerConfirmed = false),
         stats = StatsState(),
@@ -59,14 +55,9 @@ internal object MatchEngine {
             return winGame(snapshot, team, decided)
         }
         val next = advancePhase(game.plusPoint(team), snapshot.config.ruleMode, team)
-        val serve = if (game.mode == GameMode.TIEBREAK) {
-            tieBreakServe(snapshot, next.rally)
-        } else {
-            snapshot.serve.copy(serveSide = sideOf(next.rally))
-        }
         return snapshot.copy(
             game = next,
-            serve = serve,
+            serve = if (game.mode == GameMode.TIEBREAK) tieBreakServe(snapshot, next.rally) else snapshot.serve,
             stats = if (next.phase.isDeuce) stats.copy(deuceCount = stats.deuceCount + 1) else stats,
         )
     }
@@ -125,13 +116,6 @@ internal object MatchEngine {
             game.mode == GameMode.TIEBREAK -> PillState.TIEBREAK
             else -> PillState.HIDDEN
         }
-    }
-
-    /** Even rally: You bottom-right, Opp top-left; odd: You bottom-left, Opp top-right. Tie-breaks too. */
-    fun computeScoreLayout(snapshot: Snapshot): ScoreLayout = if (snapshot.game.rally % 2 == 0) {
-        ScoreLayout(ScorePosition.BOTTOM_RIGHT, ScorePosition.TOP_LEFT)
-    } else {
-        ScoreLayout(ScorePosition.BOTTOM_LEFT, ScorePosition.TOP_RIGHT)
     }
 
     // ── Game ─────────────────────────────────────────────────────────────────
@@ -211,7 +195,7 @@ internal object MatchEngine {
     }
 
     /** First to six games by two, or 7:5, or 7:6 after the tie-break. */
-    private fun setWinner(set: SetState): Team? {
+    private fun setWinner(set: SetScore): Team? {
         val leader = when {
             set.youGames > set.oppGames -> Team.YOU
             set.oppGames > set.youGames -> Team.OPP
@@ -221,29 +205,23 @@ internal object MatchEngine {
         return leader.takeIf { games == SET_GAMES + 1 || (games >= SET_GAMES && games - set.games(leader.other) >= 2) }
     }
 
-    private fun winSet(snapshot: Snapshot, set: SetState, stats: StatsState): Snapshot {
+    /** The won set joins the completed ones; the live set and game start at love, after the winning point too. */
+    private fun winSet(snapshot: Snapshot, set: SetScore, stats: StatsState): Snapshot {
         val won = snapshot.copy(
-            match = snapshot.match.copy(
-                completedSets =
-                snapshot.match.completedSets + SetScore(set.youGames, set.oppGames, isCompleted = true),
-            ),
-            set = set,
+            match = snapshot.match.copy(completedSets = snapshot.match.completedSets + set.copy(isCompleted = true)),
+            set = SetScore(0, 0),
+            game = GameState(),
             stats = stats,
         )
         if (won.isMatchOver) return won
-        return won.copy(
-            set = SetState(),
-            game = GameState(),
-            serve = nextGameServe(snapshot),
-            awaitingCourtSideChange = true,
-        )
+        return won.copy(serve = nextGameServe(snapshot), awaitingCourtSideChange = true)
     }
 
     // ── Serve ────────────────────────────────────────────────────────────────
 
-    /** The player at [orderIndex] serves a new game, from the right. */
+    /** The player at [orderIndex] serves a new game. */
     private fun serveAt(config: Config, orderIndex: Int, opponentServerConfirmed: Boolean) =
-        ServeState(config.serveOrder[orderIndex], ServeSide.RIGHT, orderIndex, opponentServerConfirmed)
+        ServeState(config.serveOrder[orderIndex], orderIndex, opponentServerConfirmed)
 
     /** The serve order moves on by one after every game, also after a tie-break. */
     private val Snapshot.nextServerIndex: Int get() = (serve.serveOrderIndex + 1) % config.serveOrder.size
@@ -251,12 +229,10 @@ internal object MatchEngine {
     private fun nextGameServe(snapshot: Snapshot) =
         serveAt(snapshot.config, snapshot.nextServerIndex, snapshot.serve.opponentServerConfirmed)
 
-    private fun sideOf(rally: Int) = if (rally % 2 == 0) ServeSide.RIGHT else ServeSide.LEFT
-
     /** The tie-break's first server serves one point, then the next ones in the order serve two each; [rally] is at least 1. */
     private fun tieBreakServe(snapshot: Snapshot, rally: Int): ServeState {
         val order = snapshot.config.serveOrder
         val index = (snapshot.serve.serveOrderIndex + 1 + (rally - 1) / 2) % order.size
-        return snapshot.serve.copy(serverPlayer = order[index], serveSide = sideOf(rally))
+        return snapshot.serve.copy(serverPlayer = order[index])
     }
 }

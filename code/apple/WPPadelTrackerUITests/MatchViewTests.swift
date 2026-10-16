@@ -76,6 +76,16 @@ final class MatchViewTests: XCTestCase {
         XCTAssertEqual(app.score(Id.tapOpp), "0")
     }
 
+    func test_aPressThatSlidesOffTheUndoButton_neitherUndoesNorToggles() {
+        let app = singles()
+        app.score(you: 2)
+        // Off to the far side of the opponent's zone, well beyond the button, and released before the hold completes
+        app.el(Id.undo).press(forDuration: 0.2, thenDragTo: app.el(Id.tapOpp), withVelocity: .fast, thenHoldForDuration: 0)
+        XCTAssertEqual(app.el(Id.undo).label, "Undo")
+        XCTAssertEqual(app.score(Id.tapYou), "30")
+        XCTAssertEqual(app.score(Id.tapOpp), "0")
+    }
+
     // ── Prompts ───────────────────────────────────────────────────────────────
 
     func test_doublesGame2_asksWhichOpponentServes() {
@@ -83,8 +93,8 @@ final class MatchViewTests: XCTestCase {
         app.goToDoublesMatch()
         app.score(you: 4)
 
-        XCTAssertEqual(app.el(Id.pickLeft).label, "← LEFT")
-        XCTAssertEqual(app.el(Id.pickRight).label, "RIGHT →")
+        XCTAssertEqual(app.el(Id.pickLeft).label, "LEFT")
+        XCTAssertEqual(app.el(Id.pickRight).label, "RIGHT")
         XCTAssert(app.staticTexts["WHO SERVES?, OPPONENT SIDE"].exists)
         app.answer(Id.pickRight)
         XCTAssertEqual(app.score(Id.tapOpp), "0")
@@ -113,8 +123,8 @@ final class MatchViewTests: XCTestCase {
         let app = XCUIApplication.watch(scenario: "doublesSetWon")
         app.answer(Id.changeSides)
         XCTAssert(app.staticTexts["YOUR TEAM, SWITCH SIDES?"].exists)
-        XCTAssertEqual(app.el(Id.switchYes).label, "← SWITCH")
-        XCTAssertEqual(app.el(Id.switchNo).label, "KEEP →")
+        XCTAssertEqual(app.el(Id.switchYes).label, "SWITCH")
+        XCTAssertEqual(app.el(Id.switchNo).label, "KEEP")
 
         app.answer(Id.switchYes, closes: false)   // the opponent's question has the same answers
         XCTAssert(app.staticTexts["OPP TEAM, SWITCH SIDES?"].waitForExistence(timeout: screenTimeout))

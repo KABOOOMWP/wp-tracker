@@ -7,8 +7,10 @@ import ch.wastedpotential.padel.model.Player
 import ch.wastedpotential.padel.model.RuleMode
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class SetupStateTest {
 
@@ -56,8 +58,10 @@ class SetupStateTest {
 
     @Test fun `back steps to the previous screen and leaves at the start`() {
         val state = answers(1, 0)
+        assertTrue(state.canGoBack)
         assertEquals(SetupStep.FORMAT, state.back()!!.step)
         assertEquals(PlayMode.DOUBLES, state.back()!!.playMode)
+        assertFalse(SetupState().canGoBack)
         assertNull(SetupState().back())
     }
 

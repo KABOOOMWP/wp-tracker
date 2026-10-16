@@ -7,12 +7,12 @@ import WatchConnectivity
 @MainActor
 final class WatchLink: NSObject, NamesSender, WCSessionDelegate {
 
-    private let session: WCSession?
+    private let session: (any LinkSession)?
     private weak var model: ScoreboardModel?
     nonisolated private static let log = Logger.app("link")
 
     /// `session: nil` keeps the link offline (unit tests).
-    init(model: ScoreboardModel, session: WCSession? = WCSession.isSupported() ? .default : nil) {
+    init(model: ScoreboardModel, session: (any LinkSession)? = WCSession.isSupported() ? WCSession.default : nil) {
         self.model = model
         self.session = session
         super.init()
@@ -28,17 +28,21 @@ final class WatchLink: NSObject, NamesSender, WCSessionDelegate {
         } catch {
             Self.log.error("Names not sent: \(error.localizedDescription)")
         }
-        session.transferUserInfo(payload)                    // delivered even while the watch app sleeps
-        if session.isReachable { session.sendMessage(payload, replyHandler: nil, errorHandler: nil) }
+        // Delivered even while the watch app sleeps; only the latest names matter, so the ones still queued go
+        session.cancelQueuedUserInfo()
+        session.queueUserInfo(payload)
+        if session.isReachable {
+            session.sendMessage(payload, replyHandler: nil) { Self.log.error("Live names not sent: \($0.localizedDescription)") }
+        }
     }
 
     // MARK: WCSessionDelegate (called off the main thread)
 
+    /// Shows the board the watch stored while this app was away (read through the LinkSession, so tests cover it).
     nonisolated func session(_ session: WCSession, activationDidCompleteWith state: WCSessionActivationState, error: Error?) {
         if let error { Self.log.error("Activation failed: \(error.localizedDescription)") }
-        let last = session.receivedApplicationContext[SyncKeys.shared.SCOREBOARD] as? String
         Task { @MainActor in
-            if let last { self.model?.receive(last) }
+            if let last = self.session?.receivedApplicationContext[SyncKeys.shared.SCOREBOARD] as? String { self.model?.receive(last) }
             self.model?.sendSavedNames()
         }
     }

@@ -1,15 +1,8 @@
 package wppadel
 
-import org.gradle.api.GradleException
 import org.gradle.api.Project
 import java.io.File
 import java.util.Properties
-
-/** The upload key both apps sign with; the Wear Data Layer only links apps signed with the same key. */
-internal class ReleaseKey(val storeFile: File, val storePassword: String, val alias: String, val keyPassword: String) {
-    /** False while keystore.properties leaves a password empty, to be filled in only for a release. */
-    val isComplete: Boolean get() = storePassword.isNotBlank() && keyPassword.isNotBlank()
-}
 
 internal const val KEYSTORE_PROPERTIES = "android/keystore.properties"
 
@@ -23,24 +16,55 @@ private enum class KeyPart(val property: String, val env: String) {
 
 internal val RELEASE_KEY_ENV: List<String> = KeyPart.entries.map { it.env }
 
-/** Reads code/android/keystore.properties (git-ignored), else the environment; null when neither has a key. */
-internal fun Project.releaseKey(): ReleaseKey? {
-    val file = rootProject.layout.projectDirectory.file(KEYSTORE_PROPERTIES)
-    val text = providers.fileContents(file).asText.orNull
-    val value: (KeyPart) -> String
-    if (text != null) {
-        val properties = Properties().apply { load(text.reader()) }
-        value = { properties.getProperty(it.property) ?: throw GradleException("$KEYSTORE_PROPERTIES has no ${it.property}") }
-    } else {
-        val env = KeyPart.entries.associateWith { providers.environmentVariable(it.env).orNull }
-        if (env.values.all { it == null }) return null
-        value = { env[it] ?: throw GradleException("${it.env} is not set (the release key needs all of $RELEASE_KEY_ENV)") }
+/** The upload key both apps sign with (the Wear Data Layer only links apps signed with one key), or why there is none yet. */
+internal sealed interface ReleaseKey {
+    /** Every part is set: release builds sign with it. */
+    class Found(val storeFile: File, val storePassword: String, val alias: String, val keyPassword: String) : ReleaseKey
+
+    /** A key is configured but a part is unset or empty; only a release build fails, with [reason]. */
+    class Incomplete(val reason: String) : ReleaseKey
+
+    /** Neither keystore.properties nor the environment names a key. */
+    data object Missing : ReleaseKey
+
+    companion object {
+        /** From keystore.properties ([propertiesText], null when absent), else [env]; a relative path is relative to [propertiesFile]. */
+        fun from(propertiesText: String?, env: Map<String, String?>, propertiesFile: File): ReleaseKey {
+            val fromFile = propertiesText != null
+            val parts = if (fromFile) {
+                val properties = Properties().apply { load(propertiesText.reader()) }
+                KeyPart.entries.associateWith { properties.getProperty(it.property) }
+            } else {
+                KeyPart.entries.associateWith { env[it.env] }
+            }
+            val name: (KeyPart) -> String = if (fromFile) KeyPart::property else KeyPart::env
+            val where =
+                if (fromFile) "in code/$KEYSTORE_PROPERTIES" else "in the environment (the release key needs all of $RELEASE_KEY_ENV)"
+            val unset = parts.filterValues { it == null }.keys
+            val empty = parts.filterValues { it != null && it.isBlank() }.keys
+            return when {
+                !fromFile && unset.size == parts.size -> Missing
+                unset.isNotEmpty() -> Incomplete("Release key incomplete: ${unset.joinToString(transform = name)} not set $where")
+                empty.isNotEmpty() -> Incomplete("Release key incomplete: ${empty.joinToString(transform = name)} empty $where")
+                else -> found(parts.mapValues { it.value!! }, propertiesFile)
+            }
+        }
+
+        private fun found(parts: Map<KeyPart, String>, propertiesFile: File) = Found(
+            storeFile = propertiesFile.parentFile.resolve(parts.getValue(KeyPart.STORE)),
+            storePassword = parts.getValue(KeyPart.STORE_PASSWORD),
+            alias = parts.getValue(KeyPart.ALIAS),
+            keyPassword = parts.getValue(KeyPart.KEY_PASSWORD),
+        )
     }
-    return ReleaseKey(
-        // A relative keystore path is relative to keystore.properties
-        storeFile = file.asFile.parentFile.resolve(value(KeyPart.STORE)),
-        storePassword = value(KeyPart.STORE_PASSWORD),
-        alias = value(KeyPart.ALIAS),
-        keyPassword = value(KeyPart.KEY_PASSWORD),
+}
+
+/** Reads code/android/keystore.properties (git-ignored), else the environment. */
+internal fun Project.releaseKey(): ReleaseKey {
+    val file = rootProject.layout.projectDirectory.file(KEYSTORE_PROPERTIES)
+    return ReleaseKey.from(
+        propertiesText = providers.fileContents(file).asText.orNull,
+        env = RELEASE_KEY_ENV.associateWith { providers.environmentVariable(it).orNull },
+        propertiesFile = file.asFile,
     )
 }

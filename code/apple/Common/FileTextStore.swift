@@ -5,7 +5,7 @@ import Shared
 /// A shared-module TextStore kept as one file in Application Support, written off the main thread.
 final class FileTextStore: NSObject, TextStore, Sendable {
 
-    let url: URL
+    private let url: URL
     private let queue = DispatchQueue(label: "file-text-store")
     private static let log = Logger.app("storage")
 

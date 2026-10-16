@@ -34,7 +34,7 @@ private struct TapPrompt: View {
             .buttonStyle(.plain)
             .accessibilityLabel(prompt.header)
             .accessibilityValue(prompt.subtitle)
-            .accessibilityIdentifier(prompt.choices[0].tag)   // a TAP prompt has exactly one choice
+            .accessibilityIdentifier(prompt.choices.first?.tag ?? "")   // a TAP prompt has one choice; none still draws
 
             VStack(spacing: scaled(metrics.PROMPT_GAP, scale, min: CGFloat(metrics.PROMPT_GAP_MIN))) {
                 Text(prompt.header)
@@ -94,9 +94,10 @@ private struct LeftRightPrompt: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
+    /// Draws the choice with its arrow (`text`); VoiceOver says the words only (`label`).
     private func half(_ choice: Choice, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(choice.label)
+            Text(choice.text)
                 .font(.system(size: scaled(metrics.PICKER_FONT, scale, min: CGFloat(metrics.PICKER_FONT_MIN)), weight: .bold))
                 .foregroundStyle(Color.boardWhite)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -104,6 +105,7 @@ private struct LeftRightPrompt: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(choice.label)
         .accessibilityIdentifier(choice.tag)
     }
 }

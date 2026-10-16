@@ -19,6 +19,7 @@ struct NameEditor: View {
             Form {
                 Section(UiText.shared.YOUR_TEAM_FIELD) {
                     TextField(current.you, text: $you)
+                        .cappedLength($you)
                         .focused($focus, equals: .you)
                         .submitLabel(.next)
                         .onSubmit { focus = .opp }
@@ -26,6 +27,7 @@ struct NameEditor: View {
                 }
                 Section(UiText.shared.OPPONENT_FIELD) {
                     TextField(current.opp, text: $opp)
+                        .cappedLength($opp)
                         .focused($focus, equals: .opp)
                         .submitLabel(.done)
                         .accessibilityIdentifier(UiTags.shared.FIELD_OPP)
@@ -46,6 +48,16 @@ struct NameEditor: View {
                 focus = .you
             }
             .onDisappear { OrientationGate.lockLandscape() }
+        }
+    }
+}
+
+private extension View {
+    /// Cuts a name at TeamNames.MAX_LENGTH while typing (as the Android editor does), so Done never shortens what the field showed.
+    func cappedLength(_ name: Binding<String>) -> some View {
+        onChange(of: name.wrappedValue) { _, typed in
+            let limit = Int(TeamNames.companion.MAX_LENGTH)
+            if typed.count > limit { name.wrappedValue = String(typed.prefix(limit)) }
         }
     }
 }
