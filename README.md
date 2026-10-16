@@ -141,7 +141,10 @@ cd code
 ```bash
 # edit app.json, then
 python3 tool/app_config.py apply    # regenerates code/apple/Config/App.xcconfig
+python3 tool/app_config.py check    # optional: every build runs it too
 ```
+
+To release a new version, raise `version.name` (semantic versioning: major for a big change, minor for a feature, patch for a fix) and set `version.build` to the day's date (`YYYYMMDD`, so it always grows), run `apply`, and commit `app.json` together with `App.xcconfig`.
 
 - **Gradle** reads `app.json` directly (`applicationId`, `versionName`, `versionCode` from `version.build` and `versionCodeOffset`, app label).
 - **Xcode** includes the generated `Config/App.xcconfig` from `Config/Base.xcconfig`, the project's base configuration. Every target refers to `$(PHONE_BUNDLE_ID)`, `$(WATCH_BUNDLE_ID)`, `$(MARKETING_VERSION)` and so on, so the phone and the embedded watch app always share one version. Do not set Version, Build, Team or Bundle Identifier in Xcode's General tab: that writes the value into the project and overrides `app.json`.

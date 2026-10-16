@@ -8,8 +8,8 @@
   "owner": "Wasted Potential (WP)",
   "version": {
     "_comment": "name is what users see; build must grow with every store upload. Android versionCode = build * 10 + versionCodeOffset.",
-    "name": "1.3.0",
-    "build": 20261012
+    "name": "2.0.0",
+    "build": 20261016
   },
   "apple": {
     "team": "9P2T82QGN8",
