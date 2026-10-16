@@ -25,8 +25,8 @@ jobs:
       run:
         working-directory: code
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.13"
       - name: App config
@@ -35,11 +35,11 @@ jobs:
           python3 tool/app_config.py check
           python3 -m unittest discover -s tool -v
       # The wrapper starts on this JDK; gradle-daemon-jvm.properties asks for 25
-      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: temurin
           java-version: "25"
-      - uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
       - name: Kotlin style and static analysis (ktlint, detekt)
         run: ./gradlew spotlessCheck detekt
       - name: Build-logic tests (release key, app.json parsing)
@@ -57,7 +57,7 @@ jobs:
         run: ./gradlew :android:watch:minifyReleaseWithR8 :android:phone:minifyReleaseWithR8
       - name: Upload reports
         if: failure()
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: android-reports
           path: code/**/build/reports/
@@ -70,7 +70,7 @@ jobs:
       run:
         working-directory: code
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
         with:
           xcode-version: latest-stable
@@ -79,11 +79,11 @@ jobs:
         run: |
           command -v swiftlint || brew install swiftlint
           swiftlint lint --strict
-      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: temurin
           java-version: "25"
-      - uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
       - name: Shared tests (all targets)
         run: ./gradlew :shared:allTests
       - name: watchOS app tests
@@ -103,7 +103,7 @@ jobs:
           python3 ../tool/xccov_floor.py build/WPPadelBoard.xcresult WPPadelBoard.app 94
       - name: Upload results
         if: failure()
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: apple-results
           path: |
