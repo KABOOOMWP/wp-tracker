@@ -591,10 +591,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CC0000000000000000000007 /* WPPadelBoard.xcconfig */;
 			buildSettings = {
-				INFOPLIST_KEY_CFBundleDisplayName = "WP Padel Board";
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
-				INFOPLIST_KEY_UIStatusBarHidden = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
 			};
 			name = Debug;
 		};
@@ -602,10 +598,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CC0000000000000000000007 /* WPPadelBoard.xcconfig */;
 			buildSettings = {
-				INFOPLIST_KEY_CFBundleDisplayName = "WP Padel Board";
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
-				INFOPLIST_KEY_UIStatusBarHidden = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
 			};
 			name = Release;
 		};
@@ -670,7 +662,6 @@
 			baseConfigurationReference = CC0000000000000000000001 /* Base.xcconfig */;
 			buildSettings = {
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = 9P2T82QGN8;
 				ENABLE_TESTABILITY = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -688,7 +679,6 @@
 			baseConfigurationReference = CC0000000000000000000001 /* Base.xcconfig */;
 			buildSettings = {
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = 9P2T82QGN8;
 				ENABLE_NS_ASSERTIONS = NO;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;

@@ -5,3 +5,5 @@ PRODUCT_BUNDLE_IDENTIFIER = $(PHONE_BUNDLE_ID)
 INFOPLIST_FILE = Config/WPPadelBoard-Info.plist
 INFOPLIST_KEY_CFBundleDisplayName = $(PHONE_DISPLAY_NAME)
 INFOPLIST_KEY_LSApplicationCategoryType = public.app-category.healthcare-fitness
+INFOPLIST_KEY_UIStatusBarHidden = YES
+INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait
